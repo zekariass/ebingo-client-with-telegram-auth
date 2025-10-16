@@ -1,0 +1,12 @@
+version: 3
+
+agent:
+  authtoken: 347BfiOUH876cCoU0ktECsq5CD7_5AMp6mt9BXfxmCY1CtBur
+
+tunnels:
+  frontend:
+    proto: http
+    addr: 3000
+  backend:
+    proto: http
+    addr: 8080
