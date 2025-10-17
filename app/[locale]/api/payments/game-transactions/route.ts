@@ -1,31 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { ApiResponse } from "@/lib/backend/types";
-import { createClient } from "@/lib/supabase/server";
 
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
 
+/**
+ * GET /[lang]/api/game/transaction
+ * Query params: page, size
+ * Description: Fetch game transactions
+ */
 export async function GET(req: NextRequest) {
   try {
     if (!BACKEND_BASE_URL) {
       throw new Error("BACKEND_BASE_URL is not defined");
     }
 
-    const supabase = await createClient();
-
-    // Securely authenticate user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    // Read initData from headers
+    const initData = req.headers.get("x-init-data");
+    if (!initData) {
+      return NextResponse.json(
+        { success: false, error: "Missing x-init-data header" },
+        { status: 400 }
+      );
     }
-
-    // Get access token
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !session) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-    }
-
-    const token = session.access_token;
-    const userSupabaseId = user.id;
 
     // Collect query parameters from frontend request
     const { searchParams } = new URL(req.url);
@@ -33,40 +29,39 @@ export async function GET(req: NextRequest) {
     const size = searchParams.get("size") || "10";
     const sortBy = "createdAt";
 
-    const headers = {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    };
-
-    // Forward query params to backend
+    // Forward query params to backend with x-init-data
     const backendUrl = new URL(`${BACKEND_BASE_URL}/api/v1/secured/game/transaction`);
-    // backendUrl.searchParams.append("userSupabaseId", userSupabaseId);
     backendUrl.searchParams.append("page", page);
     backendUrl.searchParams.append("size", size);
     backendUrl.searchParams.append("sortBy", sortBy);
 
     const response = await fetch(backendUrl.toString(), {
       method: "GET",
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+        "x-init-data": initData,
+      },
       cache: "no-store",
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch game transactions: ${response.statusText}`);
-    }
-
     const result = await response.json();
 
-    const {data} = result
+    if (!response.ok) {
+      return NextResponse.json(
+        { success: false, error: result?.error || "Failed to fetch game transactions" },
+        { status: response.status }
+      );
+    }
 
     const responseData: ApiResponse = {
       success: true,
-      data,
+      data: result.data,
       error: null,
     };
 
     return NextResponse.json(responseData);
   } catch (error) {
+    console.error("Game transaction route error:", error);
     const response: ApiResponse = {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",

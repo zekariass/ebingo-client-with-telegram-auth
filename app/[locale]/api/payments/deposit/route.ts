@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { ApiResponse } from "@/lib/backend/types";
-import { createClient } from "@/lib/supabase/server";
 
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
 
@@ -14,23 +13,16 @@ export async function POST(req: NextRequest) {
       throw new Error("BACKEND_BASE_URL is not defined");
     }
 
-    const supabase = await createClient();
-
-    // Authenticate user via Supabase
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    // Read initData from headers
+    const initData = req.headers.get("x-init-data");
+    if (!initData) {
+      return NextResponse.json(
+        { success: false, error: "Missing x-init-data header" },
+        { status: 400 }
+      );
     }
 
-    // Get access token
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !session) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-    }
-
-    const token = session.access_token;
-
-    // Parse incoming JSON body
+    // Parse request body
     const body = await req.json();
     const { amount, paymentMethodId } = body;
 
@@ -41,32 +33,31 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Forward to backend API
-    const backendUrl = `${BACKEND_BASE_URL}/api/v1/secured/transactions/deposit/initiate-offline`;
-
-    const response = await fetch(backendUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        amount,
-        paymentMethodId,
-      }),
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Backend deposit failed: ${response.status} ${errText}`);
-    }
+    // Forward request to backend with x-init-data
+    const response = await fetch(
+      `${BACKEND_BASE_URL}/api/v1/secured/transactions/deposit/initiate-offline`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-init-data": initData, // verification
+        },
+        body: JSON.stringify({ amount, paymentMethodId }),
+      }
+    );
 
     const result = await response.json();
-    const { data } = result;
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { success: false, error: result?.error || "Backend deposit failed" },
+        { status: response.status }
+      );
+    }
 
     const responseData: ApiResponse = {
       success: true,
-      data,
+      data: result.data,
       error: null,
     };
 

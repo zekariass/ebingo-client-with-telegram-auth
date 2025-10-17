@@ -1,49 +1,48 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import type { ApiResponse } from "@/lib/backend/types";
-import { createClient } from "@/lib/supabase/server";
 import { PaymentMethod } from "@/lib/types";
 
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
 
-export async function GET() {
+/**
+ * GET - Fetch payment methods using x-init-data
+ */
+export async function GET(request: NextRequest) {
   try {
     if (!BACKEND_BASE_URL) {
       throw new Error("BACKEND_BASE_URL is not defined");
     }
 
-    const supabase = await createClient();
+    // Read initData from headers
+    const initData = request.headers.get("x-init-data");
 
-    // Securely authenticate user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    if (!initData) {
+      return NextResponse.json(
+        { success: false, error: "Missing x-init-data header" },
+        { status: 400 }
+      );
     }
-
-    // Get access token
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !session) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-    }
-
-    const token = session.access_token;
 
     const response = await fetch(`${BACKEND_BASE_URL}/api/v1/secured/payment-methods`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        "x-init-data": initData, // send to backend for verification
       },
       cache: "no-store",
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch payment methods: ${response.statusText}`);
-    }
-
     const result = await response.json();
 
-     // Use result.data if your API wraps it in a success object
-    const methods: PaymentMethod[] = Array.isArray(result.data) ? result.data : []
+    if (!response.ok) {
+      return NextResponse.json(
+        { success: false, error: result?.error || "Backend error" },
+        { status: response.status }
+      );
+    }
+
+    // Ensure data is an array of PaymentMethod
+    const methods: PaymentMethod[] = Array.isArray(result.data) ? result.data : [];
 
     const responseData: ApiResponse = {
       success: true,

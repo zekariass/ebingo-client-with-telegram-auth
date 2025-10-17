@@ -1,70 +1,55 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import type { ApiResponse } from "@/lib/backend/types";
-import { createClient } from "@/lib/supabase/server";
-import { use } from "i18next";
 
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
 
-export async function GET() {
+/**
+ * GET /[lang]/api/wallet
+ * Expects: x-init-data header
+ */
+export async function GET(req: NextRequest) {
   try {
     if (!BACKEND_BASE_URL) {
       throw new Error("BACKEND_BASE_URL is not defined");
     }
 
-    const supabase = await createClient();
-
-    // ✅ Authenticate securely
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Read initData from headers
+    const initData = req.headers.get("x-init-data");
+    if (!initData) {
+      return NextResponse.json(
+        { success: false, error: "Missing x-init-data header" },
+        { status: 400 }
+      );
     }
 
-    // Get current access token
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const accessToken = session.access_token;
-
-    console.log("=====================USER==============>>>>: ", user.id)
-
-    // ✅ Call backend with verified user ID
-    const response = await fetch(
-      `${BACKEND_BASE_URL}/api/v1/secured/wallet?userSupabaseId=${user.id}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        cache: "no-store",
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch wallet balance: ${response.statusText}`);
-    }
+    // Forward request to backend API
+    const response = await fetch(`${BACKEND_BASE_URL}/api/v1/secured/wallet`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-init-data": initData, // pass initData for verification
+      },
+      cache: "no-store",
+    });
 
     const result = await response.json();
 
-    const {data} = result
+    if (!response.ok) {
+      return NextResponse.json(
+        { success: false, error: result?.error || "Failed to fetch wallet" },
+        { status: response.status }
+      );
+    }
 
     const responseData: ApiResponse = {
       success: true,
-      data,
+      data: result.data,
       error: null,
     };
 
     return NextResponse.json(responseData);
   } catch (error) {
+    console.error("Wallet route error:", error);
     const response: ApiResponse = {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",

@@ -24,7 +24,7 @@ interface GameStore {
   addDisqualifiedPlayer: (userId: number) => void
   setAmIDisqualified: (disqualified: boolean) => void
   addCard: (card: CardInfo) => void
-  selectCard: (cardId: string, userId: string) => void
+  selectCard: (cardId: string, userId: number) => void
   releaseCard: (cardId: string) => void
   setAllPlayerSelectedCardIds: (cardIds: string[]) => void
   setAllCardIds: (cardIds: string[]) => void
@@ -220,7 +220,7 @@ export const useGameStore = create<GameStore>()(
 
           // Enforce max cards only for the current user
           if (
-            userId === currentUser.supabaseId &&
+            userId === currentUser.telegramId &&
             game.userSelectedCardsIds.length >= maxCards
           ) {
             return state
@@ -236,7 +236,7 @@ export const useGameStore = create<GameStore>()(
           let newUserSelectedCards = game.userSelectedCards
 
           // If the action is from the current user, update their selections
-          if (userId === currentUser.supabaseId) {
+          if (userId === currentUser.telegramId) {
             newUserSelectedIds = Array.from(
               new Set([...game.userSelectedCardsIds, cardId])
             )

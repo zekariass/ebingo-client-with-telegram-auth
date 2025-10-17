@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { ApiResponse } from "@/lib/backend/types";
-import { createClient } from "@/lib/supabase/server";
 
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
 
 /**
  * POST /[lang]/api/payments/shop
- * Body: { amount: number, paymentMethodId: number, orderId?: string }
+ * Body: { amount: number, paymentMethodId: number, bankName?: string, accountName?: string, accountNumber?: string }
  * Description: Initiates a payment request for the Ethiopian shop
  */
 export async function POST(req: NextRequest) {
@@ -15,39 +14,17 @@ export async function POST(req: NextRequest) {
       throw new Error("BACKEND_BASE_URL is not defined");
     }
 
-    const supabase = await createClient();
-
-    // Authenticate user via Supabase
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
+    // Read initData from headers
+    const initData = req.headers.get("x-init-data");
+    if (!initData) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { success: false, error: "Missing x-init-data header" },
+        { status: 400 }
       );
     }
-
-    // Get access token for backend authorization
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const token = session.access_token;
 
     // Parse request body
     const body = await req.json();
-
     const { amount, paymentMethodId, bankName, accountName, accountNumber } = body;
 
     if (!amount || !paymentMethodId) {
@@ -57,31 +34,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Forward request to your Ethiopian shop backend
-    const backendUrl = `${BACKEND_BASE_URL}/api/v1/secured/transactions/withdraw`;
-
-    const response = await fetch(backendUrl, {
+    // Forward request to backend with x-init-data
+    const response = await fetch(`${BACKEND_BASE_URL}/api/v1/secured/transactions/withdraw`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        "x-init-data": initData, // verification
       },
-      body: JSON.stringify({
-        amount, paymentMethodId, bankName, accountName, accountNumber
-      }),
+      body: JSON.stringify({ amount, paymentMethodId, bankName, accountName, accountNumber }),
     });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Ethiopian shop payment failed: ${response.status} ${errText}`);
-    }
-
     const result = await response.json();
-    const { data } = result;
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { success: false, error: result?.error || "Backend payment failed" },
+        { status: response.status }
+      );
+    }
 
     const responseData: ApiResponse = {
       success: true,
-      data,
+      data: result.data,
       error: null,
     };
 

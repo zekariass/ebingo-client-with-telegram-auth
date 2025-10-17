@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from "next/server"
-import type { ApiResponse } from "@/lib/backend/types"
-import { createClient } from "@/lib/supabase/server"
+import { NextRequest, NextResponse } from "next/server";
+import type { ApiResponse } from "@/lib/backend/types";
 
-const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!
+const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
 
 /**
  * POST /[lang]/api/payments/transfer
@@ -11,72 +10,62 @@ const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!
 export async function POST(req: NextRequest) {
   try {
     if (!BACKEND_BASE_URL) {
-      throw new Error("BACKEND_BASE_URL is not defined")
+      throw new Error("BACKEND_BASE_URL is not defined");
     }
 
-    const supabase = await createClient()
-
-    // Authenticate user via Supabase
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
-    if (userError || !user) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    // Read initData from headers
+    const initData = req.headers.get("x-init-data");
+    if (!initData) {
+      return NextResponse.json(
+        { success: false, error: "Missing x-init-data header" },
+        { status: 400 }
+      );
     }
-
-    // Get access token
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-    if (sessionError || !session) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
-    }
-
-    const token = session.access_token
 
     // Parse incoming JSON body
-    const body = await req.json()
-    const { amount, email } = body
+    const { amount, email } = await req.json();
 
     if (!amount || !email) {
       return NextResponse.json(
         { success: false, error: "Missing required fields: amount or email" },
         { status: 400 }
-      )
+      );
     }
 
-    // Forward request to backend API
-    const backendUrl = `${BACKEND_BASE_URL}/api/v1/secured/deposit/transfers`
+    // Forward request to backend API with x-init-data
+    const backendUrl = `${BACKEND_BASE_URL}/api/v1/secured/deposit/transfers`;
 
     const response = await fetch(backendUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        "x-init-data": initData, // pass initData for verification
       },
-      body: JSON.stringify({
-        amount,
-        email: email, // ✅ Use the backend's expected field name
-      }),
-    })
+      body: JSON.stringify({ amount, email }),
+    });
+
+    const result = await response.json();
 
     if (!response.ok) {
-      const errText = await response.text()
-      throw new Error(`Backend transfer failed: ${response.status} ${errText}`)
+      return NextResponse.json(
+        { success: false, error: result?.error || "Backend transfer failed" },
+        { status: response.status }
+      );
     }
-
-    const result = await response.json()
-    const { data } = result
 
     const responseData: ApiResponse = {
       success: true,
-      data,
+      data: result.data,
       error: null,
-    }
+    };
 
-    return NextResponse.json(responseData, { status: 200 })
+    return NextResponse.json(responseData, { status: 200 });
   } catch (error) {
-    console.error("Transfer route error:", error)
+    console.error("Transfer route error:", error);
     const response: ApiResponse = {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
-    }
-    return NextResponse.json(response, { status: 500 })
+    };
+    return NextResponse.json(response, { status: 500 });
   }
 }
