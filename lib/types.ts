@@ -423,7 +423,7 @@ export interface CardSelected extends WSMessage {
   type: "game.cardSelected"
   payload: {
     gameId: string
-    playerId: string
+    playerId: number
     cardId: string
   }
 }
