@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Markup } from 'telegraf';
 import type { Telegraf } from 'telegraf';
 import { showStartMenu } from './commands';
+import { message } from 'telegraf/filters';
 
 export function registerStartHandlers(bot: Telegraf) {
   bot.command('start', async (ctx: any) => {
@@ -9,7 +10,7 @@ export function registerStartHandlers(bot: Telegraf) {
     let isRegistered = false;
 
     try {
-      const res = await axios.get(`${process.env.BACKEND_BASE_URL}/api/v1/public/user-profile/${userId}`);
+      const res = await axios.get(`${process.env.BACKEND_BASE_URL}/api/v1/secured/user-profile/${userId}`);
       isRegistered = res.data?.success && res.data?.data?.telegramId === userId;
     } catch {
       isRegistered = false;
@@ -26,7 +27,7 @@ export function registerStartHandlers(bot: Telegraf) {
     await showStartMenu(ctx);
   });
 
-  bot.on('contact', async (ctx: any) => {
+  bot.on(message('contact'), async (ctx: any) => {
     if (!ctx.message?.contact) return;
     const contact = ctx.message.contact;
     const userId = ctx.from?.id!;
@@ -42,7 +43,7 @@ export function registerStartHandlers(bot: Telegraf) {
     };
 
     try {
-      const response = await axios.post(`${process.env.BACKEND_BASE_URL}/api/v1/public/user-profile/${userId}`, payload);
+      const response = await axios.post(`${process.env.BACKEND_BASE_URL}/api/v1/public/user-profile/register`, payload);
 
       if (!response.data.success) {
         const errors = response.data.errors;
