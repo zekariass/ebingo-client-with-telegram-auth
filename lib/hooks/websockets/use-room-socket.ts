@@ -225,7 +225,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
         // const wsUrl = `${WS_API_BASE}/game?roomId=${roomId}&initData=${encodeURIComponent(initData??"")}`
 
 
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> WebSocket URL:", wsUrl)
+        // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> WebSocket URL:", wsUrl)
 
         const wsUrl = "wss://api.bingofam.com/ws/game?roomId=121&initData=query_id%3DAAHBmet0AAAAAMGZ63RnzwPp%26user%3D%257B%2522id%2522%253A1961597377%252C%2522first_name%2522%253A%2522Zekarias%2520Semegnew%2520Negese%2522%252C%2522last_name%2522%253A%2522%2522%252C%2522username%2522%253A%2522Zemaedot%2522%252C%2522language_code%2522%253A%2522en%2522%252C%2522allows_write_to_pm%2522%253Atrue%252C%2522photo_url%2522%253A%2522https%253A%255C%252F%255C%252Ft.me%255C%252Fi%255C%252Fuserpic%255C%252F320%255C%252F_wrmiZtgEBLImxe_kZYuNXx6J73fnb4U5BD7wePBlYs.svg%2522%257D%26auth_date%3D1760569648%26signature%3DDKKpSAl3yyO1lC3oYpIKZsan-_DFz-W_L1xUBKNduo_t7XZpUyPNPws4ggwFanxTssUF-6ksn_d9U3OFW-QbBg%26hash%3Deec0983e00076707ef42acd2cbca887664bedae14d6285ce2bb9cf8722d9ff64"
         const ws = new WebSocket(wsUrl)
