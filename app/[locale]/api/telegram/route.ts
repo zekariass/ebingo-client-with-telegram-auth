@@ -399,6 +399,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import { Room } from '@/lib/types';
 
+
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 if (!process.env.BOT_TOKEN) throw new Error('BOT_TOKEN missing');
@@ -814,44 +815,21 @@ bot.action(/show_rooms_(\d+)/, async (ctx) => {
 // process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
 
-// // ------------------ Webhook handler ----------------
-// export async function POST(req: NextRequest) {
-//   try {
-//     const update = await req.json();
-//     await bot.handleUpdate(update);
-//     return NextResponse.json({ ok: true });
-//   } catch (error) {
-//     console.error('Telegram webhook error:', error);
-//     return NextResponse.json({ ok: false, error });
-//   }
-// }
-
-
-// setLocalizedCommands().then(async () => {
-//    const webhookUrl = `${APP_URL}/en/api/telegram`;
-//     await bot.telegram.setWebhook(webhookUrl);
-// });
-
-
-// ---------------- NEXT.JS WEBHOOK HANDLER ----------------
+// ------------------ Webhook handler ----------------
 export async function POST(req: NextRequest) {
   try {
-    const update = await req.json();          // Telegram sends updates as JSON
-    await bot.handleUpdate(update);          // Let Telegraf process the update
+    const update = await req.json();
+    await bot.handleUpdate(update);
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error('Telegram webhook error:', error);
-    return NextResponse.json({ ok: false, error: (error as Error).message });
+    return NextResponse.json({ ok: false, error });
   }
 }
 
-// ---------------- SET WEBHOOK ON SERVER START ----------------
-(async () => {
-  try {
-    const webhookUrl = `${APP_URL}/api/telegram`;   // must match your route
-    await bot.telegram.setWebhook(webhookUrl);     // register webhook with Telegram
-    console.log(`✅ Telegram webhook set: ${webhookUrl}`);
-  } catch (err) {
-    console.error('❌ Failed to set webhook:', err);
-  }
-})();
+
+setLocalizedCommands().then(async () => {
+   const webhookUrl = `${APP_URL}/en/api/telegram`;
+    await bot.telegram.setWebhook(webhookUrl);
+});
+
