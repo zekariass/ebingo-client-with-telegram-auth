@@ -37,6 +37,7 @@ export function registerStartHandlers(bot: Telegraf) {
     if (!firstName) return await ctx.reply('❌ Please set a first name in your Telegram profile and try again.');
 
     const payload = {
+      telegramId: userId,
       firstName,
       lastName: contact.last_name || ctx.from?.last_name,
       phoneNumber: contact.phone_number,
