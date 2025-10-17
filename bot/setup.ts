@@ -45,9 +45,9 @@ webhookSet = true;
 
 
 const APP_URL = process.env.APP_URL!;
-for (const locale of availableLanguages) {
-const webhookUrl = `${APP_URL}/${locale}/api/telegram`;
+// for (const locale of availableLanguages) {
+const webhookUrl = `${APP_URL}/en/api/telegram`;
 await bot.telegram.setWebhook(webhookUrl);
-console.log(`✅ Webhook set for locale: ${locale} -> ${webhookUrl}`);
-}
+// console.log(`✅ Webhook set for locale: ${locale} -> ${webhookUrl}`);
+// }
 }
