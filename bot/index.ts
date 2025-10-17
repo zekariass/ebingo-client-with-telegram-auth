@@ -5,7 +5,7 @@ import { setCommandsAndWebhooks } from './setup';
 import { registerMiddleware } from './middleware';
 import { registerHandlers } from './handlers.ts';
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+// dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 if (!process.env.BOT_TOKEN) throw new Error('BOT_TOKEN missing');
 if (!process.env.BACKEND_BASE_URL) throw new Error('BACKEND_BASE_URL missing');
