@@ -12,6 +12,7 @@ import { GameTransactionHistory } from "../payment/game-transaction-history"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { CreditCard, ReceiptIcon, Settings, Wallet } from "lucide-react"
+import { ConnectionStatus } from "../room/connection-status"
 
 export function LobbyHeader() {
   const [walletOpen, setWalletOpen] = useState(false)
@@ -104,9 +105,12 @@ export function LobbyHeader() {
               </Button>}
               {/* <HeaderUserDropdown /> */}
               {/* <ModeToggle /> */}
+            
               {user && <h2>Hi {user.firstName}</h2>}
+
               </>}
             </div>
+              <ConnectionStatus />
 
           </div>
         </div>
