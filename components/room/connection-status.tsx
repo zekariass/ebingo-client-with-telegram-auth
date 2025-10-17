@@ -7,14 +7,13 @@ import { Badge } from "@/components/ui/badge"
 import { Wifi, WifiOff, AlertCircle, RefreshCw } from "lucide-react"
 import { userStore } from "@/lib/stores/user-store"
 import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
-import { use } from "i18next"
 
 interface ConnectionStatusProps {
   roomId?: number
 }
 
 export function ConnectionStatus({ roomId }: ConnectionStatusProps) {
-  const { connected, connecting, error, reconnectAttempts, reconnect } = useWebSocketEvents({ roomId })
+  const { connected, connecting, error, reconnectAttempts, reconnect } = useWebSocketEvents({ roomId, enabled: true })
   
   useTelegramInit();
   const {initData} = userStore(); 

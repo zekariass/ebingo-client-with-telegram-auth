@@ -326,9 +326,9 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
     maxAttemptsReachedRef.current = false
     reconnectAttemptsRef.current = 0
     disconnect()
-    if (initData) {
+    // if (initData) {
       setTimeout(() => connect(), 100)
-    }
+    // } 
   }, [disconnect, connect, initData])
 
   useEffect(() => {
