@@ -17,16 +17,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Edit, Trash2, Play, Pause, Users } from "lucide-react"
+import { Plus, Edit, Trash2, Users } from "lucide-react"
 import { useAdminStore } from "@/lib/stores/admin-store"
 import { InputField, SelectField } from "@/components/ui/form-fields"
 import { roomPatterns, roomSchema, roomStatuses, type RoomFormData } from "@/lib/schemas/admin-schemas"
-import { stat } from "fs"
 import { useGameStore } from "@/lib/stores/game-store"
+import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
 
 export function AdminRooms() {
   const { rooms, isLoading, error, createRoom, updateRoom, deleteRoom, loadRooms } = useAdminStore()
 const resetGameState = useGameStore(state => state.resetGameState);
+useTelegramInit();
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [editingRoom, setEditingRoom] = useState<any>(null)

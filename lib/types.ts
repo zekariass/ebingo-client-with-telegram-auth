@@ -1,15 +1,11 @@
 export interface UserProfile {
   id: number;
-  supabaseId: string;
+  telegramId: number;
   firstName: string;
   lastName: string;
-  nickName?: string | null;
-  email: string;
-  phone?: string | null;
-  balance: Big;
+  phoneNumber?: string | null;
   status: 'ACTIVE' | 'BANNED';
-  role: 'ADMIN' | 'PLAYER';
-  freePlayCount?: number | null;
+  role: 'ADMIN' | 'PLAYER' | 'MODERATOR';
   createdAt: string;
   updatedAt: string;
 }

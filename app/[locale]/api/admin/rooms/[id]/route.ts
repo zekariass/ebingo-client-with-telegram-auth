@@ -1,83 +1,91 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
-// import { getServerSession } from "next-auth"
+import { type NextRequest, NextResponse } from "next/server";
 
-// import { authOptions } from "@/lib/auth"
+const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
 
-const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL
-
+/**
+ * PUT - Update a room (Admin only)
+ */
 export async function PUT(
-  request: NextRequest, 
-  context: { params: { id: string } }) {
-  try {
-
-    const {id} = await context.params
-
-    const supabase = await createClient();
-    // const session = await getServerSession(authOptions)
-    const {data: {session}, error} = await supabase.auth.getSession()
-
-    if (error || !session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const updates = await request.json()
-
-    // const room = await prisma.room.update({
-    //   where: { id: params.id },
-    //   data: updates,
-    // })
-
-    const response = await fetch(`${BACKEND_BASE_URL}/api/v1/secured/rooms/${id}`, {
-          method: "PUT",
-          body: JSON.stringify({id: id, ...updates}),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-    
-      const result = await response.json();
-
-  
-      if (!response.ok) {
-      console.log("==========================================>>>>: ", result)
-
-        return NextResponse.json({ error: result?.error || "Backend error" }, { status: response.status });
-      }
-  
-      return NextResponse.json({ success: true, data: result.data });
-    } catch (err) {
-      console.error("Admin rooms error:", err);
-      return NextResponse.json({ error: err}, { status: 500 });
-    }
-}
-
-
-
-export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } } 
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await context.params;
 
-    const supabase = await createClient();
-    const { data: { session }, error } = await supabase.auth.getSession();
+    // Extract headers sent from the client
+    const role = request.headers.get("x-user-role");
+    const initData = request.headers.get("x-init-data");
 
-    if (!session || error) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Check for admin and valid Telegram initData
+    if (!role || role !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
     }
 
+    if (!initData) {
+      return NextResponse.json({ error: "Missing Telegram initData" }, { status: 400 });
+    }
+
+    const updates = await request.json();
+
+    // Forward update to backend
+    const response = await fetch(`${BACKEND_BASE_URL}/api/v1/secured/rooms/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "x-init-data": initData, // verification by backend
+      },
+      body: JSON.stringify({ id, ...updates }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error("Room update backend error:", result);
+      return NextResponse.json(
+        { error: result?.error || "Backend error" },
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: result.data });
+  } catch (err) {
+    console.error("Error updating room:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+/**
+ * DELETE - Delete a room (Admin only)
+ */
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params;
+
+    const role = request.headers.get("x-user-role");
+    const initData = request.headers.get("x-init-data");
+
+    if (!role || role !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
+    }
+
+    if (!initData) {
+      return NextResponse.json({ error: "Missing Telegram initData" }, { status: 400 });
+    }
+
+    // Call backend delete endpoint
     const response = await fetch(`${BACKEND_BASE_URL}/api/v1/secured/rooms/${id}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${session.access_token}`,
+        "x-init-data": initData,
       },
     });
 
+    const result = await response.json();
+
     if (!response.ok) {
-      const result = await response.json();
       return NextResponse.json(
         { error: result?.error || "Backend error. Room not deleted" },
         { status: response.status }
@@ -90,4 +98,3 @@ export async function DELETE(
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
-

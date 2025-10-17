@@ -1,23 +1,17 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ModeToggle } from "@/components/mode-toggle"
 import { WalletBalance } from "@/components/payment/wallet-balance"
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog"
 import { TransactionHistory } from "@/components/payment/transaction-history"
-import { CreditCard, FileTextIcon, History, ListOrdered, ListOrderedIcon, ReceiptIcon, Settings, Wallet } from "lucide-react"
 import Link from "next/link"
-import { useEffect, useState } from "react"
-import { useSession } from "@/hooks/use-session"
-import HeaderUserDropdown from "./header-user-dropdown"
-import LoginButton from "../auth/login-button"
-import SignupButton from "../auth/signup-button"
 import { DialogTitle } from "@radix-ui/react-dialog"
 import { userStore } from "@/lib/stores/user-store"
 import { UserRole } from "@/lib/types"
 import { GameTransactionHistory } from "../payment/game-transaction-history"
 import { useRouter } from "next/navigation"
-import i18n from "@/i18n"
+import { useState } from "react"
+import { CreditCard, ReceiptIcon, Settings, Wallet } from "lucide-react"
 
 export function LobbyHeader() {
   const [walletOpen, setWalletOpen] = useState(false)
@@ -43,8 +37,8 @@ export function LobbyHeader() {
             <div className="flex flex-wrap items-center gap-2 sm:gap-4">
               {!user && 
               <>
-              <LoginButton />
-              <SignupButton />
+              {/* <LoginButton />
+              <SignupButton /> */}
               </>
               }
               {user && 
@@ -108,8 +102,9 @@ export function LobbyHeader() {
                   <span className="hidden sm:inline">Admin</span>
                 </Link>
               </Button>}
-              <HeaderUserDropdown />
+              {/* <HeaderUserDropdown /> */}
               {/* <ModeToggle /> */}
+              {user && <h2>Hi {user.firstName}</h2>}
               </>}
             </div>
 

@@ -8,29 +8,28 @@ import { RoomGrid } from "./room-grid"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { usePaymentStore } from "@/lib/stores/payment-store"
+import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
 import { userStore } from "@/lib/stores/user-store"
 
 export function Lobby() {
   const { rooms, loading, error, fetchRooms, sendInitData } = useLobbyStore()
   const {fetchPaymentMethods, fetchTransactions, fetchWallet} = usePaymentStore()
-  const { fetchUserProfile} = userStore()
+  // const { fetchUserProfile} = userStore()
+
+  useTelegramInit();
+
+  const {user, initData } = userStore();
+
+  console.log("====== USER :", user)
+  console.log("====== INIT DATA :", initData)
 
   const [currentTxnPage, setCurrentTxnPage] = useState<number>(1)
   const [currentTxnSize, setCurrentTxnSize] = useState<number>(10)
 
-// fetch("https://471caa3bbe86.ngrok-free.app/api/v1/public/user-profile/initData", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({initData: "initData", initDataUnsafe: "initDataUnsafe" }),
-//       })
-
   useEffect(() => {
 
   const initData = window.Telegram?.WebApp?.initData;
-  // const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe;
-
   if (!initData) return;
-
    sendInitData(initData);
     
     fetchRooms()
@@ -40,7 +39,7 @@ export function Lobby() {
   // Fetch all payment data
   async function fetchPaymentData() {
     await Promise.all([
-      fetchUserProfile(),
+      // fetchUserProfile(),
       fetchWallet(true),
       fetchPaymentMethods(),
       fetchTransactions(currentTxnPage, currentTxnSize, true),

@@ -5,13 +5,19 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Wifi, WifiOff, AlertCircle, RefreshCw } from "lucide-react"
+import { userStore } from "@/lib/stores/user-store"
+import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
+import { use } from "i18next"
 
 interface ConnectionStatusProps {
   roomId?: number
 }
 
 export function ConnectionStatus({ roomId }: ConnectionStatusProps) {
-  const { connected, connecting, error, latencyMs, reconnectAttempts, reconnect } = useWebSocketEvents({ roomId })
+  const { connected, connecting, error, reconnectAttempts, reconnect } = useWebSocketEvents({ roomId })
+  
+  useTelegramInit();
+  const {initData} = userStore(); 
 
   if (connected) {
     return (
@@ -50,7 +56,7 @@ export function ConnectionStatus({ roomId }: ConnectionStatusProps) {
             {reconnectAttempts > 0 && ` (${reconnectAttempts} attempts)`}
           </span>
         </div>
-        <Button variant="outline" size="sm" onClick={reconnect} className="ml-4 bg-transparent">
+        <Button variant="outline" size="sm" onClick={()=>reconnect()} className="ml-4 bg-transparent">
           <RefreshCw className="h-4 w-4 mr-2" />
           Retry
         </Button>

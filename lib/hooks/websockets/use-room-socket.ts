@@ -4,10 +4,10 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import { useRoomStore } from "@/lib/stores/room-store"
 import { GameStatus, type WSEvent, type WSMessage } from "@/lib/types"
 import { useGameStore } from "@/lib/stores/game-store"
-import { useSession } from "@/hooks/use-session"
 import { useRouter } from "next/navigation"
 import i18n from "@/i18n"
 import { userStore } from "@/lib/stores/user-store"
+import { useTelegramInit } from "../use-telegram-init"
 
 
 interface UseRoomSocketOptions {
@@ -32,9 +32,10 @@ const HEARTBEAT_INTERVAL = 30000
 export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) {
   const roomStore = useRoomStore()
   const gameStore = useGameStore()
-  const { session, loading } = useSession()
-  const userSupabaseId = userStore(state => state.user?.supabaseId)
-
+  // const { session, loading } = useSession()
+  const {initData, user} = userStore()
+  // useTelegramInit();
+  
   const router = useRouter();
 
   // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Room Socket Hook - roomId:", roomId, "enabled:", enabled, "session:", session, "loading:", loading)
@@ -107,7 +108,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           _gameStore.removePlayer(message.payload.playerId)
           _gameStore.setPlayersCount(message.payload.playersCount)
           
-          if (userSupabaseId && userSupabaseId === message.payload.playerId){
+          if (user && user.telegramId.toString() === message.payload.playerId){
             message.payload.releasedCardsIds?.map(cardId => 
              _gameStore.releaseCard(cardId))
             // _gameStore.resetGameState()
@@ -208,7 +209,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
   }, [])
 
   const connect = useCallback(
-    (token: string) => {
+    () => {
       if (!enabled || maxAttemptsReachedRef.current) return
 
       setSocketState((prev) => {
@@ -218,8 +219,12 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
 
       try {
 
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Connecting to WebSocket... roomId:", roomId, "initData:", initData)
+
         const WS_API_BASE = process.env.NEXT_PUBLIC_WS_URL!
-        const wsUrl = `${WS_API_BASE}/game?roomId=${roomId}&token=${encodeURIComponent(token)}`
+        // const wsUrl = `${WS_API_BASE}/game?roomId=${roomId}&initData=${encodeURIComponent(initData || "")}`
+
+        const wsUrl = "ws://localhost:8080/ws/game?roomId=121&initData=query_id%3DAAHBmet0AAAAAMGZ63RnzwPp%26user%3D%257B%2522id%2522%253A1961597377%252C%2522first_name%2522%253A%2522Zekarias%2520Semegnew%2520Negese%2522%252C%2522last_name%2522%253A%2522%2522%252C%2522username%2522%253A%2522Zemaedot%2522%252C%2522language_code%2522%253A%2522en%2522%252C%2522allows_write_to_pm%2522%253Atrue%252C%2522photo_url%2522%253A%2522https%253A%255C%252F%255C%252Ft.me%255C%252Fi%255C%252Fuserpic%255C%252F320%255C%252F_wrmiZtgEBLImxe_kZYuNXx6J73fnb4U5BD7wePBlYs.svg%2522%257D%26auth_date%3D1760569648%26signature%3DDKKpSAl3yyO1lC3oYpIKZsan-_DFz-W_L1xUBKNduo_t7XZpUyPNPws4ggwFanxTssUF-6ksn_d9U3OFW-QbBg%26hash%3Deec0983e00076707ef42acd2cbca887664bedae14d6285ce2bb9cf8722d9ff64"
         // const wsUrl = `ws://localhost:8080/ws/game?roomId=${roomId}&token=${encodeURIComponent(token)}`
         // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Connecting to WebSocket URL:", wsUrl)
         const ws = new WebSocket(wsUrl)
@@ -264,7 +269,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
                 ...prev,
                 reconnectAttempts: reconnectAttemptsRef.current,
               }))
-              if (session?.access_token) connect(session.access_token)
+              if (initData) connect()
             }, delay)
           } else if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
             maxAttemptsReachedRef.current = true
@@ -276,10 +281,10 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           }
         }
 
-        ws.onerror = () => {
+        ws.onerror = (event) => {
           setSocketState((prev) => ({
             ...prev,
-            error: "Connection error",
+            error: "Connection error2",
             connecting: false,
           }))
         }
@@ -287,12 +292,12 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
         console.error("Failed to create WebSocket:", error)
         setSocketState((prev) => ({
           ...prev,
-          error: "Failed to connect",
+          error: "Failed to connect2",
           connecting: false,
         }))
       }
     },
-    [enabled, roomId, handleMessage, startHeartbeat, stopHeartbeat, send, getReconnectDelay, session]
+    [enabled, roomId, handleMessage, startHeartbeat, stopHeartbeat, send, getReconnectDelay, initData]
   )
 
   const disconnect = useCallback(() => {
@@ -320,19 +325,19 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
     maxAttemptsReachedRef.current = false
     reconnectAttemptsRef.current = 0
     disconnect()
-    if (session?.access_token) {
-      setTimeout(() => connect(session.access_token), 100)
+    if (initData) {
+      setTimeout(() => connect(), 100)
     }
-  }, [disconnect, connect, session?.access_token])
+  }, [disconnect, connect, initData])
 
   useEffect(() => {
-    if (enabled && session?.access_token ) {
-      connect(session.access_token)
+    if (enabled && initData ) {
+      connect()
     }
     return () => {
       disconnect()
     }
-  }, [enabled, session?.access_token, roomId])
+  }, [enabled, initData, roomId])
 
   return {
     ...socketState,

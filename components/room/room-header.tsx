@@ -14,12 +14,15 @@ import { useWebSocketContext } from "@/lib/contexts/websocket-context"
 import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { useRouter } from "next/navigation"
 import { currency } from "@/lib/constant"
+import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
 
 interface RoomHeaderProps {
   room?: Room | null 
 }
 
 export function RoomHeader({ room }: RoomHeaderProps) {
+  // useTelegramInit();
+
   const { connected, latencyMs } = useRoomStore()
   const {game: {gameId, status, joinedPlayers, playersCount}} = useGameStore()
 

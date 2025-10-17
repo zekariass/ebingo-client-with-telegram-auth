@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { RoomFormData } from "../schemas/admin-schemas"
 import i18n from "@/i18n"
 import { Transaction, TransactionStatus, TransactionType } from "../types"
+import { userStore } from "./user-store"
 
 interface AdminStats {
   activePlayers: number
@@ -120,13 +121,13 @@ interface AdminStore {
   updateRoom: (id: string, updates: Partial<Room>) => Promise<void>
   deleteRoom: (id: number) => Promise<void>
   // retrieveRooms: () => Promise<Room[]>
-  controlGame: (gameId: string, action: string, data?: any) => Promise<void>
+  // controlGame: (gameId: string, action: string, data?: any) => Promise<void>
   banPlayer: (playerId: string) => Promise<void>
   unbanPlayer: (playerId: string) => Promise<void>
   loadRooms: () => Promise<void>
-  loadPlayers: (search?: string) => Promise<void>
-  loadGames: () => Promise<void>
-  loadAnalytics: () => Promise<void>
+  // loadPlayers: (search?: string) => Promise<void>
+  // loadGames: () => Promise<void>
+  // loadAnalytics: () => Promise<void>
 
   // Transactions
   changeTransactionStatus: (txnRef: string, status: TransactionStatus) => Promise<void>
@@ -211,103 +212,200 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
   },
 
   refreshData: async () => {
-    const { loadDashboardData, loadRooms, loadPlayers, loadGames } = get()
-    await Promise.all([loadDashboardData(), loadRooms(), loadPlayers(), loadGames()])
+    const { loadDashboardData, loadRooms } = get()
+    await Promise.all([loadDashboardData(), loadRooms()])
   },
 
   createRoom: async (roomData) => {
-    set({ isLoading: true, error: null })
-    try {
-      const response = await fetch("/api/admin/rooms", {
-        method: "POST",
-        headers: { "Content-Type": "application/json"},
-        body: JSON.stringify(roomData),
-      })
+    const { user, initData } = userStore.getState();
+    const role = user?.role;
 
-      const result = await response.json()
+    set({ isLoading: true, error: null });
+
+    try {
+      if (!role || role !== "ADMIN") {
+        set({ error: "Access denied: Admins only", isLoading: false });
+        return;
+      }
+
+      if (!initData) {
+        set({ error: "Missing Telegram initData", isLoading: false });
+        return;
+      }
+
+      const response = await fetch(`/${i18n.language}/api/admin/rooms`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-role": role,
+          "x-init-data": initData,
+        },
+        body: JSON.stringify(roomData),
+      });
+
+      const result = await response.json();
 
       if (result.success) {
-        const { loadRooms } = get()
-        await loadRooms()
+        const { loadRooms } = get();
+        await loadRooms(); // refresh room list
       } else {
-        set({ error: result.error })
+        set({ error: result.error || "Failed to create room" });
       }
     } catch (error) {
-      set({ error: "Failed to create room" })
+      console.error("Error creating room:", error);
+      set({ error: "Failed to create room" });
     } finally {
-      set({ isLoading: false })
+      set({ isLoading: false });
     }
   },
 
   updateRoom: async (id, updates) => {
-    set({ isLoading: true, error: null })
-    try {
-      const response = await fetch(`/api/admin/rooms/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updates),
-      })
+    const { user, initData} = userStore.getState();
+    const role = user?.role;
 
-      const result = await response.json()
+    set({ isLoading: true, error: null });
+
+    try {
+      if (!role || role !== "ADMIN") {
+        set({ error: "Access denied: Admins only", isLoading: false });
+        return;
+      }
+
+      if (!initData) {
+        set({ error: "Missing Telegram initData", isLoading: false });
+        return;
+      }
+
+      const response = await fetch(`/${i18n.language}/api/admin/rooms/${id}`, {
+        method: "PUT",
+        headers: {
+          // "Content-Type": "application/json",
+          "x-user-role": role,
+          "x-init-data": initData,
+        },
+        body: JSON.stringify(updates),
+      });
+
+      const result = await response.json();
 
       if (result.success) {
-        const { loadRooms } = get()
-        await loadRooms()
+        const { loadRooms } = get();
+        await loadRooms();
       } else {
-        set({ error: result.error })
+        set({ error: result.error || "Failed to update room" });
       }
     } catch (error) {
-      set({ error: "Failed to update room" })
+      console.error("Error updating room:", error);
+      set({ error: "Failed to update room" });
     } finally {
-      set({ isLoading: false })
+      set({ isLoading: false });
     }
   },
 
   deleteRoom: async (id) => {
-    set({ isLoading: true, error: null })
+    const { user, initData } = userStore.getState();
+    const role = user?.role;
+
+    set({ isLoading: true, error: null });
+
     try {
-      const response = await fetch(`/api/admin/rooms/${id}`, {
+      if (!role || role !== "ADMIN") {
+        set({ error: "Access denied: Admins only", isLoading: false });
+        return;
+      }
+
+      if (!initData) {
+        set({ error: "Missing Telegram initData", isLoading: false });
+        return;
+      }
+
+      const response = await fetch(`/${i18n.language}/api/admin/rooms/${id}`, {
         method: "DELETE",
-      })
+        headers: {
+          "x-user-role": role,
+          "x-init-data": initData,
+        },
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.success) {
-        const { loadRooms } = get()
-        await loadRooms()
+        const { loadRooms } = get();
+        await loadRooms();
       } else {
-        set({ error: result.error })
+        set({ error: result.error || "Failed to delete room" });
       }
     } catch (error) {
-      set({ error: "Failed to delete room" })
+      console.error("Error deleting room:", error);
+      set({ error: "Failed to delete room" });
     } finally {
-      set({ isLoading: false })
+      set({ isLoading: false });
     }
   },
 
-  controlGame: async (gameId, action, data) => {
-    set({ isLoading: true, error: null })
+  loadRooms: async () => {
+    const { user, initData } = userStore.getState(); // ✅ get user data from userStore
+    const role = user?.role;
+
+    set({ isLoading: true, error: null });
+
     try {
-      const response = await fetch(`/api/admin/games/${gameId}/control`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, data }),
-      })
+      if (!role || role !== "ADMIN") {
+        set({ error: "Access denied: Admins only", isLoading: false });
+        return;
+      }
 
-      const result = await response.json()
+      if (!initData) {
+        set({ error: "Missing Telegram initData", isLoading: false });
+        return;
+      }
+
+      const response = await fetch(`/${i18n.language}/api/admin/rooms`, {
+        headers: {
+          "x-user-role": role,
+          "x-init-data": initData,
+        },
+        cache: "no-store",
+      });
+
+      const result = await response.json();
 
       if (result.success) {
-        const { loadGames } = get()
-        await loadGames()
+        set({ rooms: result.data });
       } else {
-        set({ error: result.error })
+        set({ error: result.error || "Failed to load rooms" });
       }
     } catch (error) {
-      set({ error: "Failed to control game" })
+      console.error("Error loading rooms:", error);
+      set({ error: "Failed to load rooms" });
     } finally {
-      set({ isLoading: false })
+      set({ isLoading: false });
     }
   },
+
+  // controlGame: async (gameId, action, data) => {
+  //   set({ isLoading: true, error: null })
+  //   try {
+  //     const response = await fetch(`/api/admin/games/${gameId}/control`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ action, data }),
+  //     })
+
+  //     const result = await response.json()
+
+  //     if (result.success) {
+  //       const { loadGames } = get()
+  //       await loadGames()
+  //     } else {
+  //       set({ error: result.error })
+  //     }
+  //   } catch (error) {
+  //     set({ error: "Failed to control game" })
+  //   } finally {
+  //     set({ isLoading: false })
+  //   }
+  // },
 
   banPlayer: async (playerId) => {
     set({ isLoading: true, error: null })
@@ -319,8 +417,8 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
       const result = await response.json()
 
       if (result.success) {
-        const { loadPlayers } = get()
-        await loadPlayers()
+        // const { loadPlayers } = get()
+        // await loadPlayers()
       } else {
         set({ error: result.error })
       }
@@ -341,8 +439,8 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
       const result = await response.json()
 
       if (result.success) {
-        const { loadPlayers } = get()
-        await loadPlayers()
+        // const { loadPlayers } = get()
+        // await loadPlayers()
       } else {
         set({ error: result.error })
       }
@@ -353,78 +451,62 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
     }
   },
 
-  loadRooms: async () => {
-    set({ isLoading: true, error: null })
-    try {
-      const response = await fetch(`/${i18n.language}/api/admin/rooms`)
-      const result = await response.json()
+  
 
-      if (result.success) {
-        set({ rooms: result.data })
-      } else {
-        set({ error: result.error })
-      }
-    } catch (error) {
-      set({ error: "Failed to load rooms" })
-    } finally {
-      set({ isLoading: false })
-    }
-  },
+  // loadPlayers: async (search) => {
+  //   set({ isLoading: true, error: null })
+  //   try {
+  //     const url = search ? `/api/admin/players?search=${encodeURIComponent(search)}` : "/api/admin/players"
+  //     const response = await fetch(url)
+  //     const result = await response.json()
 
-  loadPlayers: async (search) => {
-    set({ isLoading: true, error: null })
-    try {
-      const url = search ? `/api/admin/players?search=${encodeURIComponent(search)}` : "/api/admin/players"
-      const response = await fetch(url)
-      const result = await response.json()
+  //     if (result.success) {
+  //       set({ players: result.data })
+  //     } else {
+  //       set({ error: result.error })
+  //     }
+  //   } catch (error) {
+  //     set({ error: "Failed to load players" })
+  //   } finally {
+  //     set({ isLoading: false })
+  //   }
+  // },
 
-      if (result.success) {
-        set({ players: result.data })
-      } else {
-        set({ error: result.error })
-      }
-    } catch (error) {
-      set({ error: "Failed to load players" })
-    } finally {
-      set({ isLoading: false })
-    }
-  },
+  // loadGames: async () => {
+  //   set({ isLoading: true, error: null })
+  //   try {
+  //     const response = await fetch("/api/admin/games")
+  //     const result = await response.json()
 
-  loadGames: async () => {
-    set({ isLoading: true, error: null })
-    try {
-      const response = await fetch("/api/admin/games")
-      const result = await response.json()
+  //     if (result.success) {
+  //       set({ activeGames: result.data })
+  //     } else {
+  //       set({ error: result.error })
+  //     }
+  //   } catch (error) {
+  //     set({ error: "Failed to load games" })
+  //   } finally {
+  //     set({ isLoading: false })
+  //   }
+  // },
 
-      if (result.success) {
-        set({ activeGames: result.data })
-      } else {
-        set({ error: result.error })
-      }
-    } catch (error) {
-      set({ error: "Failed to load games" })
-    } finally {
-      set({ isLoading: false })
-    }
-  },
+  // loadAnalytics: async () => {
+  //   set({ isLoading: true, error: null })
+  //   try {
+  //     const response = await fetch("/api/admin/analytics")
+  //     const result = await response.json()
 
-  loadAnalytics: async () => {
-    set({ isLoading: true, error: null })
-    try {
-      const response = await fetch("/api/admin/analytics")
-      const result = await response.json()
-
-      if (result.success) {
-        set({ analytics: result.data })
-      } else {
-        set({ error: result.error })
-      }
-    } catch (error) {
-      set({ error: "Failed to load analytics" })
-    } finally {
-      set({ isLoading: false })
-    }
-  },
+  //     if (result.success) {
+  //       set({ analytics: result.data })
+  //     } else {
+  //       set({ error: result.error })
+  //     }
+  //   } catch (error) {
+  //     set({ error: "Failed to load analytics" })
+  //   } finally {
+  //     set({ isLoading: false })
+  //   }
+  // },
 
   getTransactions: async (
   status: TransactionStatus | undefined,

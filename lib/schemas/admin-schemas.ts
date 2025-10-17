@@ -9,7 +9,7 @@ export const roomSchema = z.object({
   pattern: z.enum(["LINE", "LINE_AND_CORNERS", "CORNERS", "FULL_HOUSE"], {
     errorMap: () => ({ message: "Please select a valid winning pattern" }),
   }),
-  status: z.enum(["OPEN", "GAME_READY", "GAME_STARTED", "CLOSED"], {
+  status: z.enum(["OPEN", "CLOSED"], {
     errorMap: () => ({message: "Please select a valid room status"})
 })//.optional()
 

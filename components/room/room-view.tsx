@@ -13,6 +13,7 @@ import { GameStatus } from "@/lib/types"
 import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { userStore } from "@/lib/stores/user-store"
 import { usePaymentStore } from "@/lib/stores/payment-store"
+import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
 
 interface RoomViewProps {
   roomId: number
@@ -26,7 +27,9 @@ export function RoomView({ roomId }: RoomViewProps) {
   const {enterRoom} = useWebSocketEvents({roomId, enabled: true})
   const fetchUserProfile = userStore(state => state.fetchUserProfile)
   const {fetchWallet} = usePaymentStore()
+  useTelegramInit();
 
+  const {user} = userStore()
 
   const targetTime = new Date(countdownEndTime).getTime()
   const now = Date.now()
@@ -47,7 +50,7 @@ export function RoomView({ roomId }: RoomViewProps) {
     try {
       await enterRoom()
       await Promise.all([
-        fetchUserProfile(),
+        fetchUserProfile(user?.telegramId || 0),
         fetchWallet(true),
       ])
     } catch (err) {
