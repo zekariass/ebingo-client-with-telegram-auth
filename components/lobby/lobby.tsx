@@ -29,9 +29,7 @@ export function Lobby() {
   useEffect(() => {
 
   const initData = window.Telegram?.WebApp?.initData;
-  if (!initData) return;
-   sendInitData(initData);
-    
+  if (!initData) return;    
     fetchRooms()
   }, [fetchRooms])
 

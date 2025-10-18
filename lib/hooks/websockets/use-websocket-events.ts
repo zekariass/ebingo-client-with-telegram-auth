@@ -57,7 +57,7 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
     [socket, roomId]
   )
 
-  // ✅ Leave Game
+  // Leave Game
   const leaveGame = useCallback(
     (gameId: number, playerId: string) => {
       if (!socket) return
@@ -69,7 +69,7 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
     [socket, roomId]
   )
 
-  // ✅ Select Card
+  // Select Card
   const selectCard = useCallback(
     (gameId: number, cardId: string) => {
       if (!socket) return
@@ -81,7 +81,7 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
     [socket]
   )
 
-  // ✅ Release Card
+  // Release Card
   const releaseCard = useCallback(
     (gameId: number, cardId: string) => {
       if (!socket) return
@@ -93,7 +93,7 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
     [socket]
   )
 
-  // ✅ Mark Number
+  // Mark Number
   const markNumber = useCallback(
     (gameId: number, cardId: string, number: number) => {
       if (!socket) return
@@ -105,7 +105,7 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
     [socket, user?.id]
   )
 
-  // ✅ Unmark Number
+  // Unmark Number
   const unmarkNumber = useCallback(
     (gameId: number, cardId: string, number: number) => {
       if (!socket) return
@@ -117,7 +117,7 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
     [socket, user?.id]
   )
 
-  // ✅ Claim Bingo
+  // Claim Bingo
   const claimBingo = useCallback(
     (request: BingoClaimRequestPayloadType) => {
       setClaiming(true)
