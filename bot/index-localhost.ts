@@ -1,6 +1,6 @@
 import { Telegraf, Markup, NarrowedContext } from 'telegraf';
 import { message } from 'telegraf/filters';
-import { Update, ContactMessage } from 'telegraf/types';
+// import { Update, ContactMessage } from 'telegraf/types';
 import axios from 'axios';
 import path from 'path';
 import dotenv from 'dotenv';
