@@ -120,6 +120,11 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
             message.payload.releasedCardsIds?.map(cardId => 
              _gameStore.releaseCard(cardId))
             router.replace(`/${i18n.language}`)
+            _gameStore.resetGameState()
+            gameStoreRef.current.resetGameState()
+            _roomStore.resetRoom()
+            roomStoreRef.current.resetRoom()
+            _gameStore.setJoining(false)
           }
           
           break
@@ -132,10 +137,12 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           }
           break
         case "game.numberDrawn":
-          if (message.payload.gameId !== gameStoreRef.current.game.gameId || message.payload.roomId !== roomStoreRef.current.room?.id) break;
+          if (message.payload.gameId === gameStoreRef.current.game.gameId && 
+            message.payload.roomId === roomStoreRef.current.room?.id){
           _gameStore.addDrawnNumber(message.payload.number)
           _gameStore.setCurrentDrawnNumber(message.payload.number)
           break
+          }
         case "game.bingoClaimResponse":
           _gameStore.handleBingoClaimResponse(message.payload)
           _gameStore.setClaiming(false)
