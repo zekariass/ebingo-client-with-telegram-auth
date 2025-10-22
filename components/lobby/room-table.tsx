@@ -219,7 +219,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
           {(Array.isArray(rooms)? rooms : []).map((room) => (
             <tr
               key={room.id}
-              className="bg-gray-900 hover:bg-gray-800 transition-colors duration-200 rounded-lg text-xs sm:text-sm"
+              className="bg-gray-900 hover:bg-gray-800 transition-colors duration-200 rounded-lg text-sm sm:text-sm py-3"
             >
               <td className="px-2 sm:px-4 py-1 sm:py-2 font-semibold text-white text-sm"> {room.entryFee} {currency}</td>
               <td className="px-2 sm:px-4 py-1 sm:py-2">
