@@ -118,7 +118,7 @@ export function GameHeader({ room, connected }: GameHeaderProps) {
     {
       label: "Prize",
       value: `${currency} ${
-        room ? (game.userSelectedCards.length * room.entryFee * 1.0 - Number(commisionRate)).toFixed(2) : 0
+        room ? (game.userSelectedCards.length * room.entryFee * (1.0 - Number(commisionRate))).toFixed(2) : 0
       }`,
       bg: "bg-green-600",
     },

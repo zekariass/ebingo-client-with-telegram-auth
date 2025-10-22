@@ -79,6 +79,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
   }, [])
 
   const handleMessage = useCallback((event: MessageEvent) => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     try {
       const message: WSEvent = JSON.parse(event.data)
       const _roomStore = roomStoreRef.current
@@ -103,17 +104,9 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           // router.replace(`/${i18n.language}/rooms/${roomId}`)
           break
         case "game.playerLeft":
-
           if (message.payload.errorType === "gameStarted"){
             router.replace(`/${i18n.language}`)
             break
-          }
-
-          _gameStore.removePlayer(message.payload.playerId)
-          _gameStore.setPlayersCount(message.payload.playersCount)
-          
-          if (message.payload.gameState){
-            _gameStore.setGameState(message.payload.gameState)
           }
           
           if (user && user.telegramId.toString() === message.payload.playerId){
@@ -121,10 +114,14 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
              _gameStore.releaseCard(cardId))
             router.replace(`/${i18n.language}`)
             _gameStore.resetGameState()
-            gameStoreRef.current.resetGameState()
             _roomStore.resetRoom()
-            roomStoreRef.current.resetRoom()
-            _gameStore.setJoining(false)
+           disconnect()
+          }else{
+            _gameStore.removePlayer(message.payload.playerId)
+            _gameStore.setPlayersCount(message.payload.playersCount)
+            if (message.payload.gameState){
+              _gameStore.setGameState(message.payload.gameState)
+            }
           }
           
           break
@@ -254,10 +251,6 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
         const WS_API_BASE = process.env.NEXT_PUBLIC_WS_URL!
         const wsUrl = `${WS_API_BASE}/ws/game?roomId=${roomId}&initData=${encodeURIComponent((initData) ??"")}`
 
-
-        // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> WebSocket URL:", wsUrl)
-
-        // const wsUrl = "ws://localhost:8080/ws/game?roomId=121&initData=query_id%3DAAHBmet0AAAAAMGZ63RnzwPp%26user%3D%257B%2522id%2522%253A1961597377%252C%2522first_name%2522%253A%2522Zekarias%2520Semegnew%2520Negese%2522%252C%2522last_name%2522%253A%2522%2522%252C%2522username%2522%253A%2522Zemaedot%2522%252C%2522language_code%2522%253A%2522en%2522%252C%2522allows_write_to_pm%2522%253Atrue%252C%2522photo_url%2522%253A%2522https%253A%255C%252F%255C%252Ft.me%255C%252Fi%255C%252Fuserpic%255C%252F320%255C%252F_wrmiZtgEBLImxe_kZYuNXx6J73fnb4U5BD7wePBlYs.svg%2522%257D%26auth_date%3D1760569648%26signature%3DDKKpSAl3yyO1lC3oYpIKZsan-_DFz-W_L1xUBKNduo_t7XZpUyPNPws4ggwFanxTssUF-6ksn_d9U3OFW-QbBg%26hash%3Deec0983e00076707ef42acd2cbca887664bedae14d6285ce2bb9cf8722d9ff64"
         const ws = new WebSocket(wsUrl)
         wsRef.current = ws
 
