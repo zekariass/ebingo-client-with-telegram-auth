@@ -203,7 +203,12 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
             router.replace(`/${i18n.language}/rooms/${roomId}`)
             // _gameStore.setJoining(false)
           } else if (message.payload?.eventType === "game.playerLeaveRequest"){
-            router.replace(`/${i18n.language}/rooms/${roomId}`)
+            _gameStore.resetGameState()
+            gameStoreRef.current.resetGameState()
+            _roomStore.resetRoom()
+            roomStoreRef.current.resetRoom()
+            _gameStore.setJoining(false)
+            router.replace(`/${i18n.language}`)
           }
           break
         default:
