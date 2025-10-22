@@ -11,7 +11,7 @@
 // import { useEffect } from "react"
 
 // export function TransactionHistory() {
-//   const { transactions, setTransactions, getRecentTransactions, fetchTransactions, loading, setLoading, error, setError } =
+//   const { transactions, setTransactions, getRecentTransactions, fetchTransactions, loading, setLoading, error, setTxnError } =
 //     usePaymentStore()
 
 //   const refreshTransactions = async (refresh: boolean) => {
@@ -21,7 +21,7 @@
 //   //     const newTransactions = await paymentApiClient.getTransactions()
 //   //     setTransactions(newTransactions)
 //   //   } catch (error) {
-//   //     setError(error instanceof Error ? error.message : "Failed to load transactions")
+//   //     setTxnError(error instanceof Error ? error.message : "Failed to load transactions")
 //   //   } finally {
 //   //     setLoading(false)
 //   //   }
@@ -170,8 +170,8 @@ export function TransactionHistory() {
     fetchTransactions,
     loading,
     setLoading,
-    error,
-    setError,
+    txnError,
+    setTxnError,
   } = usePaymentStore()
 
   // Ensure we always have an array to map over
@@ -180,10 +180,10 @@ export function TransactionHistory() {
   const refreshTransactions = async (refresh: boolean = false) => {
     try {
       setLoading(true)
-      setError(null)
+      setTxnError(null)
       await fetchTransactions(1, 10, refresh)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load transactions")
+      setTxnError(err instanceof Error ? err.message : "Failed to load transactions")
     } finally {
       setLoading(false)
     }
@@ -261,9 +261,9 @@ export function TransactionHistory() {
 
       <CardContent>
         {/* Error Message */}
-        {error && (
+        {txnError && (
           <div className="p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg mb-4">
-            <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+            <p className="text-red-700 dark:text-red-300 text-sm">{txnError}</p>
           </div>
         )}
 

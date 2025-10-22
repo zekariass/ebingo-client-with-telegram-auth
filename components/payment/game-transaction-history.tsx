@@ -11,7 +11,7 @@ import { GameTransactionStatus, GameTransactionType, TransactionStatus, Transact
 import { useEffect } from "react"
 
 export function GameTransactionHistory() {
-  const { gameTransactions, fetchGameTransactions, loading, error } = usePaymentStore()
+  const { gameTransactions, fetchGameTransactions, loading, gameTxnError } = usePaymentStore()
 
   const refreshTransactions = async () => {
     fetchGameTransactions(1, 10, "createdAt", true)
@@ -92,9 +92,9 @@ export function GameTransactionHistory() {
       </CardHeader>
 
       <CardContent>
-        {error && (
+        {gameTxnError && (
           <div className="p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg mb-4">
-            <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+            <p className="text-red-700 dark:text-red-300 text-sm">{gameTxnError}</p>
           </div>
         )}
 

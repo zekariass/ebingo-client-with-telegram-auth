@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import i18n from "@/i18n"
 import { userStore } from "@/lib/stores/user-store"
 import { useTelegramInit } from "../use-telegram-init"
+import _ from "lodash"
 
 
 interface UseRoomSocketOptions {
@@ -32,9 +33,8 @@ const HEARTBEAT_INTERVAL = 30000
 export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) {
   const roomStore = useRoomStore()
   const gameStore = useGameStore()
-  // const { session, loading } = useSession()
   const {initData, user} = userStore()
-  // useTelegramInit();
+  useTelegramInit();
   
   const router = useRouter();
 
@@ -85,7 +85,6 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
       const _gameStore = gameStoreRef.current
 
       if (message.type === "pong") {
-        // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Received pong message")
         const latency = Date.now() - lastPingRef.current
         setSocketState((prev) => ({ ...prev, latencyMs: latency }))
         _roomStore.setLatency(latency)
@@ -94,25 +93,33 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
 
       switch (message.type) {
         case "game.playerJoined":
-          // _gameStore.addPlayer(message.payload.playerId)
           _gameStore.setJoinedPlayers(message.payload.joinedPlayers)
           _gameStore.setPlayersCount(message.payload.playersCount)
+          if (user && message.payload.joinedPlayers.includes(user.telegramId.toString())){
+            router.push(`/${i18n.language}/rooms/${roomId}/game`)
+            _gameStore.setJoining(false)
+
+          }
+          // router.replace(`/${i18n.language}/rooms/${roomId}`)
           break
         case "game.playerLeft":
 
           if (message.payload.errorType === "gameStarted"){
-            router.replace(`/${i18n.language}/rooms/${message.payload.roomId}`)
+            router.replace(`/${i18n.language}`)
             break
           }
 
           _gameStore.removePlayer(message.payload.playerId)
           _gameStore.setPlayersCount(message.payload.playersCount)
           
+          if (message.payload.gameState){
+            _gameStore.setGameState(message.payload.gameState)
+          }
+          
           if (user && user.telegramId.toString() === message.payload.playerId){
             message.payload.releasedCardsIds?.map(cardId => 
              _gameStore.releaseCard(cardId))
-            // _gameStore.resetGameState()
-            router.replace(`/${i18n.language}/rooms/${message.payload.roomId}`)
+            router.replace(`/${i18n.language}`)
           }
           
           break
@@ -127,7 +134,6 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
         case "game.numberDrawn":
           _gameStore.addDrawnNumber(message.payload.number)
           _gameStore.setCurrentDrawnNumber(message.payload.number)
-          // console.log("========= DRAWN NUMBER ==============>>>: "+ message.payload.number)
           break
         case "game.bingoClaimResponse":
           _gameStore.handleBingoClaimResponse(message.payload)
@@ -142,43 +148,54 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           _gameStore.setCountdownWithEndTime(message.payload.countdownEndTime)
           break
         case "game.ended":
-          // _gameStore.setWinner(message.payload.winner)
-          // _gameStore.updateStatus(GameStatus.COMPLETED)
-          // _gameStore.setEnded(true)
           if (message.payload.gameId === gameStoreRef.current.game.gameId){
             _gameStore.setWinner(message.payload)
+            router.push(`/${i18n.language}/rooms/${roomId}`)
             _gameStore.resetGameState()
-            router.replace(`/${i18n.language}/rooms/${roomId}`)
             _gameStore.setClaiming(false)
 
           }
           break
         case "game.cardSelected":
-          // console.log("======================CARD SELECTED==============>>>: ", message.payload.cardId)
           _gameStore.selectCard(message.payload.cardId, message.payload.playerId)
           break
         case "game.cardReleased":
           _gameStore.releaseCard(message.payload.cardId)
           break
         case "room.serverGameState":
-          // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  GAME STATE:", message.payload.gameState)
           _gameStore.resetGameState()
           if (message.payload.success && message.payload.gameState) {
             _gameStore.setGameState(message.payload.gameState)
           }
           break
+
+         case "game.state":
+          _gameStore.resetGameState()
+          if (message.payload.gameState) {
+            _gameStore.setGameState(message.payload.gameState)
+          }
+          break
+
+        case "game.initialized":
+          _gameStore.resetGameState()
+          _gameStore.setGameState(message.payload.gameState)
+          break
         case "card.markNumberResponse":
-          // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>  MARK NUMBER RESPONSE:", message.payload)
           _gameStore.setMarkedNumbersForACard(message.payload.cardId, message.payload.numbers)
           break
         case "card.unmarkNumberResponse":
           _gameStore.setMarkedNumbersForACard(message.payload.cardId, message.payload.numbers)
           break
         case "error":
-          console.error("WebSocket Error:", message.payload)
-          if (message.payload.eventType === "bingo.claim"){
+          if (message.payload?.eventType === "bingo.claim"){
             _gameStore.setClaimError(message.payload)
             _gameStore.setClaiming(false)
+          }else if (message.payload?.eventType === "game.playerJoinRequest"){
+            gameStoreRef.current.setError(message.payload?.message)
+            router.replace(`/${i18n.language}/rooms/${roomId}`)
+            // _gameStore.setJoining(false)
+          } else if (message.payload?.eventType === "game.playerLeaveRequest"){
+            router.replace(`/${i18n.language}/rooms/${roomId}`)
           }
           break
         default:
@@ -219,15 +236,15 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
 
       try {
 
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Connecting to WebSocket... roomId:", roomId, "initData:", initData)
+        // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Connecting to WebSocket... roomId:", roomId, "initData:", initData)
 
         const WS_API_BASE = process.env.NEXT_PUBLIC_WS_URL!
-        // const wsUrl = `${WS_API_BASE}/game?roomId=${roomId}&initData=${encodeURIComponent(initData??"")}`
+        const wsUrl = `${WS_API_BASE}/ws/game?roomId=${roomId}&initData=${encodeURIComponent((initData) ??"")}`
 
 
         // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> WebSocket URL:", wsUrl)
 
-        const wsUrl = "wss://api.bingofam.com/ws/game?roomId=121&initData=query_id%3DAAHBmet0AAAAAMGZ63RnzwPp%26user%3D%257B%2522id%2522%253A1961597377%252C%2522first_name%2522%253A%2522Zekarias%2520Semegnew%2520Negese%2522%252C%2522last_name%2522%253A%2522%2522%252C%2522username%2522%253A%2522Zemaedot%2522%252C%2522language_code%2522%253A%2522en%2522%252C%2522allows_write_to_pm%2522%253Atrue%252C%2522photo_url%2522%253A%2522https%253A%255C%252F%255C%252Ft.me%255C%252Fi%255C%252Fuserpic%255C%252F320%255C%252F_wrmiZtgEBLImxe_kZYuNXx6J73fnb4U5BD7wePBlYs.svg%2522%257D%26auth_date%3D1760569648%26signature%3DDKKpSAl3yyO1lC3oYpIKZsan-_DFz-W_L1xUBKNduo_t7XZpUyPNPws4ggwFanxTssUF-6ksn_d9U3OFW-QbBg%26hash%3Deec0983e00076707ef42acd2cbca887664bedae14d6285ce2bb9cf8722d9ff64"
+        // const wsUrl = "ws://localhost:8080/ws/game?roomId=121&initData=query_id%3DAAHBmet0AAAAAMGZ63RnzwPp%26user%3D%257B%2522id%2522%253A1961597377%252C%2522first_name%2522%253A%2522Zekarias%2520Semegnew%2520Negese%2522%252C%2522last_name%2522%253A%2522%2522%252C%2522username%2522%253A%2522Zemaedot%2522%252C%2522language_code%2522%253A%2522en%2522%252C%2522allows_write_to_pm%2522%253Atrue%252C%2522photo_url%2522%253A%2522https%253A%255C%252F%255C%252Ft.me%255C%252Fi%255C%252Fuserpic%255C%252F320%255C%252F_wrmiZtgEBLImxe_kZYuNXx6J73fnb4U5BD7wePBlYs.svg%2522%257D%26auth_date%3D1760569648%26signature%3DDKKpSAl3yyO1lC3oYpIKZsan-_DFz-W_L1xUBKNduo_t7XZpUyPNPws4ggwFanxTssUF-6ksn_d9U3OFW-QbBg%26hash%3Deec0983e00076707ef42acd2cbca887664bedae14d6285ce2bb9cf8722d9ff64"
         const ws = new WebSocket(wsUrl)
         wsRef.current = ws
 
@@ -326,12 +343,13 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
     maxAttemptsReachedRef.current = false
     reconnectAttemptsRef.current = 0
     disconnect()
-    // if (initData) {
+    if (initData) {
       setTimeout(() => connect(), 100)
-    // } 
+    } 
   }, [disconnect, connect, initData])
 
   useEffect(() => {
+    if (!roomId) return
     if (enabled && initData ) {
       connect()
     }

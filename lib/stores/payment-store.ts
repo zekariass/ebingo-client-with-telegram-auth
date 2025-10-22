@@ -2,6 +2,7 @@ import { create } from "zustand"
 import type { GameTransaction, PaymentMethod, Transaction, WalletBalance } from "@/lib/types"
 import i18n from "@/i18n"
 import { $ZodEmail } from "zod/v4/core"
+import { userStore } from "./user-store"
 
 interface PaymentState {
   balance: WalletBalance
@@ -9,8 +10,14 @@ interface PaymentState {
   transactions: Transaction[]
   gameTransactions: GameTransaction[]
   loading: boolean
-  error: string | null
+  walletError: string | null
+  pmError: string | null
+  txnError: string | null
+  gameTxnError: string | null
   gameError: String | null
+  transferError: string | null
+  withdrawError: string | null
+  depositError: string | null
 
   // Actions
   resetBalance: () => void
@@ -26,7 +33,13 @@ interface PaymentState {
   addTransaction: (transaction: Transaction) => void
   updateTransaction: (transactionId: string, updates: Partial<Transaction>) => void
   setLoading: (loading: boolean) => void
-  setError: (error: string | null) => void
+  setWalletError: (error: string | null) => void
+  setTxnError: (error: string | null) => void
+  setGameTxnError: (error: string | null) => void
+  setPMError: (error: string | null) => void
+  setTransferError: (error: string | null) => void
+  setWithdrawError: (error: string | null) => void
+  setDepositError: (error: string | null) => void
 
   // Game Txns
   resetGameTxns: () => void
@@ -49,11 +62,13 @@ interface PaymentState {
   // getPendingDeposits: () => number
 
   // Withdraw
-  withdrawFund: (paymentMethodId: number,
-                  amount: number,
-                  bankName: string,
-                  accountName: string,
-                  accountNumber: string
+  withdrawFund: (
+          paymentMethodId: number,
+          amount: number,
+          bankName?: string,
+          accountName?: string,
+          accountNumber?: string,
+          phoneNumber?: string
   ) => Promise<void>
 }
 
@@ -80,8 +95,14 @@ export const usePaymentStore = create<PaymentState>()(
       transactions: [],
       gameTransactions: [],
       loading: false,
-      error: null,
+      walletError: null,
+      pmError: null,
+      txnError: null,
+      gameTxnError: null,
       gameError: null,
+      transferError: null,
+      withdrawError: null,
+      depositError: null,
 
       // Actions
       resetBalance: () => set({ balance: {
@@ -122,7 +143,14 @@ export const usePaymentStore = create<PaymentState>()(
         paymentMethods: [],
         transactions: [],
         loading: false,
-        error: null,
+        walletError: null,
+        pmError: null,
+        txnError: null,
+        gameTxnError: null,
+        gameError: null,
+        transferError: null,
+        withdrawError: null,
+        depositError: null,
       }),
 
       setBalance: (balance) => set({ balance }),
@@ -169,7 +197,14 @@ export const usePaymentStore = create<PaymentState>()(
         })),  
 
       setLoading: (loading) => set({ loading }),
-      setError: (error) => set({ error }),
+      setWalletError: (error) => set({ walletError: error }),
+      setTxnError: (error) => set({ txnError: error }),
+      setPMError: (error) => set({ pmError: error }),
+      setGameTxnError: (error) => set({ gameTxnError: error }),
+      setTransferError: (error) => set({ transferError: error }),
+      setWithdrawError: (error) => set({ withdrawError: error }),
+      setDepositError: (error) => set({ depositError: error }),
+      
 
       // Computed getters
       getDefaultPaymentMethod: () => {
@@ -203,38 +238,62 @@ export const usePaymentStore = create<PaymentState>()(
           gameTransactions: [...gameTxns]
          }),
 
+      fetchGameTransactions: async (page = 1, size = 10, sortBy = "createdAt", refresh = false) => {
+        const { gameTransactions } = get()
+        const initData = userStore.getState().initData || ""
+        const lang = i18n?.language || "en"
 
-      fetchGameTransactions: async (page: number, size: number, sortBy: string, refresh: boolean) => {
-        if (get().gameTransactions.length && !refresh) return
-        set({ loading: true, error: null })
+        if (gameTransactions.length && !refresh && page === 1) return
 
-        try{
+        set({ loading: true, gameTxnError: null })
 
-          const url = new URL(`/${i18n.language}/api/payments/game-transactions`, window.location.origin);
-          url.searchParams.append('page', page.toString());
-          url.searchParams.append('size', size.toString());
-          url.searchParams.append('sortBy', sortBy.toString());
-
-          const response = await fetch(url.toString());
-          if (!response.ok) throw new Error("Failed to fetch transactions");
-
-          const result = await response.json();
-          const { data } = result;
-
-          set({ gameTransactions: data, loading: false });
-
-            }catch (error: any) {
-              set({ error: error.message || "Error fetching game transaction", loading: false })
+        try {
+          const response = await fetch(
+            `/${lang}/api/payments/game-transactions?page=${page}&size=${size}&sortBy=${sortBy}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "x-init-data": initData,
+              },
+              cache: "no-store",
             }
-         },
+          )
+
+          const result = await response.json()
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.error || "Failed to fetch transactions")
+          }
+
+          set({ gameTransactions: result.data || [], loading: false })
+        } catch (err: any) {
+          console.error("fetchGameTransactions error:", err)
+          set({
+            gameTxnError: err.message || "Error fetching game transactions",
+            loading: false,
+          })
+        }
+      },
 
 
       // Async actions to fetch from DB
       fetchWallet: async (refresh: boolean) => {
         if (!refresh && get().balance.id) return
-        set({ loading: true, error: null })
+        const initData = userStore.getState().initData;
+        const user = userStore.getState().user;
+        if (!user){
+          set({ walletError: "User not logged in. Go back to telegram and reload the page", loading: false })
+        };
+        set({ loading: true, walletError: null })
         try {
-          const response = await fetch(`/${i18n.language}/api/payments/wallet`)
+          const response = await fetch(`/${i18n.language}/api/payments/wallet`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-init-data": initData || "",
+            },
+          });
           if (!response.ok) throw new Error("Failed to fetch wallet")
           const result = await response.json()
           const {data} = result
@@ -247,14 +306,14 @@ export const usePaymentStore = create<PaymentState>()(
 
 
         } catch (error: any) {
-          set({ error: error.message || "Error fetching wallet", loading: false })
+          set({ walletError: error.message || "Error fetching wallet", loading: false })
         }
       },
 
 
       fetchPaymentMethods: async () => {
         if (get().paymentMethods.length) return
-        set({ loading: true, error: null })
+        set({ loading: true, pmError: null })
         try {
           const response = await fetch(`/${i18n.language}/api/payments/methods`)
           if (!response.ok) throw new Error("Failed to fetch payment methods")
@@ -262,35 +321,87 @@ export const usePaymentStore = create<PaymentState>()(
           const {data} = result
           set({ paymentMethods: data, loading: false })
         } catch (error: any) {
-          set({ error: error.message || "Error fetching payment methods", loading: false })
+          set({ pmError: error.message || "Error fetching payment methods", loading: false })
         }
       },
 
 
-      fetchTransactions: async (page, size, refresh) => {
-      if (!refresh && get().transactions.length) return;
-      set({ loading: true, error: null });
-      try {
-        // Build URL with query parameters
-        const url = new URL(`/${i18n.language}/api/payments/transactions`, window.location.origin);
-        url.searchParams.append('page', page.toString());
-        url.searchParams.append('size', size.toString());
+      fetchTransactions: async (page: number, size: number, refresh: boolean) => {
+        const { transactions } = get();
+        const userStoreState = userStore.getState();
+        const initData = userStoreState.initData;
+        const user = userStoreState.user;
 
-        const response = await fetch(url.toString());
-        if (!response.ok) throw new Error("Failed to fetch transactions");
+        //  Avoid unnecessary reloads
+        if (!refresh && transactions.length) return;
 
-        const result = await response.json();
-        const { data } = result;
+        //  Handle missing user
+        if (!user) {
+          set({
+            txnError:
+              "User not logged in. Please go back to Telegram and reload the page.",
+            loading: false,
+          });
+          return;
+        }
 
-        set({ transactions: Array.isArray(data)? [...data]: [], loading: false });
-      } catch (error: any) {
-        set({ error: error.message || "Error fetching transactions", loading: false });
-      }
-    },
+        set({ loading: true, txnError: null });
+
+        try {
+          //  Build URL safely
+          const url = new URL(
+            `/${i18n.language}/api/payments/transactions`,
+            window.location.origin
+          );
+          url.searchParams.set("page", String(page || 1));
+          url.searchParams.set("size", String(size || 10));
+
+          //  Make request
+          const response = await fetch(url.toString(), {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-init-data": initData ?? "",
+            },
+          });
+
+          //  Gracefully handle backend non-OK responses
+          let result: any;
+          try {
+            result = await response.json();
+          } catch {
+            throw new Error("Invalid response format from server");
+          }
+
+          if (!response.ok || result?.success === false) {
+            throw new Error(result?.error || result?.message || "Failed to fetch transactions");
+          }
+
+          //  Ensure data is a list
+          const data = Array.isArray(result?.data) ? result.data : [];
+
+          set({
+            transactions: data,
+            loading: false,
+            txnError: null,
+          });
+        } catch (error: any) {
+          console.error("fetchTransactions error:", error);
+          set({
+            txnError: error?.message || "Error fetching transactions",
+            loading: false,
+          });
+        }
+      },
+
 
     transferFunds: async (amount: number, email: string) => {
-      set({ loading: true, error: null });
-
+      set({ loading: true, transferError: null });
+      const initData = userStore.getState().initData;
+        const user = userStore.getState().user;
+        if (!user){
+          set({ transferError: "User not logged in. Go back to telegram and reload the page", loading: false })
+        };
       try {
         // Build endpoint (multilingual support)
         const url = new URL(`/${i18n.language}/api/payments/transfer`, window.location.origin);
@@ -300,6 +411,7 @@ export const usePaymentStore = create<PaymentState>()(
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "x-init-data": initData || "",
           },
           body: JSON.stringify({ amount, email }),
         });
@@ -330,14 +442,19 @@ export const usePaymentStore = create<PaymentState>()(
       } catch (error: any) {
         console.error("Transfer failed:", error);
         set({
-          error: error.message || "Error transferring funds",
+          transferError: error.message || "Error transferring funds",
           loading: false,
         });
       }
     },
 
     addDeposit: async (amount: number, paymentMethodId: number) => {
-        set({ loading: true, error: null });
+        set({ loading: true, depositError: null });
+        const initData = userStore.getState().initData;
+        const user = userStore.getState().user;
+        if (!user){
+          set({ depositError: "User not logged in. Go back to telegram and reload the page", loading: false })
+        };
 
         try {
           const paymentMethod = get().paymentMethods.find(pm => pm.id === paymentMethodId);
@@ -349,6 +466,7 @@ export const usePaymentStore = create<PaymentState>()(
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                "x-init-data": initData || "",
               },
               body: JSON.stringify({
                 amount,
@@ -369,7 +487,7 @@ export const usePaymentStore = create<PaymentState>()(
           }
         } catch (error: any) {
           set({
-            error: error.message || "Error creating deposit",
+            depositError: error.message || "Error creating deposit",
             loading: false,
           });
         }
@@ -387,61 +505,70 @@ export const usePaymentStore = create<PaymentState>()(
       // },
 
       withdrawFund: async (
-          paymentMethodId: number,
-          amount: number,
-          bankName: string,
-          accountName: string,
-          accountNumber: string
-        ) => {
-          set({ loading: true, error: null });
+        paymentMethodId: number,
+        amount: number,
+        bankName?: string,
+        accountName?: string,
+        accountNumber?: string,
+        phoneNumber?: string
+      ) => {
+        set({ loading: true, withdrawError: null });
 
-          try {
-            const paymentMethod = get().paymentMethods.find(pm => pm.id === paymentMethodId);
+        try {
+          const paymentMethod = get().paymentMethods.find(pm => pm.id === paymentMethodId);
 
-            if (!paymentMethod) {
-              throw new Error("Invalid payment method");
-            }
-
-            if (!paymentMethod.name.toLowerCase().includes("bank transfer")) {
-              throw new Error("Only bank transfer withdrawals are supported");
-            }
-
-            const url = new URL(`/${i18n.language}/api/payments/withdraw`, window.location.origin);
-
-            const response = await fetch(url.toString(), {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                paymentMethodId,
-                amount,
-                bankName,
-                accountName,
-                accountNumber,
-              }),
-            });
-
-            if (!response.ok) {
-              throw new Error("Failed to process withdrawal");
-            }
-
-            const result = await response.json();
-            const { data } = result;
-
-            set({
-              loading: false,
-            });
-
-          } catch (error: any) {
-            set({
-              error: error.message || "Error processing withdrawal",
-              loading: false,
-            });
+          if (!paymentMethod) {
+            throw new Error("Invalid payment method");
           }
-        },
 
+          // Determine request payload based on selected method
+          let payload: Record<string, any> = {
+            paymentMethodId,
+            amount,
+          };
 
+          if (paymentMethod.name.toLowerCase().includes("bank transfer")) {
+            if (!bankName || !accountName || !accountNumber) {
+              set({ loading: false, depositError: "Bank details are required for Bank Transfer withdrawals" });
+              throw new Error("Bank name, account name, and account number are required for Bank Transfer");
+            }
+            payload = { ...payload, bankName, accountName, accountNumber };
+          } else if (paymentMethod.name.toLowerCase().includes("addispay")) {
+            if (!phoneNumber) {
+              set({ loading: false, depositError: "Phone number is required for AddisPay withdrawals" });
+              throw new Error("Phone number is required for AddisPay withdrawals");
+            }
+            payload = { ...payload, phoneNumber };
+          } else {
+            throw new Error(`Unsupported payment method: ${paymentMethod.name}`);
+          }
+
+          const url = new URL(`/${i18n.language}/api/payments/withdraw`, window.location.origin);
+
+          const response = await fetch(url.toString(), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to process withdrawal");
+          }
+
+          const result = await response.json();
+          const { data } = result;
+
+          set({ loading: false });
+
+        } catch (error: any) {
+          set({
+            withdrawError: error.message || "Error processing withdrawal",
+            loading: false,
+          });
+        }
+      },
 
     }),
     // {

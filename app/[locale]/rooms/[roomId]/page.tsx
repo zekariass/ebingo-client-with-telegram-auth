@@ -1,11 +1,15 @@
 import { RoomView } from "@/components/room/room-view"
+import { WinnerOverlay } from "@/components/room/winner/winner-overlay";
 
 interface RoomPageProps {
-  params: Promise<{ roomId: number }>
+  params: { roomId: string; locale: string }
 }
 
 export default async function RoomPage({ params }: RoomPageProps) {
-  const { roomId } = await params
-
-  return <RoomView roomId={roomId} />
+  const resolvedParams = await params
+  const roomId = Number(resolvedParams.roomId)
+  return <>
+      <RoomView roomId={roomId} />
+      <WinnerOverlay />
+  </>
 }

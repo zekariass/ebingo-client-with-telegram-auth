@@ -8,7 +8,10 @@ interface GameStore {
   winner: GameWinner
   error: string | null
   claimError: ClaimError | null
-  claiming: boolean
+  claiming: boolean,
+  isJoining: boolean,
+
+  setJoining: (value: boolean) => void,
 
   // Actions
   setGameState: (game: Partial<GameState>) => void
@@ -43,8 +46,8 @@ interface GameStore {
   setCountdownWithEndTime: (endTime: string) => void
   setWinner: (winner: GameWinner) => void
   resetWinner: () => void
-  setError: (error: string | null) => void
   setClaimError: (error: ClaimError) => void
+  setError: (error: string | null) => void
   resetClaimError: () => void
   setClaiming: (value: boolean) => void
   
@@ -69,12 +72,12 @@ const initialGameState: GameState = {
   status: Status.READY,
   stopNumberDrawing: false,
   countdownEndTime: "",
-  loading: false
+  loading: false,
 }
 
 const initialWinnerState: GameWinner ={
   gameId: -1,
-  playerId: "", 
+  playerId: 0, 
   playerName: "",
   cardId: "",
   pattern: GamePattern.LINE_AND_CORNERS,
@@ -93,11 +96,18 @@ export const useGameStore = create<GameStore>()(
       error: null,
       claimError: null,
       claiming: false,
+      isJoining: false,
 
       setGameState: (game) =>
-        set((state) => ({ game: { ...state.game, ...game } })),
+        set((state) => ({
+          ...state,
+          game: { ...state.game, ...game },
+        })),
 
       resetGameState: () => set({ game: { ...initialGameState } }),
+
+      setJoining: (value: boolean) =>
+        set({ isJoining: value }),  
 
       getGameState: async () => {
         try {
@@ -397,7 +407,7 @@ export const useGameStore = create<GameStore>()(
           game: {
             ...state.game,
             countdownEndTime: countdownEndTime,
-            status: countdownEndTime ? Status.COUNTDOWN : state.game.status,
+            status: Status.COUNTDOWN,
           },
         })),
 

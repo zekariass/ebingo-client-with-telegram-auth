@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { GameBingoCard } from "./game-bingo-card"
 import { useGameStore } from "@/lib/stores/game-store"
 
@@ -8,7 +9,11 @@ interface GameCardsProps {
 }
 
 export function GameCards({ selectedCardIds }: GameCardsProps) {
-  const { game: {userSelectedCards: userCards} } = useGameStore()
+  const { game: {userSelectedCards: userCards, userSelectedCardsIds}, computePlayerCardsFromPlayerCardsIds } = useGameStore()
+
+  useEffect(() => {
+      computePlayerCardsFromPlayerCardsIds()
+    }, [computePlayerCardsFromPlayerCardsIds, userSelectedCardsIds])
 
   if (!userCards || userCards.length === 0) {
     return (

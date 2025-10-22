@@ -176,7 +176,7 @@ export enum RoomStatus {
 
 export interface GameWinner {
   gameId: number
-  playerId: string
+  playerId: number
   playerName: string
   cardId: string
   pattern: GamePattern
@@ -363,6 +363,7 @@ export interface PlayerLeft extends WSMessage {
   type: "game.playerLeft"
   payload: {
     gameId: number
+    gameState?: GameState
     playerId: string
     playersCount: number
     joinedPlayers: string[]
@@ -397,6 +398,23 @@ export interface ServerGameState extends WSMessage {
     error: string
     gameState: GameState | null,
     roomId: number
+  }
+}
+
+
+export interface GameStateAfterPlayerLeave extends WSMessage {
+  type: "game.state"
+  payload: {
+    gameState: GameState | null,
+    roomId: number
+  }
+}
+
+
+export interface GameInitialized extends WSMessage {
+  type: "game.initialized"
+  payload: {
+    gameState: GameState
   }
 }
 
@@ -610,6 +628,7 @@ export type WSResponseEvent =
   | PlayerJoinResponse
   | PlayerLeaveResponse
   | ServerGameState
+  | GameInitialized
   | CardSelectResponse
   | CardReleaseResponse
   | MarkNumberResponse
@@ -625,6 +644,7 @@ export type WSResponseEvent =
   | WinnerDeclared
   | Countdown
   | GameEnded
+  | GameStateAfterPlayerLeave
 
 
 export type WSEvent = WSRequestEvent | WSResponseEvent | PongMessage | PingMessage

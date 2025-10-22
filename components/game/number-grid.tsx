@@ -61,10 +61,10 @@ const colors = ["green", "red", "yellow", "green", "red"]
                   <div
                     key={number}
                     className={cn(
-                      "h-7 md:h-10 flex items-center justify-center rounded-xs text-xs sm:text-sm font-medium border-2 transition-all duration-300",
+                      "h-7 md:h-10 flex items-center justify-center rounded-xs border-2 transition-all duration-300",
                       isCalled
-                        ? "bg-green-500 text-white border-green-600 shadow-md"
-                        : "bg-muted text-muted-foreground border-border hover:border-primary/50"
+                        ? "bg-red-500 text-white border-green-600 shadow-md"
+                        : "bg-green-800 text-white border-border hover:border-primary/50"
                     )}
                   >
                     {number}

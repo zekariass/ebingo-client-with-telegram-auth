@@ -165,7 +165,7 @@ export function WinnerDialog({ showResult, onClose, winner }: WinnerDialogProps)
       }, 5000)
       return () => clearTimeout(timer)
     }
-  }, [showResult, onClose])
+  }, [showResult, onClose, winner])
 
   const handleWinnerDialogClose = () => {
     setOpen(false)
@@ -174,8 +174,8 @@ export function WinnerDialog({ showResult, onClose, winner }: WinnerDialogProps)
 
   if (!winner || !open) return null
 
-  const isSelfWinner = winner.hasWinner && user?.supabaseId === winner.playerId
-  const isOtherWinner = winner.hasWinner && user?.supabaseId !== winner.playerId
+  const isSelfWinner = winner.hasWinner && user?.telegramId === winner.playerId
+  const isOtherWinner = winner.hasWinner && user?.telegramId !== winner.playerId
   const isNoWinner = !winner.hasWinner
 
   const titleText = isSelfWinner

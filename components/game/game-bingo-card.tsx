@@ -199,11 +199,11 @@ import { useEffect } from "react"
 import { useRoomStore } from "@/lib/stores/room-store"
 import { useGameStore } from "@/lib/stores/game-store"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { BingoColumn, GamePattern, BingoClaimRequestPayloadType } from "@/lib/types"
 import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { userStore } from "@/lib/stores/user-store"
 import { cn } from "@/lib/utils"
+import { Star } from "lucide-react"
 
 const COLUMN_HEADERS = ["B", "I", "N", "G", "O"]
 
@@ -247,7 +247,7 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
     state.game.userSelectedCards?.find((card) => card.cardId === cardInfoId)
   )
 
-  const userId = userStore((state) => state.user?.supabaseId)
+  const userId = userStore((state) => state.user?.telegramId)
   const userDbId = userStore((state) => state.user?.id)
   const userName = userStore(
     (state) => `${state.user?.firstName ?? ""} ${state.user?.lastName ?? ""}`.trim()
@@ -285,7 +285,7 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
     gameId,
     cardId: cardInfoId,
     pattern: room?.pattern ?? GamePattern.LINE_AND_CORNERS,
-    playerId: userId ?? "",
+    playerId: userId?.toString() ?? "",
     userProfileId: userDbId, 
     playerName: userName,
     markedNumbers: currentCard.marked ?? []
@@ -319,7 +319,7 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
         {COLUMN_HEADERS.map((letter, index) => (
           <div
             key={letter}
-            className={`h-4 md:h-8 flex items-center justify-center font-bold text-primary-foreground rounded bg-${colors[index]}-500`}
+            className={`h-4 md:h-8 flex items-center justify-center font-bold text-primary-foreground rounded bg-${colors[index]}-600`}
           >
             {letter}
           </div>
@@ -337,19 +337,21 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
             return (
               <Button
                 key={`${rowIndex}-${colIndex}`}
-                variant="outline"
+                // variant="outline"
                 size="sm"
                 disabled={free || !clickable}
                 onClick={!free ? () => handleCellClick(num, rowIndex, colIndex) : undefined}
                 className={cn(
-                  "h-6 md:h-10 w-full text-xs sm:text-sm font-semibold relative rounded-xs",
-                  free && "bg-yellow-200 dark:bg-yellow-800 border-yellow-400 cursor-default",
+                  "h-6 md:h-10 w-full text-xs sm:text-sm font-semibold relative rounded-xs text-white",
+                  free && "bg-yellow-500 border-yellow-400 cursor-default",
                   !marked && clickable && "bg-green-300 hover:bg-green-400 dark:hover:bg-green-900 border-green-300",
                   !marked && !clickable && "opacity-50 cursor-not-allowed",
-                  marked && !free && "!bg-violet-950 !text-white !border-blue-600"
+                  marked && !free && "!bg-violet-950 border-2 border-white-600"
                 )}
               >
-                {free ? "⭐" : num}
+                {/* {free ? "⭐" : num} */}
+                {free ? <Star fill="currentColor" strokeWidth="0" className="text-white" /> : num}
+
               </Button>
             )
           })
@@ -361,7 +363,7 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
         <Button
           onClick={handleBingoClaim}
           disabled={!isConnected || !started || !userId}
-          className="h-8 w-full font-bold text-sm sm:text-base bg-green-500 hover:bg-green-600 text-white cursor-pointer"
+          className="h-8 w-full font-bold text-sm sm:text-base bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
         >
           {!claiming ? "Claim Bingo" : "Claiming..."}
         </Button>

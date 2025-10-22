@@ -14,20 +14,20 @@ export async function GET(request: NextRequest) {
     }
 
     // Read initData from headers
-    const initData = request.headers.get("x-init-data");
+    // const initData = request.headers.get("x-init-data");
 
-    if (!initData) {
-      return NextResponse.json(
-        { success: false, error: "Missing x-init-data header" },
-        { status: 400 }
-      );
-    }
+    // if (!initData) {
+    //   return NextResponse.json(
+    //     { success: false, error: "Missing x-init-data header" },
+    //     { status: 400 }
+    //   );
+    // }
 
     const response = await fetch(`${BACKEND_BASE_URL}/api/v1/secured/payment-methods`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-init-data": initData, // send to backend for verification
+        // "x-init-data": initData, // send to backend for verification
       },
       cache: "no-store",
     });

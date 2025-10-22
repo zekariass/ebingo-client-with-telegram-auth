@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SelectedCardsView } from "./selected-cards-view"
 import { useGameStore } from "@/lib/stores/game-store"
 import { useEffect } from "react"
+import { GameStatus } from "@/lib/types"
 
 export function SelectedCardsPanel() {
-  const { game: {userSelectedCards, userSelectedCardsIds}, computePlayerCardsFromPlayerCardsIds } = useGameStore()
+  const { game: {userSelectedCards, userSelectedCardsIds, status}, computePlayerCardsFromPlayerCardsIds } = useGameStore()
 
   useEffect(() => {
     computePlayerCardsFromPlayerCardsIds()
@@ -22,7 +23,7 @@ export function SelectedCardsPanel() {
         <CardTitle className="text-base sm:text-lg pt-2">Your Selected Cards ({userSelectedCards?.length}/2)</CardTitle>
       </CardHeader> */}
       <CardContent className="p-2 sm:p-4">
-        <div
+        {status === GameStatus.PLAYING? <h3 className="text-red-500 text-center">Game In Progress...</h3> : <div
           className={`grid gap-1 sm:gap-2 md:gap-4 w-full ${userSelectedCards?.length === 1 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-2"
             }`}
         >
@@ -38,7 +39,7 @@ export function SelectedCardsPanel() {
               </p>
             </div>
           )}
-        </div>
+        </div>}
       </CardContent>
     </Card>
   )

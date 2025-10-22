@@ -26,7 +26,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
   const { room } = useRoomStore()
   const { game: {gameId, started, joinedPlayers} } = useGameStore()
   const userProfileId = userStore(state => state.user?.id)
-  const userSupabaseId = userStore(state => state.user?.supabaseId) || ""
+  const telegramId = userStore(state => state.user?.telegramId) || ""
   const { balance } = usePaymentStore()
   const router = useRouter()
   const { toast } = useToast()
@@ -40,7 +40,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
   const canAfford = balance.totalAvailableBalance >= totalCost
 
   const handleStartGame = () => {
-    if (joinedPlayers.includes(userSupabaseId)){
+    if (joinedPlayers.includes(telegramId.toString())){
       router.push(`/${i18n.language}/rooms/${room?.id}/game`)
       return false
     }
@@ -83,7 +83,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
       }
 
       setIsOpen(false)
-      router.push(`/rooms/${room?.id}/game`)
+      // router.push(`/rooms/${room?.id}/game`)
     } catch (error) {
       console.error("Game Start Failed:", error)
       toast({
@@ -100,7 +100,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <Button
         size="lg"
-        className="w-full cursor-pointer"
+        className="w-full cursor-pointer bg-blue-800 text-white hover:bg-blue-600"
         disabled={disabled}
         variant={canAfford ? "default" : "secondary"}
         onClick={() => {

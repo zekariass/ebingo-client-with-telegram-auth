@@ -38,35 +38,33 @@ export const useRoomStore = create<RoomState>()(
 
       // Actions
       setRoom: (room) => set({ room }),
-      fetchRoom: async (roomId) => {
-        if (get().room && get().room?.id === roomId) return get().room
+      fetchRoom: async (roomId: number) => {
+        const { room } = get();
+
+        // ✅ Avoid redundant fetch if same room is already loaded
+        if (room && room.id === roomId) return room;
+
+        set({ loading: true });
+
         try {
-          set((state)=>({
-            ...state,
-            loading: true
-          }) )
           const response = await fetch(`/${i18n.language}/api/rooms/${roomId}`);
+
           if (!response.ok) {
             throw new Error('Failed to fetch room data');
           }
-          const result = await response.json();
-          const {data} = result;
 
-          set((state)=>({
-            ...state,
-            room: data,
-            loading: false
-          }));
+          const result = await response.json();
+          const { data } = result;
+
+          set({ room: data, loading: false });
           return data;
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error fetching room:', error);
-          set((state)=>({
-            ...state,
-            loading: true
-          }) )
+          set({ loading: false }); // ✅ Fix: stop loading
           return null;
         }
       },
+
 
 
       getRoomFromLobby: (roomId: number) => {

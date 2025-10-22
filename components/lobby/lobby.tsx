@@ -4,33 +4,34 @@ import { useEffect, useState } from "react"
 import { useLobbyStore } from "@/lib/stores/lobby-store"
 import { LobbyHeader } from "./lobby-header"
 import { LobbyFilters } from "./lobby-filters"
-import { RoomGrid } from "./room-grid"
+import { RoomTable } from "./room-table"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { usePaymentStore } from "@/lib/stores/payment-store"
 import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
 import { userStore } from "@/lib/stores/user-store"
+import { useSystemStore } from "@/lib/stores/system-store"
 
 export function Lobby() {
   const { rooms, loading, error, fetchRooms, sendInitData } = useLobbyStore()
   const {fetchPaymentMethods, fetchTransactions, fetchWallet} = usePaymentStore()
-  // const { fetchUserProfile} = userStore()
+  
+  const fetchSystemConfigs = useSystemStore(state => state.fetchSystemConfigs);
 
   useTelegramInit();
-
-  const {user, initData } = userStore();
-
-  console.log("====== USER :", user)
-  console.log("====== INIT DATA :", initData)
 
   const [currentTxnPage, setCurrentTxnPage] = useState<number>(1)
   const [currentTxnSize, setCurrentTxnSize] = useState<number>(10)
 
-  useEffect(() => {
+  const getAllFromDB = async () => {
+     Promise.all([
+      await fetchRooms(),
+      await fetchSystemConfigs()
+     ]);
+  }
 
-  const initData = window.Telegram?.WebApp?.initData;
-  if (!initData) return;    
-    fetchRooms()
+  useEffect(() => {  
+    getAllFromDB()
   }, [fetchRooms])
 
 
@@ -80,7 +81,7 @@ useEffect(() => {
 
         <div className="space-y-6">
           {rooms?.length >=8 && <LobbyFilters />}
-          <RoomGrid rooms={rooms} loading={loading} />
+          <RoomTable rooms={rooms} loading={loading} />
         </div>
       </main>
     </div>

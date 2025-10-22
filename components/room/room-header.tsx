@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { CapacityBadge } from "@/components/lobby/capacity-badge"
 import { CountdownTimer } from "@/components/common/countdown-timer"
 import { useRoomStore } from "@/lib/stores/room-store"
-import { ArrowLeft, RefreshCcw, Wifi, WifiOff } from "lucide-react"
+import { ArrowLeft, RefreshCcw, RefreshCcwDot, Wifi, WifiOff } from "lucide-react"
 import Link from "next/link"
 import { ConnectionStatus } from "./connection-status"
 import { useGameStore } from "@/lib/stores/game-store"
@@ -93,7 +93,7 @@ export function RoomHeader({ room }: RoomHeaderProps) {
             </div>
             <span className="flex flex-row">
               <ConnectionStatus roomId={room?.id} />
-              <RefreshCcw onClick={()=>window.location.reload()} className="ms-3 cursor-pointer"></RefreshCcw>
+              <RefreshCcwDot onClick={()=>window.location.reload()} className="ms-3 cursor-pointer pt-1 text-blue-500" size="20"></RefreshCcwDot>
             </span>
           </div>
         </div>

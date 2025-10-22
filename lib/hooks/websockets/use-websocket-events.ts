@@ -6,6 +6,7 @@ import type { BingoClaimRequestPayloadType } from "@/lib/types"
 import { useRoomStore } from "@/lib/stores/room-store"
 import { useGameStore } from "@/lib/stores/game-store"
 import { userStore } from "@/lib/stores/user-store"
+import { useRouter } from "next/navigation"
 
 interface UseWebSocketEventsOptions {
   roomId?: number
@@ -14,23 +15,33 @@ interface UseWebSocketEventsOptions {
 
 export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEventsOptions) {
   const socket = useRoomSocket({ roomId, enabled })
-  // const { data } = useUserProfile()
-  // const { session, user } = useSession()
   const { user } = userStore(state => state)
 
   const capacity = useRoomStore((state) => state.room?.capacity);
+  const setJoining = useGameStore(state => state.setJoining)
   const setClaiming = useGameStore(state => state.setClaiming)
-
+  const selectCardOptimistically  = useGameStore(state => state.selectCard)
+  const addMarkedNumberToCard  = useGameStore(state => state.addMarkedNumberToCard)
+  const removeMarkedNumberFromCard  = useGameStore(state => state.removeMarkedNumberFromCard)
 
   const enterRoom = useCallback(() => {
     if (!socket || !roomId || !user?.id) return
-    // console.log("=========================>>>>>: CAPACITY: ", capacity)
+    socket.send({
+      type: "room.getGameStateRequest",
+      payload: { roomId, playerId: user?.telegramId, capacity },
+    })
+
+  }, [roomId, user?.id])
+
+
+  const refreshGameState = useCallback(() => {
+    if (!socket || !roomId || !user?.id) return
     socket.send({
       type: "room.getGameStateRequest",
       payload: { roomId, playerId: user?.id, capacity },
     })
 
-  }, [roomId, user?.id])
+  }, [socket, roomId, user?.id, capacity])
 
 
   // Reset player state in backend
@@ -49,9 +60,10 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
   const joinGame = useCallback(
     (gameId: number, fee: number) => {
       if (!socket) return
+      setJoining(true)
       socket.send({
         type: "game.playerJoinRequest",
-        payload: { gameId, fee, capacity },
+        payload: { gameId, fee, capacity, playerId: user?.telegramId },
       })
     },
     [socket, roomId]
@@ -60,10 +72,13 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
   // Leave Game
   const leaveGame = useCallback(
     (gameId: number, playerId: string) => {
+
+      // router.replace(`/${i18n.language}/rooms/${roomId}`)
       if (!socket) return
+    
       socket.send({
         type: "game.playerLeaveRequest",
-        payload: { gameId },
+        payload: { gameId, playerId },
       })
     },
     [socket, roomId]
@@ -72,6 +87,9 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
   // Select Card
   const selectCard = useCallback(
     (gameId: number, cardId: string) => {
+      // Optimistically update user selected card ids
+      selectCardOptimistically(cardId, user?.telegramId || 0);
+
       if (!socket) return
       socket.send({
         type: "card.cardSelectRequest",
@@ -97,6 +115,9 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
   const markNumber = useCallback(
     (gameId: number, cardId: string, number: number) => {
       if (!socket) return
+      // Optimistically update marked numbers
+      addMarkedNumberToCard(cardId, number);
+
       socket.send({
         type: "card.markNumberRequest",
         payload: { gameId, cardId, number},
@@ -109,6 +130,9 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
   const unmarkNumber = useCallback(
     (gameId: number, cardId: string, number: number) => {
       if (!socket) return
+      // Optimistically update marked numbers
+      removeMarkedNumberFromCard(cardId, number);
+
       socket.send({
         type: "card.unmarkNumberRequest",
         payload: { gameId, cardId, number },
@@ -146,6 +170,7 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
 
     // Game actions
     enterRoom,
+    refreshGameState,
     resetPlayerStateInBackend,
     joinGame,
     leaveGame,

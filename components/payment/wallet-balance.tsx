@@ -14,7 +14,7 @@ import { currency } from "@/lib/constant"
 import { TransferDialog } from "./transfer-dialog"
 
 export function WalletBalance() {
-  const { balance, transactions, loading, setLoading, error, setError, fetchWallet, getPendingTransactions } = usePaymentStore()
+  const { balance, transactions, loading, setLoading, walletError, setWalletError, fetchWallet, getPendingTransactions } = usePaymentStore()
   // const { setBalance: setRoomBalance } = useRoomStore()
   const [depositOpen, setDepositOpen] = useState(false)
   const [withdrawOpen, setWithdrawOpen] = useState(false)
@@ -22,17 +22,17 @@ export function WalletBalance() {
 
   const refreshBalance = useCallback(async (refresh: boolean)=>{
       setLoading(true)
-      setError(null)
+      setWalletError(null)
 
       try {
         await fetchWallet(refresh)
       } catch (error) {
-        setError(error instanceof Error ? error.message : "Failed to refresh balance")
+        setWalletError(error instanceof Error ? error.message : "Failed to refresh balance")
       } finally {
         setLoading(false)
       }
     
-  }, [fetchWallet, setLoading, setError])
+  }, [fetchWallet, setLoading, setWalletError])
 
 
   const computePendingTxns = getPendingTransactions()
@@ -124,9 +124,9 @@ export function WalletBalance() {
             </div>
           </div>
 
-          {error && (
+          {walletError && (
             <div className="p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+              <p className="text-red-700 dark:text-red-300 text-sm">{walletError}</p>
             </div>
           )}
 

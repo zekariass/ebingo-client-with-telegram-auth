@@ -1,71 +1,62 @@
-import { NextRequest, NextResponse } from "next/server";
-import type { ApiResponse } from "@/lib/backend/types";
+"use server"
 
-const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
+import { NextRequest, NextResponse } from "next/server"
+import type { ApiResponse } from "@/lib/backend/types"
 
-/**
- * GET /[lang]/api/game/transaction
- * Query params: page, size
- * Description: Fetch game transactions
- */
+const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!
+
 export async function GET(req: NextRequest) {
   try {
-    if (!BACKEND_BASE_URL) {
-      throw new Error("BACKEND_BASE_URL is not defined");
-    }
+    if (!BACKEND_BASE_URL) throw new Error("BACKEND_BASE_URL is not defined")
 
-    // Read initData from headers
-    const initData = req.headers.get("x-init-data");
+    const initData = req.headers.get("x-init-data")
     if (!initData) {
       return NextResponse.json(
         { success: false, error: "Missing x-init-data header" },
         { status: 400 }
-      );
+      )
     }
 
-    // Collect query parameters from frontend request
-    const { searchParams } = new URL(req.url);
-    const page = searchParams.get("page") || "1";
-    const size = searchParams.get("size") || "10";
-    const sortBy = "createdAt";
+    const { searchParams } = req.nextUrl
+    const page = searchParams.get("page") || "1"
+    const size = searchParams.get("size") || "10"
+    const sortBy = "createdAt"
 
-    // Forward query params to backend with x-init-data
-    const backendUrl = new URL(`${BACKEND_BASE_URL}/api/v1/secured/game/transaction`);
-    backendUrl.searchParams.append("page", page);
-    backendUrl.searchParams.append("size", size);
-    backendUrl.searchParams.append("sortBy", sortBy);
+    const res = await fetch(
+      `${BACKEND_BASE_URL}/api/v1/secured/game/transaction?page=${page}&size=${size}&sortBy=${sortBy}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-init-data": initData,
+        },
+        cache: "no-store",
+      }
+    )
 
-    const response = await fetch(backendUrl.toString(), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "x-init-data": initData,
-      },
-      cache: "no-store",
-    });
+    const json = await res.json()
 
-    const result = await response.json();
-
-    if (!response.ok) {
+    if (!res.ok) {
       return NextResponse.json(
-        { success: false, error: result?.error || "Failed to fetch game transactions" },
-        { status: response.status }
-      );
+        { success: false, error: json?.error || "Failed to fetch game transactions" },
+        { status: res.status }
+      )
     }
 
     const responseData: ApiResponse = {
       success: true,
-      data: result.data,
+      data: json.data,
       error: null,
-    };
+    }
 
-    return NextResponse.json(responseData);
-  } catch (error) {
-    console.error("Game transaction route error:", error);
-    const response: ApiResponse = {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-    return NextResponse.json(response, { status: 500 });
+    return NextResponse.json(responseData)
+  } catch (err) {
+    console.error("Game transaction route error:", err)
+    return NextResponse.json(
+      {
+        success: false,
+        error: err instanceof Error ? err.message : "Unknown error",
+      },
+      { status: 500 }
+    )
   }
 }

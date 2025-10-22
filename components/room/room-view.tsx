@@ -1,19 +1,119 @@
+// "use client"
+
+// import { useEffect } from "react"
+// import { useRoomStore } from "@/lib/stores/room-store"
+// import { RoomHeader } from "./room-header"
+// import { CardSelectionGrid } from "./card-selection-grid"
+// import { SelectedCardsPanel } from "./selected-cards-panel"
+// import { GameControls } from "./game-controls"
+// import { useGameStore } from "@/lib/stores/game-store"
+// import { WinnerDialog } from "./winner/winner-dialog"
+// import { GameStatus } from "@/lib/types"
+// import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
+// import { userStore } from "@/lib/stores/user-store"
+// import { usePaymentStore } from "@/lib/stores/payment-store"
+// import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
+
+// interface RoomViewProps {
+//   roomId: number
+// }
+
+// export function RoomView({ roomId }: RoomViewProps) {
+//   const { room, loading, fetchRoom, resetRoom } = useRoomStore()
+//   const {game: {userSelectedCardsIds, countdownEndTime, status}} = useGameStore()
+//   const winner = useGameStore(state => state.winner)
+//   const resetWinner = useGameStore(state => state.resetWinner)
+//   const {enterRoom} = useWebSocketEvents({roomId, enabled: true})
+//   // const fetchUserProfile = userStore(state => state.fetchUserProfile)
+//   const {fetchWallet} = usePaymentStore()
+//   // useTelegramInit();
+
+//   // const {user} = userStore()
+
+//   const targetTime = new Date(countdownEndTime).getTime()
+//   const now = Date.now()
+//   const timeLeft = Math.max(Math.ceil((targetTime - now) / 1000), 0)
+//   const disableCardSelection = (timeLeft < 10 && timeLeft > 0) || (status === GameStatus.PLAYING)
+
+//   const onGameWinnerClose = () => {
+//     resetWinner()
+//   }
+
+//   useEffect(() => {
+//     resetRoom()
+//     fetchRoom(roomId)
+//   }, [roomId, fetchRoom])
+
+//   useEffect(() => {
+//   const init = async () => {
+//     try {
+//       await enterRoom()
+//       await Promise.all([
+//         // fetchUserProfile(user?.telegramId || 0),
+//         fetchWallet(true),
+//       ])
+//     } catch (err) {
+//       console.error("Failed to initialize room/payment data:", err)
+//     }
+//   }
+
+//   init()
+// }, [])
+
+
+//   if (loading) {
+//     return (
+//       <div className="min-h-screen bg-background flex items-center justify-center">
+//         <div className="text-lg text-muted-foreground">Loading room...</div>
+//       </div>
+//     )
+//   }
+
+
+//   return (
+//     <div className="min-h-screen bg-background">
+//       <RoomHeader room={room} />
+//       {winner.playerName && <WinnerDialog showResult={!!winner.playerName} winner={winner} onClose={onGameWinnerClose} />}
+
+//       <main className="container mx-auto px-2 sm:px-4 py-3 sm:py-6 space-y-3 sm:space-y-6">
+//         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
+//           {/* Left Column - Card Selection */}
+//           <div className="lg:col-span-2 space-y-3 sm:space-y-6">
+//             <CardSelectionGrid roomId={roomId} capacity={room?.capacity ?? 0} disabled={disableCardSelection}/>
+
+//             {userSelectedCardsIds.length > 0 && (
+//               <div className="space-y-3 sm:space-y-4">
+//                 <SelectedCardsPanel />
+//                 <GameControls disabled={disableCardSelection}/>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Right Column - Game Info */}
+//           {/* <div className="space-y-3 sm:space-y-6">
+//             <NumberCallingArea />
+//           </div> */}
+//         </div>
+//       </main>
+//     </div>
+//   )
+// }
+
+
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRoomStore } from "@/lib/stores/room-store"
 import { RoomHeader } from "./room-header"
 import { CardSelectionGrid } from "./card-selection-grid"
 import { SelectedCardsPanel } from "./selected-cards-panel"
-import { NumberCallingArea } from "./number-calling-area"
 import { GameControls } from "./game-controls"
 import { useGameStore } from "@/lib/stores/game-store"
 import { WinnerDialog } from "./winner/winner-dialog"
 import { GameStatus } from "@/lib/types"
 import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
-import { userStore } from "@/lib/stores/user-store"
 import { usePaymentStore } from "@/lib/stores/payment-store"
-import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
+import { useAutoRefreshGameState } from "@/lib/hooks/use-auto-refresh-game-state"
 
 interface RoomViewProps {
   roomId: number
@@ -21,15 +121,16 @@ interface RoomViewProps {
 
 export function RoomView({ roomId }: RoomViewProps) {
   const { room, loading, fetchRoom, resetRoom } = useRoomStore()
-  const {game: {userSelectedCardsIds, countdownEndTime, status}} = useGameStore()
+  const { game: { userSelectedCardsIds, countdownEndTime, status }, isJoining, setJoining } = useGameStore()
   const winner = useGameStore(state => state.winner)
   const resetWinner = useGameStore(state => state.resetWinner)
-  const {enterRoom} = useWebSocketEvents({roomId, enabled: true})
-  const fetchUserProfile = userStore(state => state.fetchUserProfile)
-  const {fetchWallet} = usePaymentStore()
-  useTelegramInit();
+  const { enterRoom, refreshGameState, connected } = useWebSocketEvents({ roomId, enabled: true })
+  const { fetchWallet } = usePaymentStore()
 
-  const {user} = userStore()
+  // Refresh game state every 3 seconds when connected
+  // useAutoRefreshGameState(roomId, 3000);
+
+  // const [isJoining, setJoining] = useState(true)
 
   const targetTime = new Date(countdownEndTime).getTime()
   const now = Date.now()
@@ -41,25 +142,28 @@ export function RoomView({ roomId }: RoomViewProps) {
   }
 
   useEffect(() => {
+    setJoining(false)
+  },[])
+
+  // Fetch room data
+  useEffect(() => {
     resetRoom()
     fetchRoom(roomId)
   }, [roomId, fetchRoom])
 
+  // Enter room + fetch wallet
   useEffect(() => {
-  const init = async () => {
-    try {
-      await enterRoom()
-      await Promise.all([
-        fetchUserProfile(user?.telegramId || 0),
-        fetchWallet(true),
-      ])
-    } catch (err) {
-      console.error("Failed to initialize room/payment data:", err)
+    const init = async () => {
+      try {
+        await enterRoom()
+        await fetchWallet(true)
+      } catch (err) {
+        console.error("Failed to initialize room/payment data:", err)
+      } finally {
+      }
     }
-  }
-
-  init()
-}, [])
+    init()
+  }, [enterRoom, fetchWallet])
 
 
   if (loading) {
@@ -70,22 +174,38 @@ export function RoomView({ roomId }: RoomViewProps) {
     )
   }
 
-
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
+      {isJoining &&
+        <div className="fixed inset-0 bg-black opacity-50 z-[9999] flex flex-col items-center justify-center gap-4 w-full h-full pointer-events-auto">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
+          <span className="text-white text-xl font-semibold">Joining room...</span>
+        </div>
+      }
+
       <RoomHeader room={room} />
-      {winner.playerName && <WinnerDialog showResult={!!winner.playerName} winner={winner} onClose={onGameWinnerClose} />}
+      {/* {winner.playerName && (
+        <WinnerDialog
+          showResult={!!winner.playerName}
+          winner={winner}
+          onClose={onGameWinnerClose}
+        />
+      )} */}
 
       <main className="container mx-auto px-2 sm:px-4 py-3 sm:py-6 space-y-3 sm:space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
           {/* Left Column - Card Selection */}
           <div className="lg:col-span-2 space-y-3 sm:space-y-6">
-            <CardSelectionGrid roomId={roomId} capacity={room?.capacity ?? 0} disabled={disableCardSelection}/>
+            <CardSelectionGrid
+              roomId={roomId}
+              capacity={room?.capacity ?? 0}
+              disabled={disableCardSelection}
+            />
 
             {userSelectedCardsIds.length > 0 && (
               <div className="space-y-3 sm:space-y-4">
                 <SelectedCardsPanel />
-                <GameControls disabled={disableCardSelection}/>
+                <GameControls disabled={disableCardSelection} />
               </div>
             )}
           </div>
