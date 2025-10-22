@@ -165,6 +165,20 @@ export function GameView({ roomId }: GameViewProps) {
 
   const router = useRouter()
 
+
+   const playNumberSound = (number: number | undefined) => {
+    if (!number) return;
+    const audio = new Audio(`/audio/${i18n.language}/${number}.mp3`);
+    audio.play().catch((err) => console.warn("Audio blocked:", err));
+  };
+
+
+  useEffect(() => {
+    if (currentDrawnNumber !== null && currentDrawnNumber !==undefined && status === GameStatus.PLAYING) {
+      playNumberSound(currentDrawnNumber);
+    }
+  }, [currentDrawnNumber, status]);
+
   // Fetch room data once
   useEffect(() => {
     const init = async () => {

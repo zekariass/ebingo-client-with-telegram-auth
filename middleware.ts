@@ -85,8 +85,16 @@ export async function middleware(req: NextRequest) {
   return res;
 }
 
+// export const config = {
+//   matcher: [
+//   "/((?!_next|favicon.ico|.*\\.(?:png|jpg|jpeg|svg|gif|ico)|ws/.*).*)"
+// ],
+// };
+
+
 export const config = {
   matcher: [
-  "/((?!_next|favicon.ico|.*\\.(?:png|jpg|jpeg|svg|gif|ico)|ws/.*).*)"
-],
+    // Exclude Next.js internals, static assets, and public folders
+    "/((?!_next|favicon.ico|audio|images|fonts|.*\\.(?:png|jpg|jpeg|svg|gif|ico|mp3|mp4|wav)|ws/.*).*)",
+  ],
 };
