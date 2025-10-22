@@ -106,6 +106,9 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
         case "game.playerLeft":
           if (message.payload.errorType === "gameStarted"){
             router.replace(`/${i18n.language}`)
+            _gameStore.resetGameState()
+            _roomStore.resetRoom()
+            disconnect()
             break
           }
           
