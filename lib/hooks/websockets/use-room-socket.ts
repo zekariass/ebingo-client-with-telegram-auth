@@ -132,6 +132,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           }
           break
         case "game.numberDrawn":
+          if (message.payload.gameId !== gameStoreRef.current.game.gameId && message.payload.roomId !== roomStoreRef.current.room?.id) break;
           _gameStore.addDrawnNumber(message.payload.number)
           _gameStore.setCurrentDrawnNumber(message.payload.number)
           break

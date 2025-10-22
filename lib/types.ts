@@ -532,6 +532,7 @@ export interface NumberDrawn extends WSMessage {
   payload: {
     gameId: number
     number: number
+    roomId: number
     column?: BingoColumn
   }
 }
