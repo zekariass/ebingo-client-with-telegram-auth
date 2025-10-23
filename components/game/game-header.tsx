@@ -88,9 +88,7 @@ import { useGameStore } from "@/lib/stores/game-store"
 import { useRoomStore } from "@/lib/stores/room-store"
 import type { Room } from "@/lib/types"
 import { currency } from "@/lib/constant"
-import { Button } from "../ui/button"
 import { useSystemStore } from "@/lib/stores/system-store"
-import { number } from "zod"
 
 interface GameHeaderProps {
   room: Room | undefined | null
@@ -118,7 +116,7 @@ export function GameHeader({ room, connected }: GameHeaderProps) {
     {
       label: "Prize",
       value: `${currency} ${
-        room ? (game.userSelectedCards.length * room.entryFee * (1.0 - Number(commisionRate))).toFixed(2) : 0
+        room ? (game.allSelectedCardsIds.length * room.entryFee * (1.0 - Number(commisionRate))).toFixed(2) : 0
       }`,
       bg: "bg-green-600",
     },
