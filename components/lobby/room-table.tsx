@@ -218,9 +218,9 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
           {(Array.isArray(rooms)? rooms : []).map((room) => (
             <tr
               key={room.id}
-              className="bg-lime-950 transition-colors duration-200 rounded-lg text-sm py-3 shadow-xl"
+              className="bg-white transition-colors duration-200 rounded-lg text-sm py-3 shadow-xl"
             >
-              <td className="px-2 sm:px-4 py-1 sm:py-2 font-semibold text-white text-sm"> {room.entryFee} {currency}</td>
+              <td className="px-2 sm:px-4 py-1 sm:py-2 font-semibold text-gray-950 text-sm"> {room.entryFee} {currency}</td>
               <td className="px-2 sm:px-4 py-1 sm:py-2">
                 <Badge
                   className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${
@@ -234,7 +234,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
                   {room.status}
                 </Badge>
               </td>
-              <td className="px-2 sm:px-4 py-1 sm:py-2 text-white font-semibold">{room.capacity} Players</td>
+              <td className="px-2 sm:px-4 py-1 sm:py-2 text-gray-950 font-semibold">{room.capacity} Players</td>
               <td className="px-2 sm:px-4 py-1 sm:py-2">
                 <button
                   onClick={() => handleJoinClick(room)}
