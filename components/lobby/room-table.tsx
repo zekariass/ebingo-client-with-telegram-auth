@@ -311,7 +311,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
         return (
           <div
             key={room.id}
-            className="bg-gray-950 rounded-lg shadow-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between transition-colors duration-200 hover:bg-stone-700"
+            className="bg-lime-900 rounded-lg shadow-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between transition-colors duration-200 hover:bg-stone-700"
           >
             <div className="flex items-center justify-between">
               {/* Bet */}
