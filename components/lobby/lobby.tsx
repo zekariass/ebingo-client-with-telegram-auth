@@ -9,11 +9,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { usePaymentStore } from "@/lib/stores/payment-store"
 import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
-import { userStore } from "@/lib/stores/user-store"
 import { useSystemStore } from "@/lib/stores/system-store"
 
 export function Lobby() {
-  const { rooms, loading, error, fetchRooms, sendInitData } = useLobbyStore()
+  const { rooms, loading, error, fetchRooms } = useLobbyStore()
   const {fetchPaymentMethods, fetchTransactions, fetchWallet} = usePaymentStore()
   
   const fetchSystemConfigs = useSystemStore(state => state.fetchSystemConfigs);

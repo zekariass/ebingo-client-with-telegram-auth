@@ -95,7 +95,7 @@ export default function WithdrawPage() {
     loadData()
   }, [])
 
-  // 🔹 Automatically select default payment method once loaded
+  // Automatically select default payment method once loaded
   useEffect(() => {
     if (paymentMethods.length > 0) {
       const defaultMethod = getDefaultPaymentMethod()
@@ -106,7 +106,7 @@ export default function WithdrawPage() {
     }
   }, [paymentMethods, getDefaultPaymentMethod, setValue])
 
-  // 🔹 Handle submission
+  // Handle submission
   const onSubmit = async (data: WithdrawForm) => {
     if (data.amount > balance.totalAvailableBalance) {
       console.error(
@@ -157,8 +157,12 @@ export default function WithdrawPage() {
             <h2 className="text-lg font-semibold">Withdraw Funds</h2>
           </div>
           <button
-            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            onClick={() => router.push("/")}
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer"
+            onClick={() => {
+            if (window.Telegram?.WebApp) {
+              window.Telegram.WebApp.close();
+            }
+          }}
           >
             <X className="h-5 w-5" />
           </button>

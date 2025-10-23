@@ -11,9 +11,10 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CreditCard, DollarSign, X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { currency } from "@/lib/constant"
 
 const depositSchema = z.object({
-  amount: z.number().min(10, "Minimum deposit is $10").max(1000, "Maximum deposit is $1000"),
+  amount: z.number().min(50, `Minimum deposit is 50 ${currency}`).max(10000, `Maximum deposit is 10000 ${currency}`),
   paymentMethodId: z.number().min(1, "Please select a payment method"),
 })
 
@@ -22,7 +23,7 @@ type DepositForm = z.infer<typeof depositSchema>
 export default function DepositPage() {
   const router = useRouter()
   const [isProcessing, setIsProcessing] = useState(false)
-  const { paymentMethods, addDeposit, fetchPaymentMethods, getDefaultPaymentMethod, balance, setBalance, addTransaction } = usePaymentStore()
+  const { paymentMethods, addDeposit, fetchPaymentMethods, getDefaultPaymentMethod, balance} = usePaymentStore()
 
   const {
     register,
@@ -40,11 +41,22 @@ export default function DepositPage() {
   })
 
   const selectedAmount = watch("amount")
-  const quickAmounts = [25, 50, 100, 200]
+  const quickAmounts = [50, 100, 200, 500]
 
   useEffect(() => {
     fetchPaymentMethods()
   }, [fetchPaymentMethods])
+
+
+  // Automatically select default payment method once loaded
+  useEffect(() => {
+    if (paymentMethods.length > 0) {
+      const defaultMethod = getDefaultPaymentMethod()
+      if (defaultMethod) {
+        setValue("paymentMethodId", defaultMethod.id)
+      }
+    }
+  }, [paymentMethods, getDefaultPaymentMethod, setValue])
 
   const onSubmit = async (data: DepositForm) => {
     setIsProcessing(true)
@@ -67,8 +79,12 @@ export default function DepositPage() {
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 relative">
         {/* Close Button */}
         <button
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-          onClick={() => router.push('/')}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer"
+          onClick={() => {
+            if (window.Telegram?.WebApp) {
+              window.Telegram.WebApp.close();
+}
+          }}
         >
           <X className="h-5 w-5" />
         </button>
@@ -93,7 +109,7 @@ export default function DepositPage() {
               {...register("amount", { valueAsNumber: true })}
               className="text-lg font-semibold"
             />
-            {errors.amount && <p className="text-sm text-red-600">{errors.amount.message}</p>}
+            {errors.amount && <p className="text-sm text-red-600 pt-2">{errors.amount.message}</p>}
 
             <div className="grid grid-cols-4 gap-2 mt-2">
               {quickAmounts.map((amount) => (
@@ -133,11 +149,11 @@ export default function DepositPage() {
                 ))}
               </SelectContent>
             </Select>
-            {errors.paymentMethodId && <p className="text-sm text-red-600">{errors.paymentMethodId.message}</p>}
+            {errors.paymentMethodId && <p className="text-sm text-red-600 pt-2">{errors.paymentMethodId.message}</p>}
           </div>
 
           {/* Summary */}
-          <div className="bg-muted p-4 rounded-lg space-y-2">
+          {/* <div className="bg-muted p-4 rounded-lg space-y-2">
             <div className="flex justify-between text-sm">
               <span>Deposit Amount:</span>
               <span className="font-semibold">${selectedAmount?.toFixed(2) || "0.00"}</span>
@@ -150,7 +166,7 @@ export default function DepositPage() {
               <span>Total:</span>
               <span>${selectedAmount?.toFixed(2) || "0.00"}</span>
             </div>
-          </div>
+          </div> */}
 
           {/* Actions */}
           <div className="flex gap-3">

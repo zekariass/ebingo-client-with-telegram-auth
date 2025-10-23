@@ -278,8 +278,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Minus, AlertTriangle, CreditCard, Phone } from "lucide-react"
+import { Minus, CreditCard, Phone } from "lucide-react"
 import { currency } from "@/lib/constant"
 
 const minWithdrawalAmount = 50

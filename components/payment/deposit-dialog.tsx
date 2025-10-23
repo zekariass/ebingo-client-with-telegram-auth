@@ -11,9 +11,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CreditCard, DollarSign } from "lucide-react"
+import { currency } from "@/lib/constant"
 
 const depositSchema = z.object({
-  amount: z.number().min(10, "Minimum deposit is $10").max(1000, "Maximum deposit is $1000"),
+  amount: z.number().min(50, `Minimum deposit is 50 ${currency}`).max(10000, `Maximum deposit is 10000 ${currency}`),
   paymentMethodId: z.number().min(1, "Please select a payment method"),
 })
 
@@ -26,7 +27,7 @@ interface DepositDialogProps {
 
 export function DepositDialog({ open, onOpenChange }: DepositDialogProps) {
   const [isProcessing, setIsProcessing] = useState(false)
-  const { paymentMethods, addDeposit, fetchPaymentMethods, getDefaultPaymentMethod, balance, setBalance, addTransaction } = usePaymentStore()
+  const { paymentMethods, addDeposit, fetchPaymentMethods, getDefaultPaymentMethod, balance} = usePaymentStore()
 
   const {
     register,
@@ -44,7 +45,7 @@ export function DepositDialog({ open, onOpenChange }: DepositDialogProps) {
   })
 
   const selectedAmount = watch("amount")
-  const quickAmounts = [25, 50, 100, 200]
+  const quickAmounts = [50, 100, 200, 500]
 
   useEffect(()=>{
     fetchPaymentMethods()
@@ -54,43 +55,10 @@ export function DepositDialog({ open, onOpenChange }: DepositDialogProps) {
     setIsProcessing(true)
 
     try {
-      // const result = await paymentApiClient.deposit({
-      //   amount: data.amount,
-      //   paymentMethodId: data.paymentMethodId,
-      // })
-
-
       addDeposit(data.amount, data.paymentMethodId)
-
-      // if (result.success) {
-        // Update balance
-        // const newBalance = {
-        //   ...balance,
-        //   totalAvailableBalance: balance.totalAvailableBalance + data.amount,
-        //   depositBalance: balance.depositBalance + data.amount,
-        // }
-        // setBalance(newBalance)
-
-        // Add transaction record
-        // addTransaction({
-        //   id: result.transactionId!,
-        //   userProfileId: 1,
-        //   transferTo: null,
-        //   txnType: "DEPOSIT",
-        //   txnAmount: data.amount,
-        //   status: "COMPLETED",
-        //   description: `Deposit via payment method`,
-        //   createdAt: new Date().toISOString(),
-        //   paymentMethodId: data.paymentMethodId
-        // })
-
-        // console.log(`Deposit Successful: $${data.amount.toFixed(2)} has been added to your wallet`)
 
         reset()
         onOpenChange(false)
-      // } else {
-      //   throw new Error(result.error || "Deposit failed")
-      // }
     } catch (error) {
       console.error("Deposit Failed:", error instanceof Error ? error.message : "Please try again")
     } finally {
@@ -163,7 +131,7 @@ export function DepositDialog({ open, onOpenChange }: DepositDialogProps) {
             </div>
           </div>
 
-          <div className="bg-muted p-4 rounded-lg space-y-2">
+          {/* <div className="bg-muted p-4 rounded-lg space-y-2">
             <div className="flex justify-between text-sm">
               <span>Deposit Amount:</span>
               <span className="font-semibold">${selectedAmount?.toFixed(2) || "0.00"}</span>
@@ -176,7 +144,7 @@ export function DepositDialog({ open, onOpenChange }: DepositDialogProps) {
               <span>Total:</span>
               <span>${selectedAmount?.toFixed(2) || "0.00"}</span>
             </div>
-          </div>
+          </div> */}
 
           <div className="flex gap-3">
             <Button

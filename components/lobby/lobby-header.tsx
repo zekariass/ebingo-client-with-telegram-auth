@@ -11,12 +11,15 @@ import { UserRole } from "@/lib/types"
 import { GameTransactionHistory } from "../payment/game-transaction-history"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { CreditCard, ReceiptIcon, Settings, Wallet } from "lucide-react"
+import { CreditCard, Info, ReceiptIcon, Settings, Wallet } from "lucide-react"
+import GameInstructions from "../common/game-insructions"
+import { Badge } from "../ui/badge"
 
 export function LobbyHeader() {
   const [walletOpen, setWalletOpen] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
   const [gameHistoryOpen, setGameHistoryOpen] = useState(false)
+  const [instructionOPen, setInstructionOPen] = useState(false)
 
   // const {user, loading} = useSession();
   const user = userStore((state) => state.user);
@@ -102,10 +105,29 @@ export function LobbyHeader() {
                   <span className="hidden sm:inline">Admin</span>
                 </Link>
               </Button>}
+              
+              <Dialog open={instructionOPen} onOpenChange={setInstructionOPen}>
+                <DialogTrigger asChild>
+                  <Button variant="secondary" size="sm">
+                    <Info className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Game Instructions</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>
+                      Game Instructions
+                    </DialogTitle>
+                  </DialogHeader>
+                  <GameInstructions />
+                </DialogContent>
+              </Dialog>
+
+
               {/* <HeaderUserDropdown /> */}
               {/* <ModeToggle /> */}
             
-              {user && <h2>Hi {user.firstName?.split(' ')[0]}</h2>}
+              {user && <Badge variant="outline"><span className="font-bold text-blue-500">Hi,</span> <span className="text-green-800 font-bold">{user.firstName?.split(' ')[0]}</span></Badge>}
 
               </>}
             </div>

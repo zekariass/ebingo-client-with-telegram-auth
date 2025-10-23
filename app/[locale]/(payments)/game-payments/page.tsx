@@ -20,7 +20,7 @@ export default function GameHistoryModal() {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Game fees and prizes</h2>
           <button
-            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer"
             onClick={handleClose}
           >
             <X className="h-5 w-5" />
