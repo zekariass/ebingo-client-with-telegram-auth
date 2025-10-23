@@ -79,13 +79,14 @@ export default function WithdrawPage() {
   useEffect(() => {
       const loadData = async () => {
         try {
-          await Promise.all([fetchPaymentMethods(), fetchWallet(false)])
+          await Promise.all([fetchPaymentMethods(), fetchWallet(true)])
         } catch (error) {
           console.error("Failed to fetch payment data:", error)
         }
       }
 
       loadData()
+      getDefaultPaymentMethod()
     }, [])
 
 
