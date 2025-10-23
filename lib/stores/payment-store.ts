@@ -299,7 +299,7 @@ export const usePaymentStore = create<PaymentState>()(
           const {data} = result
 
           if(data) {
-            set({ balance: data, loading: false })
+            set({ balance: { ...data }, loading: false })
           }else{
             throw new Error("No wallet data found")
           }
