@@ -344,7 +344,7 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
                 className={cn(
                   "h-6 md:h-10 w-full text-xs sm:text-sm font-semibold relative rounded-xs text-white",
                   free && "bg-yellow-500 border-yellow-400 cursor-default",
-                  !marked && clickable && "bg-green-300 hover:bg-green-400 dark:hover:bg-green-900 border-green-300",
+                  !marked && clickable && "bg-green-300 border-green-300",
                   !marked && !clickable && "opacity-50 cursor-not-allowed",
                   marked && !free && "!bg-violet-950 border-2 border-white-600"
                 )}

@@ -39,6 +39,9 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
   const totalCost = fee * selectedCards
   const canAfford = balance.totalAvailableBalance >= totalCost
 
+  // Prefetch the game page
+  router.prefetch(`/${i18n.language}/rooms/${room?.id}/game`)
+
   const handleStartGame = () => {
     if (joinedPlayers.includes(telegramId.toString())){
       router.push(`/${i18n.language}/rooms/${room?.id}/game`)
