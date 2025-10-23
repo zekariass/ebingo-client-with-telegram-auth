@@ -6,55 +6,56 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useRouter } from "next/navigation"
 import { usePaymentStore } from "@/lib/stores/payment-store"
+import { userStore } from "@/lib/stores/user-store"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Minus, CreditCard, Phone, X } from "lucide-react"
 import { currency } from "@/lib/constant"
-import { use } from "i18next"
-import { userStore } from "@/lib/stores/user-store"
 
 // ---- CONFIG ----
 const minWithdrawalAmount = 50
 const maxWithdrawalAmount = 10000
 
 // ---- SCHEMA ----
-const withdrawSchema = z.object({
-  amount: z
-    .number()
-    .min(minWithdrawalAmount, `Minimum withdrawal is ${minWithdrawalAmount} ${currency}`)
-    .max(maxWithdrawalAmount, `Maximum withdrawal is ${maxWithdrawalAmount} ${currency}`),
+const withdrawSchema = z
+  .object({
+    amount: z
+      .number()
+      .min(minWithdrawalAmount, `Minimum withdrawal is ${minWithdrawalAmount} ${currency}`)
+      .max(maxWithdrawalAmount, `Maximum withdrawal is ${maxWithdrawalAmount} ${currency}`),
 
-  paymentMethodId: z.number().min(1, "Please select a payment method"),
-  paymentMethodName: z.string().optional(),
+    paymentMethodId: z.number().min(1, "Please select a payment method"),
+    paymentMethodName: z.string().optional(),
 
-  bankName: z.string().optional(),
-  accountName: z.string().optional(),
-  accountNumber: z.string().optional(),
-  phoneNumber: z.string().optional(),
-}).superRefine((data, ctx) => {
-  if (data.paymentMethodName === "Bank Transfer") {
-    if (!data.bankName) ctx.addIssue({ code: "custom", message: "Bank name is required", path: ["bankName"] })
-    if (!data.accountName) ctx.addIssue({ code: "custom", message: "Account holder name is required", path: ["accountName"] })
-    if (!data.accountNumber) ctx.addIssue({ code: "custom", message: "Account number is required", path: ["accountNumber"] })
-  } else if (data.paymentMethodName === "AddisPay") {
-    if (!data.phoneNumber)
-      ctx.addIssue({ code: "custom", message: "Phone number is required", path: ["phoneNumber"] })
-    else if (!/^(\+?251|0)?9\d{8}$/.test(data.phoneNumber))
-      ctx.addIssue({ code: "custom", message: "Enter a valid Ethiopian phone number", path: ["phoneNumber"] })
-  }
-})
+    bankName: z.string().optional(),
+    accountName: z.string().optional(),
+    accountNumber: z.string().optional(),
+    phoneNumber: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.paymentMethodName === "Bank Transfer") {
+      if (!data.bankName) ctx.addIssue({ code: "custom", message: "Bank name is required", path: ["bankName"] })
+      if (!data.accountName) ctx.addIssue({ code: "custom", message: "Account holder name is required", path: ["accountName"] })
+      if (!data.accountNumber) ctx.addIssue({ code: "custom", message: "Account number is required", path: ["accountNumber"] })
+    } else if (data.paymentMethodName === "AddisPay") {
+      if (!data.phoneNumber)
+        ctx.addIssue({ code: "custom", message: "Phone number is required", path: ["phoneNumber"] })
+      else if (!/^(\+?251|0)?9\d{8}$/.test(data.phoneNumber))
+        ctx.addIssue({ code: "custom", message: "Enter a valid Ethiopian phone number", path: ["phoneNumber"] })
+    }
+  })
 
 type WithdrawForm = z.infer<typeof withdrawSchema>
 
 export default function WithdrawPage() {
   const router = useRouter()
   const [isProcessing, setIsProcessing] = useState(false)
-  const { paymentMethods, fetchPaymentMethods, getDefaultPaymentMethod, balance, withdrawFund, fetchWallet } = usePaymentStore()
-  const {fetchUserProfile, initDataUnsafe} = userStore()
+  const { paymentMethods, fetchPaymentMethods, getDefaultPaymentMethod, balance, withdrawFund, fetchWallet } =
+    usePaymentStore()
+  const { fetchUserProfile, initDataUnsafe } = userStore()
 
   const {
     register,
@@ -67,37 +68,49 @@ export default function WithdrawPage() {
     resolver: zodResolver(withdrawSchema),
     defaultValues: {
       amount: 50,
-      paymentMethodId: getDefaultPaymentMethod()?.id || 0,
+      paymentMethodId: 0,
     },
   })
 
   const selectedAmount = watch("amount")
   const selectedMethodId = watch("paymentMethodId")
+
   const selectedMethod = useMemo(
     () => paymentMethods.find((m) => m.id === selectedMethodId),
     [paymentMethods, selectedMethodId]
   )
 
+  // 🔹 Fetch all required data
   useEffect(() => {
-      const loadData = async () => {
-        try {
-          await fetchUserProfile(initDataUnsafe?.user?.id)
-          await Promise.all([fetchPaymentMethods(), fetchWallet(true)])
-        } catch (error) {
-          console.error("Failed to fetch payment data:", error)
-        }
+    const loadData = async () => {
+      try {
+        await fetchUserProfile(initDataUnsafe?.user?.id)
+        await Promise.all([fetchPaymentMethods(), fetchWallet(true)])
+      } catch (error) {
+        console.error("Failed to fetch payment data:", error)
       }
+    }
 
-      loadData()
-      getDefaultPaymentMethod()
-    }, [])
+    loadData()
+  }, [])
 
+  // 🔹 Automatically select default payment method once loaded
+  useEffect(() => {
+    if (paymentMethods.length > 0) {
+      const defaultMethod = getDefaultPaymentMethod()
+      if (defaultMethod) {
+        setValue("paymentMethodId", defaultMethod.id)
+        setValue("paymentMethodName", defaultMethod.name)
+      }
+    }
+  }, [paymentMethods, getDefaultPaymentMethod, setValue])
 
-  
-
+  // 🔹 Handle submission
   const onSubmit = async (data: WithdrawForm) => {
     if (data.amount > balance.totalAvailableBalance) {
-      console.error(`Insufficient Balance: You can only withdraw up to ${currency} ${balance.totalAvailableBalance?.toFixed(2)}`)
+      console.error(
+        `Insufficient Balance: You can only withdraw up to ${currency} ${balance.totalAvailableBalance?.toFixed(2)}`
+      )
       return
     }
 
@@ -107,7 +120,9 @@ export default function WithdrawPage() {
       amount: data.amount,
       bankName: methodName.toLowerCase().includes("bank transfer") ? data.bankName : "",
       accountName: methodName.toLowerCase().includes("bank transfer") ? data.accountName : "",
-      accountNumber: methodName.toLowerCase().includes("bank transfer") ? data.accountNumber : data.phoneNumber || "",
+      accountNumber: methodName.toLowerCase().includes("bank transfer")
+        ? data.accountNumber
+        : data.phoneNumber || "",
       phonenumber: !methodName.toLowerCase().includes("bank transfer") ? data.phoneNumber : "",
     }
 
@@ -149,15 +164,11 @@ export default function WithdrawPage() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* <Alert>
-            <AlertDescription>
-              Withdrawals may take 1–3 business days. Please ensure your details match the payment method.
-            </AlertDescription>
-          </Alert> */}
-
           {/* Amount */}
           <div>
-            <Label htmlFor="amount" className="mb-2 block">Amount</Label>
+            <Label htmlFor="amount" className="mb-2 block">
+              Amount
+            </Label>
             <Input
               id="amount"
               type="number"
@@ -169,13 +180,17 @@ export default function WithdrawPage() {
 
             <div className="flex justify-between text-sm text-muted-foreground mt-1">
               <span>Available:</span>
-              <span className="font-semibold">{currency} {balance.totalAvailableBalance?.toFixed(2)}</span>
+              <span className="font-semibold">
+                {currency} {(balance.totalAvailableBalance ?? 0).toFixed(2)}
+              </span>
             </div>
           </div>
 
           {/* Payment Method */}
           <div>
-            <Label htmlFor="paymentMethod" className="mb-2 block">Withdraw Method</Label>
+            <Label htmlFor="paymentMethod" className="mb-2 block">
+              Withdraw Method
+            </Label>
             <Select
               value={selectedMethodId?.toString()}
               onValueChange={(value) => {
@@ -202,26 +217,38 @@ export default function WithdrawPage() {
                 ))}
               </SelectContent>
             </Select>
-            {errors.paymentMethodId && <p className="text-sm text-red-600">{errors.paymentMethodId.message}</p>}
+            {errors.paymentMethodId && (
+              <p className="text-sm text-red-600">{errors.paymentMethodId.message}</p>
+            )}
           </div>
 
           {/* Conditional Fields */}
           {selectedMethod?.name === "Bank Transfer" && (
             <>
               <div>
-                <Label htmlFor="bankName" className="mb-2 block">Bank Name</Label>
+                <Label htmlFor="bankName" className="mb-2 block">
+                  Bank Name
+                </Label>
                 <Input id="bankName" {...register("bankName")} />
                 {errors.bankName && <p className="text-sm text-red-600">{errors.bankName.message}</p>}
               </div>
               <div>
-                <Label htmlFor="accountName" className="mb-2 block">Account Holder Name</Label>
+                <Label htmlFor="accountName" className="mb-2 block">
+                  Account Holder Name
+                </Label>
                 <Input id="accountName" {...register("accountName")} />
-                {errors.accountName && <p className="text-sm text-red-600">{errors.accountName.message}</p>}
+                {errors.accountName && (
+                  <p className="text-sm text-red-600">{errors.accountName.message}</p>
+                )}
               </div>
               <div>
-                <Label htmlFor="accountNumber" className="mb-2 block">Account Number</Label>
+                <Label htmlFor="accountNumber" className="mb-2 block">
+                  Account Number
+                </Label>
                 <Input id="accountNumber" {...register("accountNumber")} />
-                {errors.accountNumber && <p className="text-sm text-red-600">{errors.accountNumber.message}</p>}
+                {errors.accountNumber && (
+                  <p className="text-sm text-red-600">{errors.accountNumber.message}</p>
+                )}
               </div>
             </>
           )}
@@ -232,7 +259,9 @@ export default function WithdrawPage() {
                 <Phone className="h-4 w-4" /> Phone Number
               </Label>
               <Input id="phoneNumber" placeholder="e.g. 0912345678" {...register("phoneNumber")} />
-              {errors.phoneNumber && <p className="text-sm text-red-600">{errors.phoneNumber.message}</p>}
+              {errors.phoneNumber && (
+                <p className="text-sm text-red-600">{errors.phoneNumber.message}</p>
+              )}
             </div>
           )}
 
