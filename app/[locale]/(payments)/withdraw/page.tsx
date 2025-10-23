@@ -77,12 +77,19 @@ export default function WithdrawPage() {
   )
 
   useEffect(() => {
-    fetchPaymentMethods()
-  }, [])
+      const loadData = async () => {
+        try {
+          await Promise.all([fetchPaymentMethods(), fetchWallet(false)])
+        } catch (error) {
+          console.error("Failed to fetch payment data:", error)
+        }
+      }
 
-  useEffect(() => {
-    fetchWallet(true)
-  }, [fetchWallet])
+      loadData()
+    }, [])
+
+
+  
 
   const onSubmit = async (data: WithdrawForm) => {
     if (data.amount > balance.totalAvailableBalance) {
