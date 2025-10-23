@@ -15,6 +15,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Minus, CreditCard, Phone, X } from "lucide-react"
 import { currency } from "@/lib/constant"
 import { use } from "i18next"
+import { userStore } from "@/lib/stores/user-store"
 
 // ---- CONFIG ----
 const minWithdrawalAmount = 50
@@ -53,6 +54,7 @@ export default function WithdrawPage() {
   const router = useRouter()
   const [isProcessing, setIsProcessing] = useState(false)
   const { paymentMethods, fetchPaymentMethods, getDefaultPaymentMethod, balance, withdrawFund, fetchWallet } = usePaymentStore()
+  const {fetchUserProfile, initDataUnsafe} = userStore()
 
   const {
     register,
@@ -79,6 +81,7 @@ export default function WithdrawPage() {
   useEffect(() => {
       const loadData = async () => {
         try {
+          await fetchUserProfile(initDataUnsafe?.user?.id)
           await Promise.all([fetchPaymentMethods(), fetchWallet(true)])
         } catch (error) {
           console.error("Failed to fetch payment data:", error)
