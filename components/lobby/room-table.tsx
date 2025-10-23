@@ -161,103 +161,6 @@
 // }
 
 
-// "use client"
-
-// import { RoomStatus, type Room } from "@/lib/types"
-// import { Badge } from "@/components/ui/badge"
-// import { useRouter } from "next/navigation"
-// import i18n from "@/i18n"
-// import { currency } from "@/lib/constant"
-
-// interface RoomTableProps {
-//   rooms: Room[]
-//   loading: boolean
-// }
-
-// export function RoomTable({ rooms, loading }: RoomTableProps) {
-//   const router = useRouter()
-
-//   const handleJoinClick = (room: Room) => {
-//     if (room.status === RoomStatus.OPEN) {
-//       router.push(`/${i18n.language}/rooms/${room.id}`)
-//     } else {
-//       router.push(`/${i18n.language}/rooms/${room.id}`)
-//     }
-//   }
-
-//     // Loading state
-//   if (loading) {
-//     return (
-//       <div className="flex items-center justify-center py-16">
-//         <div className="text-lg text-muted-foreground animate-pulse">Loading rooms...</div>
-//       </div>
-//     )
-//   }
-
-//   if (!rooms || rooms.length === 0) {
-//     return (
-//       <div className="text-center py-16">
-//         <h3 className="text-lg font-semibold text-muted-foreground">No rooms found</h3>
-//         <p className="text-sm text-muted-foreground mt-2">Check your connection.</p>
-//       </div>
-//     )
-//   }
-
-//   return (
-//     <div className="w-full overflow-x-auto">
-//       <table className="w-full text-left border-separate border-spacing-y-2 text-sm sm:text-base">
-//         <thead>
-//           <tr className="text-gray-400 uppercase tracking-wider text-xs sm:text-sm">
-//             <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Bet</th>
-//             <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Status</th>
-//             <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Capacity</th>
-//             <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Action</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {(Array.isArray(rooms)? rooms : []).map((room) => (
-//             <tr
-//               key={room.id}
-//               className="bg-stone-100 transition-colors duration-200 rounded-lg text-sm py-3 shadow-xl"
-//             >
-//               <td className="px-2 sm:px-4 py-1 sm:py-2 font-semibold text-white text-sm"> {room.entryFee} {currency}</td>
-//               <td className="px-2 sm:px-4 py-1 sm:py-2">
-//                 <Badge
-//                   className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${
-//                     room.status === RoomStatus.OPEN
-//                       ? "bg-green-600 text-white"
-//                       : room.status === RoomStatus.CLOSED
-//                       ? "bg-red-600 text-white"
-//                       : "bg-yellow-600 text-white"
-//                   }`}
-//                 >
-//                   {room.status}
-//                 </Badge>
-//               </td>
-//               <td className="px-2 sm:px-4 py-1 sm:py-2 text-white font-semibold">{room.capacity} Players</td>
-//               <td className="px-2 sm:px-4 py-1 sm:py-2">
-//                 <button
-//                   onClick={() => handleJoinClick(room)}
-//                   disabled={room.status !== RoomStatus.OPEN}
-//                   className={`w-full px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-medium text-white transition-colors duration-200 text-xs sm:text-sm cursor-pointer ${
-//                     room.status === RoomStatus.OPEN
-//                       ? "bg-indigo-600 hover:bg-indigo-700"
-//                       : "bg-gray-700 cursor-not-allowed"
-//                   }`}
-//                 >
-//                   {room.status === RoomStatus.OPEN ? "Enter" : "____"}
-//                 </button>
-//               </td>
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-//     </div>
-//   )
-// }
-
-
-
 "use client"
 
 import { RoomStatus, type Room } from "@/lib/types"
@@ -275,13 +178,18 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
   const router = useRouter()
 
   const handleJoinClick = (room: Room) => {
-    router.push(`/${i18n.language}/rooms/${room.id}`)
+    if (room.status === RoomStatus.OPEN) {
+      router.push(`/${i18n.language}/rooms/${room.id}`)
+    } else {
+      router.push(`/${i18n.language}/rooms/${room.id}`)
+    }
   }
 
+    // Loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="text-lg text-gray-400 animate-pulse">Loading rooms...</div>
+        <div className="text-lg text-muted-foreground animate-pulse">Loading rooms...</div>
       </div>
     )
   }
@@ -289,40 +197,33 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
   if (!rooms || rooms.length === 0) {
     return (
       <div className="text-center py-16">
-        <h3 className="text-lg font-semibold text-gray-400">No rooms found</h3>
-        <p className="text-sm text-gray-500 mt-2">Check your connection.</p>
+        <h3 className="text-lg font-semibold text-muted-foreground">No rooms found</h3>
+        <p className="text-sm text-muted-foreground mt-2">Check your connection.</p>
       </div>
     )
   }
 
   return (
-    <div className="w-full space-y-3">
-      {/* Header */}
-      <div className="hidden sm:flex bg-gray-200 rounded-lg p-3 text-gray-700 font-semibold text-sm sm:text-base">
-        <div className="w-1/4">Bet</div>
-        <div className="w-1/4">Status</div>
-        <div className="w-1/4">Capacity</div>
-        <div className="w-1/4">Action</div>
-      </div>
-
-      {/* Rows */}
-      {rooms.map((room) => {
-        const canJoin = room.status === RoomStatus.OPEN
-        return (
-          <div
-            key={room.id}
-            className="bg-lime-900 rounded-lg shadow-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between transition-colors duration-200 hover:bg-stone-700"
-          >
-            <div className="flex items-center justify-between">
-              {/* Bet */}
-              <div className="w-full sm:w-1/4 font-semibold text-white text-sm sm:text-base mb-2 sm:mb-0 ">
-                {room.entryFee} {currency}
-              </div>
-
-              {/* Status */}
-              <div className="w-full sm:w-1/4 mb-2 sm:mb-0 flex items-center justify-end">
+    <div className="w-full overflow-x-auto">
+      <table className="w-full text-left border-separate border-spacing-y-2 text-sm sm:text-base">
+        <thead>
+          <tr className="text-gray-400 uppercase tracking-wider text-xs sm:text-sm">
+            <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Bet</th>
+            <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Status</th>
+            <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Capacity</th>
+            <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(Array.isArray(rooms)? rooms : []).map((room) => (
+            <tr
+              key={room.id}
+              className="bg-lime-950 transition-colors duration-200 rounded-lg text-sm py-3 shadow-xl"
+            >
+              <td className="px-2 sm:px-4 py-1 sm:py-2 font-semibold text-white text-sm"> {room.entryFee} {currency}</td>
+              <td className="px-2 sm:px-4 py-1 sm:py-2">
                 <Badge
-                  className={`px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${
+                  className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${
                     room.status === RoomStatus.OPEN
                       ? "bg-green-600 text-white"
                       : room.status === RoomStatus.CLOSED
@@ -332,29 +233,25 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
                 >
                   {room.status}
                 </Badge>
-              </div>
-            </div>
-
-            {/* Capacity */}
-            <div className="w-full sm:w-1/4 font-semibold text-white text-sm sm:text-base mb-2 sm:mb-0">
-              {room.capacity} Players
-            </div>
-
-            {/* Action */}
-            <div className="w-full sm:w-1/4">
-              <button
-                onClick={() => handleJoinClick(room)}
-                disabled={!canJoin}
-                className={`w-full px-4 py-2 rounded-lg font-medium text-white text-sm sm:text-base transition-colors duration-200 ${
-                  canJoin ? "bg-indigo-600 hover:bg-indigo-700" : "bg-gray-700 cursor-not-allowed"
-                }`}
-              >
-                {canJoin ? "Enter" : "____"}
-              </button>
-            </div>
-          </div>
-        )
-      })}
+              </td>
+              <td className="px-2 sm:px-4 py-1 sm:py-2 text-white font-semibold">{room.capacity} Players</td>
+              <td className="px-2 sm:px-4 py-1 sm:py-2">
+                <button
+                  onClick={() => handleJoinClick(room)}
+                  disabled={room.status !== RoomStatus.OPEN}
+                  className={`w-full px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-medium text-white transition-colors duration-200 text-xs sm:text-sm cursor-pointer ${
+                    room.status === RoomStatus.OPEN
+                      ? "bg-indigo-600 hover:bg-indigo-700"
+                      : "bg-gray-700 cursor-not-allowed"
+                  }`}
+                >
+                  {room.status === RoomStatus.OPEN ? "Enter" : "____"}
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
