@@ -278,11 +278,10 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
     router.push(`/${i18n.language}/rooms/${room.id}`)
   }
 
-  // Loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="text-lg text-muted-foreground animate-pulse">Loading rooms...</div>
+        <div className="text-lg text-gray-400 animate-pulse">Loading rooms...</div>
       </div>
     )
   }
@@ -290,57 +289,71 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
   if (!rooms || rooms.length === 0) {
     return (
       <div className="text-center py-16">
-        <h3 className="text-lg font-semibold text-muted-foreground">No rooms found</h3>
-        <p className="text-sm text-muted-foreground mt-2">Check your connection.</p>
+        <h3 className="text-lg font-semibold text-gray-400">No rooms found</h3>
+        <p className="text-sm text-gray-500 mt-2">Check your connection.</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-3 w-full">
+    <div className="w-full space-y-3">
+      {/* Header */}
+      <div className="hidden sm:flex bg-gray-200 rounded-lg p-3 text-gray-700 font-semibold text-sm sm:text-base">
+        <div className="w-1/4">Bet</div>
+        <div className="w-1/4">Status</div>
+        <div className="w-1/4">Capacity</div>
+        <div className="w-1/4">Action</div>
+      </div>
+
+      {/* Rows */}
       {rooms.map((room) => {
         const canJoin = room.status === RoomStatus.OPEN
         return (
           <div
             key={room.id}
-            className="bg-stone-100 rounded-lg shadow-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between transition-colors duration-200"
+            className="bg-stone-800 rounded-lg shadow-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between transition-colors duration-200 hover:bg-stone-700"
           >
             {/* Bet */}
-            <div className="font-semibold text-sm sm:text-base text-white mb-2 sm:mb-0">
+            <div className="w-full sm:w-1/4 font-semibold text-white text-sm sm:text-base mb-2 sm:mb-0">
               {room.entryFee} {currency}
             </div>
 
             {/* Status */}
-            <Badge
-              className={`px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${
-                room.status === RoomStatus.OPEN
-                  ? "bg-green-600 text-white"
-                  : room.status === RoomStatus.CLOSED
-                  ? "bg-red-600 text-white"
-                  : "bg-yellow-600 text-white"
-              }`}
-            >
-              {room.status}
-            </Badge>
+            <div className="w-full sm:w-1/4 mb-2 sm:mb-0">
+              <Badge
+                className={`px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${
+                  room.status === RoomStatus.OPEN
+                    ? "bg-green-600 text-white"
+                    : room.status === RoomStatus.CLOSED
+                    ? "bg-red-600 text-white"
+                    : "bg-yellow-600 text-white"
+                }`}
+              >
+                {room.status}
+              </Badge>
+            </div>
 
             {/* Capacity */}
-            <div className="font-semibold text-white text-sm sm:text-base mt-2 sm:mt-0">
+            <div className="w-full sm:w-1/4 font-semibold text-white text-sm sm:text-base mb-2 sm:mb-0">
               {room.capacity} Players
             </div>
 
             {/* Action */}
-            <button
-              onClick={() => handleJoinClick(room)}
-              disabled={!canJoin}
-              className={`mt-2 sm:mt-0 px-4 py-2 rounded-lg font-medium text-white text-sm sm:text-base transition-colors duration-200 ${
-                canJoin ? "bg-indigo-600 hover:bg-indigo-700" : "bg-gray-700 cursor-not-allowed"
-              }`}
-            >
-              {canJoin ? "Enter" : "____"}
-            </button>
+            <div className="w-full sm:w-1/4">
+              <button
+                onClick={() => handleJoinClick(room)}
+                disabled={!canJoin}
+                className={`w-full px-4 py-2 rounded-lg font-medium text-white text-sm sm:text-base transition-colors duration-200 ${
+                  canJoin ? "bg-indigo-600 hover:bg-indigo-700" : "bg-gray-700 cursor-not-allowed"
+                }`}
+              >
+                {canJoin ? "Enter" : "____"}
+              </button>
+            </div>
           </div>
         )
       })}
     </div>
   )
 }
+
