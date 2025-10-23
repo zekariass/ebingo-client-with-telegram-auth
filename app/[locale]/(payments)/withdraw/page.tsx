@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Minus, CreditCard, Phone, X } from "lucide-react"
 import { currency } from "@/lib/constant"
+import { use } from "i18next"
 
 // ---- CONFIG ----
 const minWithdrawalAmount = 50
@@ -51,7 +52,7 @@ type WithdrawForm = z.infer<typeof withdrawSchema>
 export default function WithdrawPage() {
   const router = useRouter()
   const [isProcessing, setIsProcessing] = useState(false)
-  const { paymentMethods, getDefaultPaymentMethod, balance, withdrawFund, fetchWallet } = usePaymentStore()
+  const { paymentMethods, fetchPaymentMethods, getDefaultPaymentMethod, balance, withdrawFund, fetchWallet } = usePaymentStore()
 
   const {
     register,
@@ -74,6 +75,10 @@ export default function WithdrawPage() {
     () => paymentMethods.find((m) => m.id === selectedMethodId),
     [paymentMethods, selectedMethodId]
   )
+
+  useEffect(() => {
+    fetchPaymentMethods()
+  }, [])
 
   useEffect(() => {
     fetchWallet(true)
@@ -133,11 +138,11 @@ export default function WithdrawPage() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <Alert>
+          {/* <Alert>
             <AlertDescription>
               Withdrawals may take 1–3 business days. Please ensure your details match the payment method.
             </AlertDescription>
-          </Alert>
+          </Alert> */}
 
           {/* Amount */}
           <div>
