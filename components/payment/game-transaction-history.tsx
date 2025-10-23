@@ -21,7 +21,7 @@ export function GameTransactionHistory() {
     if (gameTransactions.length === 0) {
       refreshTransactions()
     }
-  }, [fetchGameTransactions])
+  }, [])
 
   const getTransactionIcon = (type: GameTransactionType) => {
     switch (type) {
