@@ -311,16 +311,16 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
         return (
           <div
             key={room.id}
-            className="bg-stone-200 rounded-lg shadow-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between transition-colors duration-200 hover:bg-stone-700"
+            className="bg-gray-950 rounded-lg shadow-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between transition-colors duration-200 hover:bg-stone-700"
           >
             <div className="flex items-center justify-between">
               {/* Bet */}
-              <div className="w-full sm:w-1/4 font-semibold text-gray-950 text-sm sm:text-base mb-2 sm:mb-0">
+              <div className="w-full sm:w-1/4 font-semibold text-white text-sm sm:text-base mb-2 sm:mb-0 ">
                 {room.entryFee} {currency}
               </div>
 
               {/* Status */}
-              <div className="w-full sm:w-1/4 mb-2 sm:mb-0">
+              <div className="w-full sm:w-1/4 mb-2 sm:mb-0 flex items-center justify-end">
                 <Badge
                   className={`px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${
                     room.status === RoomStatus.OPEN
@@ -336,7 +336,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
             </div>
 
             {/* Capacity */}
-            <div className="w-full sm:w-1/4 font-semibold text-gray-950 text-sm sm:text-base mb-2 sm:mb-0">
+            <div className="w-full sm:w-1/4 font-semibold text-white text-sm sm:text-base mb-2 sm:mb-0">
               {room.capacity} Players
             </div>
 
