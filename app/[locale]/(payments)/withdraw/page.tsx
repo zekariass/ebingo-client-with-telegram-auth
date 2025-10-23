@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Minus, CreditCard, Phone, X } from "lucide-react"
 import { currency } from "@/lib/constant"
+import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
 
 // ---- CONFIG ----
 const minWithdrawalAmount = 50
@@ -55,7 +56,8 @@ export default function WithdrawPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const { paymentMethods, fetchPaymentMethods, getDefaultPaymentMethod, balance, withdrawFund, fetchWallet } =
     usePaymentStore()
-  const { fetchUserProfile, initDataUnsafe } = userStore()
+
+  useTelegramInit();
 
   const {
     register,
@@ -84,7 +86,6 @@ export default function WithdrawPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        await fetchUserProfile(initDataUnsafe?.user?.id)
         await Promise.all([fetchPaymentMethods(), fetchWallet(true)])
       } catch (error) {
         console.error("Failed to fetch payment data:", error)
