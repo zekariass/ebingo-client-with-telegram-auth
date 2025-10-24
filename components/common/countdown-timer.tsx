@@ -279,7 +279,6 @@ export function CountdownTimer({label }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<number>(0)
   const setCountdownEndTime = useGameStore(state => state.setCountdownWithEndTime)
   const endTime = useGameStore(state => state.game.countdownEndTime)
-  const status = useGameStore(state => state.game.status)
 
   useEffect(() => {
     if (!endTime) {
@@ -287,7 +286,10 @@ export function CountdownTimer({label }: CountdownTimerProps) {
       return
     }
 
-    const targetTime = new Date(endTime).getTime()
+    const safeEndTime = endTime
+                        .replace(/\.\d+Z$/, "Z") // remove sub-millisecond precision
+                        .replace(/Z?$/, "Z");    // ensure UTC suffix
+    const targetTime = new Date(safeEndTime).getTime()
     if (isNaN(targetTime)) {
       console.error("CountdownTimer: invalid endTime", endTime)
       return
@@ -317,8 +319,8 @@ export function CountdownTimer({label }: CountdownTimerProps) {
 
   const getBadgeBg = () => {
     if (timeLeft <= 10) return "bg-red-500 text-white"
-    if (timeLeft <= 30) return "bg-yellow-400 text-black"
-    return "bg-blue-400 text-black"
+    if (timeLeft <= 30) return "bg-yellow-400 text-white"
+    return "bg-blue-400 text-white"
   }
 
   if (timeLeft <= 0) {
@@ -337,6 +339,7 @@ export function CountdownTimer({label }: CountdownTimerProps) {
       {label && <div className="text-xs text-white">{label}</div>}
       <Badge className={`font-mono text-sm px-3 py-1 ${getBadgeBg()}`}>
         Starts In: {formatTime(timeLeft)}
+        {/* Starts In: {endTime} */}
       </Badge>
     </div>
   )

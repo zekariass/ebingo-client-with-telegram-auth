@@ -24,6 +24,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const allCardIds = useGameStore(state => state.game.allCardIds)
   const gameId = useGameStore(state => state.game.gameId)
   const status = useGameStore(state => state.game.status)
+  const joinedPlayers = useGameStore(state => state.game.joinedPlayers)
 
   const {enterRoom, connected, selectCard: selectCardBackend, releaseCard: releaseCardBackend} =  useWebSocketEvents({roomId: roomId, enabled: true});
 
@@ -88,6 +89,11 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 sm:w-3 sm:h-3 border-red-300 bg-red-300 dark:bg-red-950 rounded-full" />
                 <span className="text-muted-foreground text-xs">Taken</span>
+              </div>
+              <div className="">
+                {joinedPlayers.length > 5 && <p className="text-xs text-blue-500">
+                   | Active: {joinedPlayers.length} Players
+                </p>}
               </div>
               {status === GameStatus.COUNTDOWN && <div className="flex items-center gap-1">
                 <div className="sm:w-3 sm:h-3 border-red-300 bg-red-300 dark:bg-red-950 rounded-full" />

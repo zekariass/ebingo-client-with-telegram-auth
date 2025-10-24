@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { useGameStore } from "@/lib/stores/game-store"
 import { userStore } from "@/lib/stores/user-store"
 import i18n from "@/i18n"
+import { currency } from "@/lib/constant"
 
 interface StartGameButtonProps {
   disabled: boolean
@@ -111,8 +112,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
           if (ok) setIsOpen(true)      
         }}
       >
-        <DollarSign className="h-5 w-5 mr-2" />
-        Start Game (${totalCost.toFixed(2)})
+        Start Game ({totalCost.toFixed(2)} {currency})
       </Button>
 
       <DialogContent className="pr-8">
@@ -127,12 +127,12 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
               <span className="font-semibold">{selectedCards}</span>
             </div>
             <div className="flex justify-between">
-              <span>Entry Fee per Card:</span>
-              <span className="font-semibold">${fee.toFixed(2)}</span>
+              <span>Bet per Card:</span>
+              <span className="font-semibold">{fee.toFixed(2)} {currency}</span>
             </div>
             <div className="border-t pt-2 flex justify-between text-lg font-bold">
               <span>Total Cost:</span>
-              <span>${totalCost.toFixed(2)}</span>
+              <span>{totalCost.toFixed(2)} {currency}</span>
             </div>
           </div>
 
@@ -143,7 +143,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
                 canAfford ? "text-green-600" : "text-red-600"
               }`}
             >
-              ${balance.totalAvailableBalance.toFixed(2)}
+              {balance.totalAvailableBalance.toFixed(2)} {currency}
             </span>
           </div>
 

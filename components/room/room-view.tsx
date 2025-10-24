@@ -102,18 +102,16 @@
 
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRoomStore } from "@/lib/stores/room-store"
 import { RoomHeader } from "./room-header"
 import { CardSelectionGrid } from "./card-selection-grid"
 import { SelectedCardsPanel } from "./selected-cards-panel"
 import { GameControls } from "./game-controls"
 import { useGameStore } from "@/lib/stores/game-store"
-import { WinnerDialog } from "./winner/winner-dialog"
 import { GameStatus } from "@/lib/types"
 import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { usePaymentStore } from "@/lib/stores/payment-store"
-import { useAutoRefreshGameState } from "@/lib/hooks/use-auto-refresh-game-state"
 
 interface RoomViewProps {
   roomId: number
@@ -122,9 +120,8 @@ interface RoomViewProps {
 export function RoomView({ roomId }: RoomViewProps) {
   const { room, loading, fetchRoom, resetRoom } = useRoomStore()
   const { game: { userSelectedCardsIds, countdownEndTime, status }, isJoining, setJoining } = useGameStore()
-  const winner = useGameStore(state => state.winner)
   const resetWinner = useGameStore(state => state.resetWinner)
-  const { enterRoom, refreshGameState, connected } = useWebSocketEvents({ roomId, enabled: true })
+  const { enterRoom } = useWebSocketEvents({ roomId, enabled: true })
   const { fetchWallet } = usePaymentStore()
 
   // Refresh game state every 3 seconds when connected
@@ -137,9 +134,9 @@ export function RoomView({ roomId }: RoomViewProps) {
   const timeLeft = Math.max(Math.ceil((targetTime - now) / 1000), 0)
   const disableCardSelection = (timeLeft < 10 && timeLeft > 0) || (status === GameStatus.PLAYING)
 
-  const onGameWinnerClose = () => {
-    resetWinner()
-  }
+  // const onGameWinnerClose = () => {
+  //   resetWinner()
+  // }
 
   useEffect(() => {
     setJoining(false)

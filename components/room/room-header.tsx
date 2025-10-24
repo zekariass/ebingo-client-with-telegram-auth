@@ -23,8 +23,8 @@ interface RoomHeaderProps {
 export function RoomHeader({ room }: RoomHeaderProps) {
   // useTelegramInit();
 
-  const { connected, latencyMs } = useRoomStore()
-  const {game: {gameId, status, joinedPlayers, playersCount}} = useGameStore()
+  // const { connected, latencyMs } = useRoomStore()
+  // const {game: {gameId, status, joinedPlayers, playersCount}} = useGameStore()
 
   const {resetPlayerStateInBackend} = useWebSocketEvents({roomId: room?.id, enabled: true});
   const { resetGameState } = useGameStore();
@@ -82,8 +82,8 @@ export function RoomHeader({ room }: RoomHeaderProps) {
             <div className="space-y-1 min-w-0">
               {/* <h1 className="text-sm sm:text-lg lg:text-xl font-bold truncate">{room?.name}</h1> */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs text-muted-foreground">
-                <span className="truncate">ID: {room?.id}</span>
-                <span>{currency} {room?.entryFee}</span>
+                <span className="truncate">Room Id: {room?.id}</span>
+                <span>Bet: {room?.entryFee} {currency}</span>
               </div>
             </div>
           </div>
@@ -93,7 +93,7 @@ export function RoomHeader({ room }: RoomHeaderProps) {
             </div>
             <span className="flex flex-row">
               <ConnectionStatus roomId={room?.id} />
-              <RefreshCcwDot onClick={()=>window.location.reload()} className="ms-3 cursor-pointer pt-1 text-blue-500" size="20"></RefreshCcwDot>
+              <RefreshCcw onClick={()=>window.location.reload()} className="ms-3 cursor-pointer pt-1 text-white" size="20"></RefreshCcw>
             </span>
           </div>
         </div>

@@ -208,20 +208,22 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
       <table className="w-full text-left border-separate border-spacing-y-2 text-sm sm:text-base">
         <thead>
           <tr className="text-gray-400 uppercase tracking-wider text-xs sm:text-sm">
+            <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Room Name</th>
             <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Bet</th>
             <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Status</th>
             <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Capacity</th>
             <th className="px-2 sm:px-4 py-1 sm:py-2 w-1/4">Action</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="rouded-2xl">
           {(Array.isArray(rooms)? rooms : []).map((room) => (
             <tr
               key={room.id}
               className="bg-white transition-colors duration-200 rounded-lg text-sm py-3 shadow-xl"
             >
-              <td className="px-2 sm:px-4 py-1 sm:py-2 font-semibold text-gray-950 text-sm"> {room.entryFee} {currency}</td>
-              <td className="px-2 sm:px-4 py-1 sm:py-2">
+              <td className="px-2 sm:px-4 py-1 sm:py-2 font-semibold text-gray-950 text-sm  bg-gray-300 w-fit"> {room.name}</td>
+              <td className="px-2 sm:px-4 py-1 sm:py-2 font-semibold text-gray-950 text-sm bg-gray-400"> {room.entryFee} {currency}</td>
+              <td className="px-2 sm:px-4 py-1 sm:py-2 bg-gray-300 w-fit">
                 <Badge
                   className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${
                     room.status === RoomStatus.OPEN
@@ -234,8 +236,8 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
                   {room.status}
                 </Badge>
               </td>
-              <td className="px-2 sm:px-4 py-1 sm:py-2 text-gray-950 font-semibold">{room.capacity} Players</td>
-              <td className="px-2 sm:px-4 py-1 sm:py-2">
+              <td className="px-2 sm:px-4 py-1 sm:py-2 text-gray-950 font-semibold bg-gray-400">{room.capacity} Players</td>
+              <td className="px-2 sm:px-4 py-1 sm:py-2 bg-gray-300 w-fit">
                 <button
                   onClick={() => handleJoinClick(room)}
                   disabled={room.status !== RoomStatus.OPEN}

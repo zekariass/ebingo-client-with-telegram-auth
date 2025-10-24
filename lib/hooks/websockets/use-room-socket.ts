@@ -173,6 +173,13 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
         case "room.serverGameState":
           _gameStore.resetGameState()
           if (message.payload.success && message.payload.gameState) {
+
+            // Filter card IDs
+            const cardIds = message.payload.gameState?.currentCardPool.map(
+              (card) => card.cardId
+            )
+
+            message.payload.gameState.allCardIds = cardIds || []
             _gameStore.setGameState(message.payload.gameState)
           }
           break
