@@ -151,14 +151,14 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
             )}
           </div>
 
-        {userSelectedCardsIds.length >= maxCards && (
+        {/* {userSelectedCardsIds.length >= maxCards && (
           <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-800 rounded-lg flex flex-row">
             <Info size="16"></Info>
             <p className="text-xs sm:text-sm text-white ms-1">
               Max {maxCards} cards selected. To choose another deselect one.
             </p>
           </div>
-        )}
+        )} */}
 
         {totalPages > 1 && (
           <div className="flex items-center gap-2 justify-end mt-1">
