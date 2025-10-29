@@ -1,8 +1,8 @@
 import { create } from "zustand"
-import type { GameTransaction, PaymentMethod, Transaction, WalletBalance } from "@/lib/types"
+import type {CheckoutData, CheckoutResponse, GameTransaction, PaymentMethod, PaymentOrderData, Transaction, WalletBalance } from "@/lib/types"
 import i18n from "@/i18n"
-import { $ZodEmail } from "zod/v4/core"
 import { userStore } from "./user-store"
+import { ApiResponse } from "../backend/types"
 
 interface PaymentState {
   balance: WalletBalance
@@ -10,6 +10,10 @@ interface PaymentState {
   transactions: Transaction[]
   gameTransactions: GameTransaction[]
   loading: boolean
+  processing: boolean
+  paymentOrderData: PaymentOrderData | null
+  checkoutData: CheckoutData | null
+  checkoutResult: CheckoutResponse | null
   walletError: string | null
   pmError: string | null
   txnError: string | null
@@ -33,6 +37,9 @@ interface PaymentState {
   addTransaction: (transaction: Transaction) => void
   updateTransaction: (transactionId: string, updates: Partial<Transaction>) => void
   setLoading: (loading: boolean) => void
+  setPaymentOrderData: (data: PaymentOrderData) => void
+  setCheckoutData: (checkoutData: CheckoutData) => void
+  setProcessing: (processing: boolean) => void
   setWalletError: (error: string | null) => void
   setTxnError: (error: string | null) => void
   setGameTxnError: (error: string | null) => void
@@ -55,10 +62,11 @@ interface PaymentState {
   fetchWallet: (refresh: boolean) => Promise<void>
   fetchPaymentMethods: () => Promise<void>
   fetchTransactions: (page: number, size: number, refresh: boolean) => Promise<void>
-  transferFunds: (amount: number, email: string) => Promise<void>
+  transferFunds: (amount: number, phone: string) => Promise<boolean>
 
   // Deposit
   addDeposit: (amount: number, paymentMethodId: number) => Promise<void>
+  checkout:  (paymentData: CheckoutData) => Promise<void>
   // getPendingDeposits: () => number
 
   // Withdraw
@@ -68,8 +76,12 @@ interface PaymentState {
           bankName?: string,
           accountName?: string,
           accountNumber?: string,
-          phoneNumber?: string
-  ) => Promise<void>
+          phoneNumber?: string,
+          currency?: string,
+          txnType?: string,
+          providerPaymentMethodName?: string,
+          withdrawalMode?: string
+  ) => Promise<boolean>
 }
 
 export const usePaymentStore = create<PaymentState>()(
@@ -95,6 +107,10 @@ export const usePaymentStore = create<PaymentState>()(
       transactions: [],
       gameTransactions: [],
       loading: false,
+      processing: false,
+      paymentOrderData: null,
+      checkoutData: null,
+      checkoutResult: null,
       walletError: null,
       pmError: null,
       txnError: null,
@@ -143,10 +159,14 @@ export const usePaymentStore = create<PaymentState>()(
         paymentMethods: [],
         transactions: [],
         loading: false,
+        processing: false,
         walletError: null,
         pmError: null,
         txnError: null,
         gameTxnError: null,
+        checkoutData: null,
+        checkoutResult: null,
+        paymentOrderData: null,
         gameError: null,
         transferError: null,
         withdrawError: null,
@@ -178,6 +198,16 @@ export const usePaymentStore = create<PaymentState>()(
         }))
       },
 
+      setPaymentOrderData: (data) => {
+        set({
+          paymentOrderData: {...data}
+        })
+      },
+
+      setCheckoutData: (data) => {
+        set({checkoutData: {...data}})
+      },
+
       setTransactions: (transactions) =>
          set(()=>({
           transactions: Array.isArray(transactions)? [...transactions] : []
@@ -197,6 +227,7 @@ export const usePaymentStore = create<PaymentState>()(
         })),  
 
       setLoading: (loading) => set({ loading }),
+      setProcessing: (processing) => set({ processing }),
       setWalletError: (error) => set({ walletError: error }),
       setTxnError: (error) => set({ txnError: error }),
       setPMError: (error) => set({ pmError: error }),
@@ -395,61 +426,68 @@ export const usePaymentStore = create<PaymentState>()(
       },
 
 
-    transferFunds: async (amount: number, email: string) => {
-      set({ loading: true, transferError: null });
-      const initData = userStore.getState().initData;
+    transferFunds: async (amount: number, phone: string) => {
+        set({ loading: true, transferError: null });
+
+        const initData = userStore.getState().initData;
         const user = userStore.getState().user;
-        if (!user){
-          set({ transferError: "User not logged in. Go back to telegram and reload the page", loading: false })
-        };
-      try {
-        // Build endpoint (multilingual support)
-        const url = new URL(`/${i18n.language}/api/payments/transfer`, window.location.origin);
 
-        // Make API call
-        const response = await fetch(url.toString(), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-init-data": initData || "",
-          },
-          body: JSON.stringify({ amount, email }),
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(errorText || "Transfer failed");
-        }
-
-        const result = await response.json();
-        const { data } = result;
-
-        // Optionally refresh wallet balances or transactions
-        if (get().fetchWallet) {
-          await get().fetchWallet(true);
-        }
-
-        // Optionally update transactions list
-        if (data) {
+        if (!user) {
           set({
-            transactions: data,
+            transferError: "User not logged in. Please go back to Telegram and reload the page.",
             loading: false,
           });
-        } else {
-          set({ loading: false });
+          return false; // must return false to indicate failure
         }
 
-      } catch (error: any) {
-        console.error("Transfer failed:", error);
-        set({
-          transferError: error.message || "Error transferring funds",
-          loading: false,
-        });
-      }
-    },
+        try {
+          const url = new URL(`/${i18n.language}/api/payments/transfer`, window.location.origin);
+
+          const response = await fetch(url.toString(), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-init-data": initData || "",
+            },
+            body: JSON.stringify({ amount, phone }),
+          });
+
+          if (!response.ok) {
+            let errorText = "Transfer failed";
+            try {
+              const result = await response.json();
+              errorText = result?.error || result?.message || errorText;
+            } catch {
+              errorText = await response.text();
+            }
+
+            set({ loading: false, transferError: errorText });
+            return false;
+          }
+
+          const result = await response.json();
+          const { data } = result;
+
+          set({
+            ...(data ? { transactions: data } : {}),
+            loading: false,
+            transferError: null,
+          });
+
+          return true; // success
+        } catch (error: any) {
+          console.error("Transfer failed:", error);
+          set({
+            transferError: error.message || "Error transferring funds",
+            loading: false,
+          });
+          return false;
+        }
+      },
+
 
     addDeposit: async (amount: number, paymentMethodId: number) => {
-        set({ loading: true, depositError: null });
+        set({ processing: true, depositError: null });
         const initData = userStore.getState().initData;
         const user = userStore.getState().user;
         if (!user){
@@ -459,7 +497,7 @@ export const usePaymentStore = create<PaymentState>()(
         try {
           const paymentMethod = get().paymentMethods.find(pm => pm.id === paymentMethodId);
 
-          if (paymentMethod?.name.toLowerCase().includes("bank transfer")) {
+          // if (paymentMethod?.name.toLowerCase().includes("bank transfer")) {
             const url = new URL(`/${i18n.language}/api/payments/deposit`, window.location.origin);
 
             const response = await fetch(url.toString(), {
@@ -469,8 +507,13 @@ export const usePaymentStore = create<PaymentState>()(
                 "x-init-data": initData || "",
               },
               body: JSON.stringify({
+                userId: user?.telegramId,
                 amount,
                 paymentMethodId,
+                currency: "ETB",
+                reason: "Deposit",
+                txnType: "DEPOSIT",
+                metadata: {},
               }),
             });
 
@@ -481,17 +524,138 @@ export const usePaymentStore = create<PaymentState>()(
             const result = await response.json();
             const { data } = result;
 
-            set({ transactions: data, loading: false });
-          } else {
-            throw new Error("Unsupported payment method");
-          }
+            set({ paymentOrderData: {...data}, processing: false });
+
         } catch (error: any) {
           set({
             depositError: error.message || "Error creating deposit",
-            loading: false,
+            processing: false,
           });
         }
       },
+
+
+      // checkout: async (checkoutData) => {
+      //   set({ processing: true, depositError: null });
+      //   const initData = userStore.getState().initData;
+
+      //   if (!checkoutData) {
+      //     set({ depositError: "No checkout data found. Please start a new deposit.", processing: false });
+      //     return;
+      //   }
+
+      //   try {
+      //     const url = new URL(`/${i18n.language}/api/payments/deposit/checkout`, window.location.origin);
+
+      //     const response = await fetch(url.toString(), {
+      //       method: "POST",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //         "x-init-data": initData || "",
+      //       },
+      //       body: JSON.stringify({...checkoutData}),
+      //     });
+
+      //     if (!response.ok) {
+      //       throw new Error("Failed to complete checkout");
+      //     }
+
+      //     const result = await response.json();
+      //     const { data } = result;
+
+      //     if (result.status === 200){
+      //       set({
+      //         checkoutResult: {...data},
+      //         processing: false,
+      //         depositError: null,
+      //       });
+      //     }else{
+      //       set({
+      //         // checkoutResult: {...data},
+      //         processing: false,
+      //         depositError: result?.error,
+      //       });
+      //     }
+          
+
+
+      //   } catch (error: any) {
+      //     console.error("Checkout error:", error);
+      //     set({
+      //       depositError: error.message || "Error during checkout",
+      //       processing: false,
+      //       checkoutResult: {
+      //         message: error,
+      //         data: "",
+      //         details: "",
+      //         statusCode: "500"
+
+      //       }
+      //     });
+
+      //     // window.location.href = `/${i18n.language}/deposit/checkout/online-result`;
+      //   }
+      // },
+
+
+      checkout: async (checkoutData) => {
+        set({ processing: true, depositError: null });
+
+        const initData = userStore.getState().initData;
+
+        if (!checkoutData) {
+          set({
+            depositError: "No checkout data found. Please start a new deposit.",
+            processing: false,
+          });
+          return;
+        }
+
+        try {
+          const url = new URL(
+            `/${i18n.language}/api/payments/deposit/checkout`,
+            window.location.origin
+          );
+
+          const response = await fetch(url.toString(), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-init-data": initData || "",
+            },
+            body: JSON.stringify(checkoutData),
+          });
+
+          const result: ApiResponse = await response.json();
+
+          if (!result.success) {
+            set({
+              processing: false,
+              depositError:
+                result.message || result.error || "Failed to complete checkout",
+              checkoutResult: result,
+            });
+            return;
+          }
+
+          set({
+            checkoutResult: result,
+            processing: false,
+            depositError: null,
+          });
+        } catch (error: any) {
+          console.error("Checkout error:", error);
+          set({
+            depositError: error.message || "Unexpected error during checkout",
+            processing: false,
+            checkoutResult: {
+              message: error.message,
+              status: 500,
+            },
+          });
+        }
+      },
+
 
       // getPendingDeposits: () => {
       //   let pendingDeposits = 0.00;
@@ -510,38 +674,36 @@ export const usePaymentStore = create<PaymentState>()(
         bankName?: string,
         accountName?: string,
         accountNumber?: string,
-        phoneNumber?: string
+        phoneNumber?: string,
+        currency?: string,
+        txnType?: string,
+        providerPaymentMethodName?: string,
+        withdrawalMode?: string
       ) => {
-        set({ loading: true, withdrawError: null });
+
+        const initData = userStore.getState().initData;
+        if (!initData){
+          set({ processing: false, withdrawError: "User not logged in from telegram!" });
+          return false
+        }
+
+        set({ processing: true, withdrawError: null });
 
         try {
-          const paymentMethod = get().paymentMethods.find(pm => pm.id === paymentMethodId);
-
-          if (!paymentMethod) {
-            throw new Error("Invalid payment method");
-          }
-
-          // Determine request payload based on selected method
-          let payload: Record<string, any> = {
+          // Build payload dynamically based on isMobileMoney
+          const payload: Record<string, any> = {
             paymentMethodId,
             amount,
-          };
+            currency,
+            txnType,
+            providerPaymentMethodName,
 
-          if (paymentMethod.name.toLowerCase().includes("bank transfer")) {
-            if (!bankName || !accountName || !accountNumber) {
-              set({ loading: false, depositError: "Bank details are required for Bank Transfer withdrawals" });
-              throw new Error("Bank name, account name, and account number are required for Bank Transfer");
-            }
-            payload = { ...payload, bankName, accountName, accountNumber };
-          } else if (paymentMethod.name.toLowerCase().includes("addispay")) {
-            if (!phoneNumber) {
-              set({ loading: false, depositError: "Phone number is required for AddisPay withdrawals" });
-              throw new Error("Phone number is required for AddisPay withdrawals");
-            }
-            payload = { ...payload, phoneNumber };
-          } else {
-            throw new Error(`Unsupported payment method: ${paymentMethod.name}`);
-          }
+            phoneNumber,
+            bankName,
+            accountName,
+            accountNumber,
+            withdrawalMode
+          };
 
           const url = new URL(`/${i18n.language}/api/payments/withdraw`, window.location.origin);
 
@@ -549,26 +711,32 @@ export const usePaymentStore = create<PaymentState>()(
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              "x-init-data": initData || ""
             },
             body: JSON.stringify(payload),
           });
 
           if (!response.ok) {
-            throw new Error("Failed to process withdrawal");
+            set({ processing: false, withdrawError: "Failed to process withdrawal" });
+            return false;
           }
 
           const result = await response.json();
           const { data } = result;
 
-          set({ loading: false });
+          set({ processing: false });
+
+          return true;
 
         } catch (error: any) {
           set({
             withdrawError: error.message || "Error processing withdrawal",
-            loading: false,
+            processing: false,
           });
+          return false; // rethrow for calling code if needed
         }
       },
+
 
     }),
     // {

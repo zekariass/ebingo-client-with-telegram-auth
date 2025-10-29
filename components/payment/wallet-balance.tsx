@@ -12,6 +12,7 @@ import { WithdrawDialog } from "./withdraw-dialog"
 import { useState } from "react"
 import { currency } from "@/lib/constant"
 import { TransferDialog } from "./transfer-dialog"
+import { useRouter } from "next/navigation"
 
 export function WalletBalance() {
   const { balance, transactions, loading, setLoading, walletError, setWalletError, fetchWallet, getPendingTransactions } = usePaymentStore()
@@ -19,6 +20,8 @@ export function WalletBalance() {
   const [depositOpen, setDepositOpen] = useState(false)
   const [withdrawOpen, setWithdrawOpen] = useState(false)
   const [transferOpen, setTransferOpen] = useState(false)
+
+  const router = useRouter()
 
   const refreshBalance = useCallback(async (refresh: boolean)=>{
       setLoading(true)
@@ -131,14 +134,14 @@ export function WalletBalance() {
           )}
 
           <div className="grid grid-cols-3 gap-3">
-            <Button onClick={() => setDepositOpen(true)} className="flex items-center gap-2 dark:bg-green-500">
+            <Button onClick={() => router.push(`/deposit`)} className="flex items-center gap-2 dark:bg-green-500">
               {/* <Plus className="h-4 w-4" /> */}
               Deposit
             </Button>
             
             <Button
               variant="outline"
-              onClick={() => setTransferOpen(true)}
+              onClick={() => router.replace('/transfer')}
               disabled={balance.totalAvailableBalance <= 0}
               className="flex items-center gap-2 dark:bg-yellow-500"
             >
@@ -148,7 +151,7 @@ export function WalletBalance() {
 
             <Button
               variant="outline"
-              onClick={() => setWithdrawOpen(true)}
+              onClick={() => router.replace('/withdraw')}
               disabled={balance.totalAvailableBalance <= 0}
               className="flex items-center gap-2 dark:bg-red-500"
             >

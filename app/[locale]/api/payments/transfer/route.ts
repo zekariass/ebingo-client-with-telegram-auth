@@ -1,71 +1,82 @@
-import { NextRequest, NextResponse } from "next/server";
-import type { ApiResponse } from "@/lib/backend/types";
+import { NextRequest, NextResponse } from "next/server"
+import type { ApiResponse } from "@/lib/backend/types"
+import { error } from "console"
 
-const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
+const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!
 
 /**
  * POST /[lang]/api/payments/transfer
- * Body: { amount: number, email: string }
+ * Body: { amount: number, phone: string }
  */
 export async function POST(req: NextRequest) {
   try {
     if (!BACKEND_BASE_URL) {
-      throw new Error("BACKEND_BASE_URL is not defined");
+      throw new Error("BACKEND_BASE_URL is not defined")
     }
 
-    // Read initData from headers
-    const initData = req.headers.get("x-init-data");
+    // 🔹 Read Telegram init data from headers
+    const initData = req.headers.get("x-init-data")
     if (!initData) {
       return NextResponse.json(
         { success: false, error: "Missing x-init-data header" },
         { status: 400 }
-      );
+      )
     }
 
-    // Parse incoming JSON body
-    const { amount, email } = await req.json();
+    // 🔹 Parse JSON request body
+    const { amount, phone } = await req.json()
 
-    if (!amount || !email) {
+    if (!amount || !phone) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields: amount or email" },
+        { success: false, error: "Missing required fields: amount or phone" },
         { status: 400 }
-      );
+      )
     }
 
-    // Forward request to backend API with x-init-data
-    const backendUrl = `${BACKEND_BASE_URL}/api/v1/secured/deposit/transfers`;
+    // 🔹 Validate phone format before forwarding
+    const phoneRegex = /^(?:\+251|0)(7|9)\d{8}$/
+    if (!phoneRegex.test(phone)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid phone number format. Use 09..., 07..., +2519..., or +2517..." },
+        { status: 400 }
+      )
+    }
 
+    // 🔹 Forward to backend
+    const backendUrl = `${BACKEND_BASE_URL}/api/v1/secured/deposit/transfers`
     const response = await fetch(backendUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-init-data": initData, // pass initData for verification
+        "x-init-data": initData,
       },
-      body: JSON.stringify({ amount, email }),
-    });
+      body: JSON.stringify({ amount, phoneNumber: phone }),
+    })
 
-    const result = await response.json();
+    const result = await response.json().catch(() => ({}))
+
 
     if (!response.ok) {
       return NextResponse.json(
-        { success: false, error: result?.error || "Backend transfer failed" },
+        { success: false, error: result?.error || result?.message || "Backend transfer failed" },
         { status: response.status }
-      );
+      )
     }
 
     const responseData: ApiResponse = {
       success: true,
       data: result.data,
       error: null,
-    };
+    }
 
-    return NextResponse.json(responseData, { status: 200 });
+
+    return NextResponse.json(responseData, { status: 200 })
   } catch (error) {
-    console.error("Transfer route error:", error);
+    console.error("Transfer route error:", error)
     const response: ApiResponse = {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
-    };
-    return NextResponse.json(response, { status: 500 });
+    }
+    return NextResponse.json(response, { status: 500 })
   }
 }

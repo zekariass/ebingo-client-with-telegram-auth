@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { RoomFormData } from "../schemas/admin-schemas"
 import i18n from "@/i18n"
-import { Transaction, TransactionStatus, TransactionType } from "../types"
+import { PaymentOrder, Transaction, TransactionStatus, TransactionType } from "../types"
 import { userStore } from "./user-store"
 
 interface AdminStats {
@@ -24,17 +24,6 @@ interface ActiveRoom {
   gameStatus: "waiting" | "playing" | "finished"
 }
 
-// interface Room {
-//   id: string
-//   name: string
-//   fee: number
-//   capacity: number
-//   players: number
-//   minPlayers: number,
-//   status: "OPEN" | "GAME_READY" | "GAME_STARTED" | "CLOSED"
-//   gameStatus: "waiting" | "playing" | "finished"
-//   pattern: string
-// }
 
 export type Room = {
   id: number;                  // Long -> number
@@ -93,10 +82,14 @@ interface AdminStore {
   // Dashboard data
   stats: AdminStats
   activeRooms: ActiveRoom[]
-  deposits: Transaction[]
-  withdrawals: Transaction[]
+  // deposits: PaymentOrder[]
+  // withdrawals: PaymentOrder[]
   systemStatus: "healthy" | "warning" | "error"
   notifications: number
+
+  orders: PaymentOrder[]
+  page: number
+  totalPages: number
 
   // Room management
   rooms: Room[]
@@ -140,10 +133,22 @@ interface AdminStore {
     sortBy: string
   ) => Promise<void>
 
+
+  getPaymentOrders: (
+    type: "WITHDRAWAL" | "DEPOSIT",
+    status: "PENDING" | "AWAITING_APPROVAL",
+    page: number,
+    size: number) => Promise<void>
+  approveOrRejectPaymentOrder: (orderId: number, approve: boolean, reason?: string) => Promise<void>
+
   
 }
 
 export const useAdminStore = create<AdminStore>((set, get) => ({
+
+  orders: [],
+  page: 0,
+  totalPages: 1,
 
 
   // Initial state
@@ -383,29 +388,6 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
     }
   },
 
-  // controlGame: async (gameId, action, data) => {
-  //   set({ isLoading: true, error: null })
-  //   try {
-  //     const response = await fetch(`/api/admin/games/${gameId}/control`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ action, data }),
-  //     })
-
-  //     const result = await response.json()
-
-  //     if (result.success) {
-  //       const { loadGames } = get()
-  //       await loadGames()
-  //     } else {
-  //       set({ error: result.error })
-  //     }
-  //   } catch (error) {
-  //     set({ error: "Failed to control game" })
-  //   } finally {
-  //     set({ isLoading: false })
-  //   }
-  // },
 
   banPlayer: async (playerId) => {
     set({ isLoading: true, error: null })
@@ -451,63 +433,6 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
     }
   },
 
-  
-
-  // loadPlayers: async (search) => {
-  //   set({ isLoading: true, error: null })
-  //   try {
-  //     const url = search ? `/api/admin/players?search=${encodeURIComponent(search)}` : "/api/admin/players"
-  //     const response = await fetch(url)
-  //     const result = await response.json()
-
-  //     if (result.success) {
-  //       set({ players: result.data })
-  //     } else {
-  //       set({ error: result.error })
-  //     }
-  //   } catch (error) {
-  //     set({ error: "Failed to load players" })
-  //   } finally {
-  //     set({ isLoading: false })
-  //   }
-  // },
-
-  // loadGames: async () => {
-  //   set({ isLoading: true, error: null })
-  //   try {
-  //     const response = await fetch("/api/admin/games")
-  //     const result = await response.json()
-
-  //     if (result.success) {
-  //       set({ activeGames: result.data })
-  //     } else {
-  //       set({ error: result.error })
-  //     }
-  //   } catch (error) {
-  //     set({ error: "Failed to load games" })
-  //   } finally {
-  //     set({ isLoading: false })
-  //   }
-  // },
-
-  // loadAnalytics: async () => {
-  //   set({ isLoading: true, error: null })
-  //   try {
-  //     const response = await fetch("/api/admin/analytics")
-  //     const result = await response.json()
-
-  //     if (result.success) {
-  //       set({ analytics: result.data })
-  //     } else {
-  //       set({ error: result.error })
-  //     }
-  //   } catch (error) {
-  //     set({ error: "Failed to load analytics" })
-  //   } finally {
-  //     set({ isLoading: false })
-  //   }
-  // },
-
   getTransactions: async (
   status: TransactionStatus | undefined,
   type: TransactionType | undefined,
@@ -534,17 +459,93 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
       const result = await response.json()
 
       if (result.success) {
-        if (type === "DEPOSIT") {
-          set({ deposits: result.data })
-        } else {
-          set({ withdrawals: result.data })
-        }
+        set({ orders: result.data })
       } else {
         set({ error: result.message || "Failed to fetch transactions" })
       }
     } catch (error) {
       console.error("Error fetching transactions:", error)
       set({ error: "Failed to load transactions" })
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+
+  getPaymentOrders: async (
+    type: "WITHDRAWAL" | "DEPOSIT",
+    status: "PENDING" | "AWAITING_APPROVAL",
+    page = 0,
+    size = 10
+  ) => {
+    const { user, initData } = userStore.getState()
+    const role = user?.role
+
+    if (role !== "ADMIN") return
+
+    set({ isLoading: true, error: null })
+    try {
+      const params = new URLSearchParams({
+        type,
+        status,
+        page: page.toString(),
+        size: size.toString(),
+      })
+
+      const url = `/${i18n.language}/api/admin/payment-orders?${params.toString()}`
+
+      const response = await fetch(url, {
+        headers: {
+          "x-user-role": role,
+          "x-init-data": initData || "",
+        },
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        set({
+          orders: data.data.content,
+          page: data.data.number,
+          totalPages: data.data.totalPages,
+        })
+      } else {
+        set({ error: data.error || "Failed to fetch payment orders" })
+      }
+    } catch (error) {
+      console.error(error)
+      set({ error: "Error fetching payment orders" })
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+
+  approveOrRejectPaymentOrder: async (orderId, approve, reason) => {
+    const { user, initData } = userStore.getState()
+    const role = user?.role
+    if (role !== "ADMIN") return
+
+    set({ isLoading: true, error: null })
+    try {
+      const response = await fetch(`/${i18n.language}/api/admin/payment-orders/approval`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-role": role,
+          "x-init-data": initData || "",
+        },
+        body: JSON.stringify({ orderId, approve, reason }),
+      })
+
+      const result = await response.json()
+
+      if (!result.success) {
+        set({ error: result.error || "Failed to process approval" })
+      }
+    } catch (error) {
+      console.error(error)
+      set({ error: "Error approving/rejecting payment order" })
     } finally {
       set({ isLoading: false })
     }
@@ -591,13 +592,13 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
   },
 
 updateTransaction: (txn: Transaction) => {
-  if (txn.txnType === "DEPOSIT") {
-    const existing = get().deposits.filter(t => t.id !== txn.id)
-    set({ deposits: [...existing, txn] })
-  } else if (txn.txnType === "WITHDRAWAL") {
-    const existing = get().withdrawals.filter(t => t.id !== txn.id)
-    set({ withdrawals: [...existing, txn] }) 
-  }
+  // if (txn.txnType === "DEPOSIT") {
+  //   const existing = get().deposits.filter(t => t.id !== txn.id)
+  //   set({ deposits: [...existing, txn] })
+  // } else if (txn.txnType === "WITHDRAWAL") {
+  //   const existing = get().withdrawals.filter(t => t.id !== txn.id)
+  //   set({ withdrawals: [...existing, txn] }) 
+  // }
 }
 
 

@@ -3,6 +3,8 @@ export interface ApiResponse<T = any> {
   data?: T
   error?: string | null
   status?: number
+  statusCode?: number
+  message?: string
 }
 
 export interface GamePlayer {

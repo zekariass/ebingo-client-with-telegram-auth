@@ -181,7 +181,7 @@ const sidebarItems = [
   // { title: "Games", href: "/admin/games", icon: Settings },
   // { title: "Manual Calling", href: "/admin/manual-calling", icon: Mic },
   // { title: "Players", href: "/admin/players", icon: Users },
-  { title: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+  // { title: "Analytics", href: "/admin/analytics", icon: BarChart3 },
 ]
 
 interface AdminSidebarProps {

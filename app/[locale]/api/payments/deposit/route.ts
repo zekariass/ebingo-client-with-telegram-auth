@@ -8,6 +8,7 @@ const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
  * Body: { amount: number, paymentMethodId: number }
  */
 export async function POST(req: NextRequest) {
+
   try {
     if (!BACKEND_BASE_URL) {
       throw new Error("BACKEND_BASE_URL is not defined");
@@ -22,9 +23,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
+
+
     // Parse request body
     const body = await req.json();
-    const { amount, paymentMethodId } = body;
+    const {
+       userId, amount, paymentMethodId, currency, txnType, reason, metadata } = body;
 
     if (!amount || !paymentMethodId) {
       return NextResponse.json(
@@ -35,14 +39,14 @@ export async function POST(req: NextRequest) {
 
     // Forward request to backend with x-init-data
     const response = await fetch(
-      `${BACKEND_BASE_URL}/api/v1/secured/transactions/deposit/initiate-offline`,
+      `${BACKEND_BASE_URL}/api/v1/secured/payments/order`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-init-data": initData, // verification
+          "x-init-data": initData, 
         },
-        body: JSON.stringify({ amount, paymentMethodId }),
+        body: JSON.stringify({userId, amount, paymentMethodId, currency, txnType, reason, metadata }),
       }
     );
 

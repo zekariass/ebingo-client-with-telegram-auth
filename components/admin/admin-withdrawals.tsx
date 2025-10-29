@@ -1,209 +1,255 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useForm, Controller } from "react-hook-form"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Edit, Trash2 } from "lucide-react"
 import { useAdminStore } from "@/lib/stores/admin-store"
-import { TransactionStatus } from "@/lib/types"
-import { getStatusColor } from "@/lib/constant"
-import TransactionsTable from "./admin-transactions"
+import { Button } from "@/components/ui/button"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Loader2, CheckCircle2, XCircle, ChevronLeft, ChevronRight } from "lucide-react"
+import { toast } from "sonner"
+import { motion } from "framer-motion"
 
-type EditFormData = { status: TransactionStatus }
+export default function AdminPaymentOrdersPage() {
+  const {
+    orders,
+    page,
+    totalPages,
+    isLoading,
+    error,
+    getPaymentOrders,
+    approveOrRejectPaymentOrder,
+  } = useAdminStore()
 
-export default function AdminWithdrawals() {
-//   const { withdrawals, getTransactions, changeTransactionStatus, isLoading } = useAdminStore()
-  const { withdrawals} = useAdminStore()
-  return <TransactionsTable transactions={withdrawals} txnType="WITHDRAWAL"/>
+  const [type, setType] = useState<"DEPOSIT" | "WITHDRAWAL">("WITHDRAWAL")
+  const [status, setStatus] = useState<"PENDING" | "AWAITING_APPROVAL">("PENDING")
 
-//   const [page, setPage] = useState(0)
-//   const [size, setSize] = useState(2)
-//   const [sortBy, setSortBy] = useState<"createdat" | "txnamount">("createdat")
-//   const [filterStatus, setFilterStatus] = useState<TransactionStatus>("PENDING")
-//   const [editingTxn, setEditingTxn] = useState<typeof withdrawals[0] | null>(null)
-//   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  useEffect(() => {
+    getPaymentOrders(type, status, 0, 10)
+  }, [type, status])
 
-//   const { control, handleSubmit, reset } = useForm<EditFormData>({
-//     defaultValues: { status: "PENDING" },
-//   })
+  useEffect(() => {
+    if (error) toast.error(error)
+  }, [error])
 
-//   const statuses: TransactionStatus[] = ["PENDING", "AWAITING_APPROVAL", "COMPLETED", "FAILED", "CANCELLED", "REJECTED"]
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 0 && newPage < totalPages) getPaymentOrders(type, status, newPage, 10)
+  }
 
-//   // Fetch withdrawals whenever filters/pagination/sort change
-//   useEffect(() => {
-//     getTransactions(filterStatus, "WITHDRAWAL", page, size, sortBy)
-//   }, [filterStatus, page, size, sortBy, getTransactions])
+  const handleApprove = async (id: number) => {
+    await approveOrRejectPaymentOrder(id, true)
+    toast.success("Order approved")
+  }
 
-//   const handleEdit = (txn: typeof withdrawals[0]) => {
-//     setEditingTxn(txn)
-//     reset({ status: txn.status })
-//     setIsDialogOpen(true)
-//   }
+  const handleReject = async (id: number) => {
+    const reason = prompt("Enter reason for rejection (optional):") || ""
+    await approveOrRejectPaymentOrder(id, false, reason)
+    toast.info("Order rejected")
+  }
 
-//   const onSubmit = async (data: EditFormData) => {
-//     if (editingTxn) {
-//         await changeTransactionStatus(editingTxn.txnRef, data.status)
-//         setEditingTxn(null)
-//         setIsDialogOpen(false)
-//     }
-//   }
+  return (
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
+        <h1 className="text-2xl font-bold tracking-tight">Payment Orders</h1>
 
-//   const handleDelete = (txnId: number) => {
-//     if (confirm("Are you sure you want to delete this withdrawal?")) {
-//       // Optional: implement delete in store
-//     }
-//   }
+        {/* Filters */}
+        <div className="flex flex-wrap gap-2">
+          <select
+            className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-xl px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            value={type}
+            onChange={(e) => setType(e.target.value as any)}
+          >
+            <option value="DEPOSIT">Deposits</option>
+            <option value="WITHDRAWAL">Withdrawals</option>
+          </select>
 
-//   return (
-//     <div className="space-y-6">
-//       <Card>
-//         <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-//           {/* Filters + Sort */}
-//             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:w-auto">
-//             {/* Filter */}
-//             <div className="flex-1 sm:w-auto">
-//                 <select
-//                     className="w-full px-2 py-1 border rounded bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100"
-//                     value={filterStatus}
-//                     onChange={(e) => setFilterStatus(e.target.value as TransactionStatus)}
-//                     >
-//                     <option value="">All Statuses</option>
-//                     {statuses.map((s) => (
-//                         <option key={s} value={s}>{s.replaceAll("_", " ")}</option>
-//                     ))}
-//                     </select>
+          <select
+            className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-xl px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            value={status}
+            onChange={(e) => setStatus(e.target.value as any)}
+          >
+            <option value="PENDING">Pending</option>
+            <option value="AWAITING_APPROVAL">Awaiting Approval</option>
+          </select>
+        </div>
+      </div>
 
-//             </div>
+      {/* Table Container */}
+      <div className="rounded-2xl border bg-white dark:bg-gray-900 overflow-hidden shadow-sm">
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader className="bg-gray-50 dark:bg-gray-800 sticky top-0">
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>User ID</TableHead>
+                <TableHead>Txn Ref</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead className="text-center">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-gray-500" />
+                  </TableCell>
+                </TableRow>
+              ) : orders.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-6 text-gray-500">
+                    No {type.toLowerCase()}s with status {status.toLowerCase()} found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                orders.map((order) => (
+                  <motion.tr
+                    key={order.id}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition"
+                  >
+                    <TableCell>{order.id}</TableCell>
+                    <TableCell>{order.userId}</TableCell>
+                    <TableCell className="font-mono text-sm text-gray-700 dark:text-gray-300">{order.txnRef}</TableCell>
+                    <TableCell>{order.txnType}</TableCell>
+                    <TableCell>{order.amount} {order.currency}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          order.status === "PENDING"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : order.status === "COMPLETED"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {order.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>{new Date(order.createdAt ?? "").toLocaleString()}</TableCell>
+                    <TableCell className="flex gap-2 justify-center">
+                      <Button
+                        size="sm"
+                        onClick={() => handleApprove(order?.id ?? 0)}
+                        disabled={isLoading}
+                        className="bg-green-600 hover:bg-green-700 text-white transition"
+                      >
+                        <CheckCircle2 className="h-4 w-4 mr-1" /> Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleReject(order.id ?? 0)}
+                        disabled={isLoading}
+                        className="bg-red-600 hover:bg-red-700 text-white transition"
+                      >
+                        <XCircle className="h-4 w-4 mr-1" /> Reject
+                      </Button>
+                    </TableCell>
+                  </motion.tr>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-//             {/* Sort */}
-//             <div className="flex-1 sm:w-auto max-w-[95vw]">
-//                 <select
-//                     className="w-full px-2 py-1 border rounded bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100" 
-//                     value={sortBy}
-//                     onChange={(e) =>
-//                     setSortBy(e.target.value as "createdat" | "txnamount")
-//                     }
-//                 >
-//                     <option value="createdat">Created At</option>
-//                     <option value="txnamount">Amount</option>
-//                 </select>
-//                 </div>
+        {/* Mobile View */}
+        <div className="md:hidden divide-y">
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
+            </div>
+          ) : orders.length === 0 ? (
+            <div className="text-center py-6 text-gray-500">
+              No {type.toLowerCase()}s with status {status.toLowerCase()} found
+            </div>
+          ) : (
+            orders.map((order) => (
+              <motion.div
+                key={order.id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="p-4"
+              >
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="font-semibold">Order #{order.id}</span>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      order.status === "PENDING"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : order.status === "COMPLETED"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {order.status}
+                  </span>
+                </div>
+                <div className="text-gray-600 text-sm space-y-1">
+                  <div><strong>User:</strong> {order.userId}</div>
+                  <div><strong>Txn Ref:</strong> {order.txnRef}</div>
+                  <div><strong>Type:</strong> {order.txnType}</div>
+                  <div><strong>Amount:</strong> {order.amount} {order.currency}</div>
+                  <div><strong>Date:</strong> {new Date(order.createdAt ?? "").toLocaleString()}</div>
+                </div>
+                <div className="flex gap-2 justify-end mt-3">
+                  <Button
+                    size="sm"
+                    onClick={() => handleApprove(order?.id ?? 0)}
+                    disabled={isLoading}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <CheckCircle2 className="h-4 w-4 mr-1" /> Approve
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => handleReject(order.id ?? 0)}
+                    disabled={isLoading}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    <XCircle className="h-4 w-4 mr-1" /> Reject
+                  </Button>
+                </div>
+              </motion.div>
+            ))
+          )}
+        </div>
+      </div>
 
-//             </div>
+      {/* Pagination */}
+      <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-3">
+        <Button
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 0 || isLoading}
+          variant="outline"
+          className="flex items-center gap-1"
+        >
+          <ChevronLeft className="h-4 w-4" /> Previous
+        </Button>
 
-//         </CardHeader>
+        <span className="text-sm text-gray-600">
+          Page {page + 1} of {totalPages}
+        </span>
 
-//         <CardContent className="p-0 sm:p-6">
-//             {isLoading ? 
-//             (<h2 className="text-center">Loading transactions...</h2>):
-//             (<>
-//             <div className="overflow-x-auto">
-//             <Table>
-//               <TableHeader>
-//                 <TableRow>
-//                   <TableHead>ID</TableHead>
-//                   <TableHead>Player ID</TableHead>
-//                   <TableHead>Payment Method</TableHead>
-//                   <TableHead>Type</TableHead>
-//                   <TableHead>Amount</TableHead>
-//                   <TableHead>Status</TableHead>
-//                   <TableHead>Ref</TableHead>
-//                   <TableHead>Created At</TableHead>
-//                   <TableHead>Actions</TableHead>
-//                 </TableRow>
-//               </TableHeader>
-//               <TableBody>
-//                 {withdrawals.length === 0 ? (
-//                   <TableRow>
-//                     <TableCell colSpan={9} className="text-center py-6 text-muted-foreground">
-//                       No withdrawals found
-//                     </TableCell>
-//                   </TableRow>
-//                 ) : (
-//                   withdrawals.map((txn) => (
-//                     <TableRow key={txn.id}>
-//                       <TableCell>{txn.id}</TableCell>
-//                       <TableCell>{txn.playerId}</TableCell>
-//                       <TableCell>{txn.paymentMethodId}</TableCell>
-//                       <TableCell>{txn.txnType}</TableCell>
-//                       <TableCell>${txn.txnAmount}</TableCell>
-//                       <TableCell>
-//                         <Badge className={`text-xs px-2 py-1 rounded-full ${getStatusColor(txn.status)}`}>
-//                           {txn.status.replaceAll("_", " ")}
-//                         </Badge>
-//                       </TableCell>
-//                       <TableCell>{txn.txnRef}</TableCell>
-//                       <TableCell>{new Date(txn.createdAt).toLocaleString()}</TableCell>
-//                       <TableCell className="flex gap-1">
-//                         <Button size="sm" variant="outline" onClick={() => handleEdit(txn)}>
-//                           <Edit className="h-3 w-3" />
-//                         </Button>
-//                         <Button size="sm" variant="outline" onClick={() => handleDelete(txn.id)}>
-//                           <Trash2 className="h-3 w-3" />
-//                         </Button>
-//                       </TableCell>
-//                     </TableRow>
-//                   ))
-//                 )}
-//               </TableBody>
-//             </Table>
-//           </div>
-
-//           {/* Pagination */}
-//           <div className="flex justify-between items-center mt-4 flex-wrap gap-2 px-3">
-//             <Button
-//               size="sm"
-//               onClick={() => setPage((p) => Math.max(p - 1, 0))}
-//               disabled={page === 0}
-//             >
-//               Previous
-//             </Button>
-//             <span>Page {page + 1}</span>
-//             <Button size="sm" onClick={() => setPage((p) => p + 1)} disabled={withdrawals.length == 0}>
-//               Next
-//             </Button>
-//           </div>
-//           </>
-        
-//         )}
-//         </CardContent>
-//       </Card>
-
-//       {/* Edit Status Dialog */}
-//       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-//         <DialogContent className="w-[95vw] max-w-md mx-auto">
-//           <DialogHeader>
-//             <DialogTitle>Edit Withdrawal Status</DialogTitle>
-//           </DialogHeader>
-//           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-//             <Controller
-//               name="status"
-//               control={control}
-//               render={({ field }) => (
-//                 <div className="flex flex-col gap-1">
-//                   <label className="text-sm font-medium">Status</label>
-//                   <select {...field} className="w-full px-2 py-1 border rounded bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-//                     {statuses.map((s) => (
-//                       <option key={s} value={s}>{s.replaceAll("_", " ")}</option>
-//                     ))}
-//                   </select>
-//                 </div>
-//               )}
-//             />
-//             <DialogFooter className="flex justify-end gap-2">
-//               <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isLoading}>
-//                 Cancel
-//               </Button>
-//               {!isLoading && <Button type="submit">Save</Button>}
-//               {isLoading && <Button type="submit" disabled>Saving...</Button>}
-//             </DialogFooter>
-//           </form>
-//         </DialogContent>
-//       </Dialog>
-//     </div>
-//   )
+        <Button
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page >= totalPages - 1 || isLoading}
+          variant="outline"
+          className="flex items-center gap-1"
+        >
+          Next <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  )
 }

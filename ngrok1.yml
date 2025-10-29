@@ -1,7 +1,7 @@
 version: 3
 
 agent:
-  authtoken: 34O25EKzxyrjTfOFrcjxz1lBjvv_2SXyu56DcLW9eQqY24PM4
+  authtoken: 34f8vQKOvbRiH4dsm1hzPHZC9VA_3L3jiAUBBKc8EzdUTQ3JQ
 
 tunnels:
   frontend:

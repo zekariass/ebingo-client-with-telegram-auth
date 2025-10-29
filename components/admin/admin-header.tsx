@@ -32,10 +32,10 @@ export function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
             <Menu className="h-4 w-4" />
           </Button>
 
-          <h2 className="text-base sm:text-lg font-semibold truncate">{t("systemStatus", "System Status")}</h2>
-          <Badge variant={systemStatus === "healthy" ? "default" : "destructive"} className="text-xs">
+           <h2 className="text-base sm:text-lg font-semibold truncate">Dashboard</h2>
+          {/*<Badge variant={systemStatus === "healthy" ? "default" : "destructive"} className="text-xs">
             {t(`status.${systemStatus}`, systemStatus)}
-          </Badge>
+          </Badge> */}
         </div>
 
         <div className="flex items-center gap-1 sm:gap-2">
@@ -48,14 +48,14 @@ export function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
             <RefreshCw className="h-4 w-4" />
           </Button>
 
-          <Button variant="outline" size="sm" className="relative bg-transparent">
+          {/* <Button variant="outline" size="sm" className="relative bg-transparent">
             <Bell className="h-4 w-4" />
             {notifications > 0 && (
               <Badge className="absolute -top-2 -right-2 h-4 w-4 sm:h-5 sm:w-5 rounded-full p-0 text-xs flex items-center justify-center">
                 {notifications}
               </Badge>
             )}
-          </Button>
+          </Button> */}
 
           <div className="hidden sm:block">
             {/* <LanguageSwitcher /> */}

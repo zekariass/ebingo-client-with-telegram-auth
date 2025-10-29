@@ -1,24 +1,24 @@
-"use client"
+// "use client"
 
-import { useEffect, useState } from "react"
-import { useForm, Controller } from "react-hook-form"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Edit, Trash2 } from "lucide-react"
-import { useAdminStore } from "@/lib/stores/admin-store"
-import { TransactionStatus } from "@/lib/types"
-import { getStatusColor } from "@/lib/constant"
-import TransactionsTable from "./admin-transactions"
+// import { useEffect, useState } from "react"
+// import { useForm, Controller } from "react-hook-form"
+// import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+// import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+// import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+// import { Button } from "@/components/ui/button"
+// import { Badge } from "@/components/ui/badge"
+// import { Edit, Trash2 } from "lucide-react"
+// import { useAdminStore } from "@/lib/stores/admin-store"
+// import { TransactionStatus } from "@/lib/types"
+// import { getStatusColor } from "@/lib/constant"
+// import TransactionsTable from "./admin-transactions"
 
-type EditFormData = { status: TransactionStatus }
+// type EditFormData = { status: TransactionStatus }
 
-export default function AdminDeposits() {
-//   const { deposits, getTransactions, isLoading } = useAdminStore()
-  const { deposits } = useAdminStore()
-  return <TransactionsTable transactions={deposits} txnType="DEPOSIT"/>
+// export default function AdminDeposits() {
+// //   const { deposits, getTransactions, isLoading } = useAdminStore()
+//   const { deposits } = useAdminStore()
+//   return <TransactionsTable transactions={deposits} txnType="DEPOSIT"/>
 
 //   const [page, setPage] = useState(0)
 //   const [size, setSize] = useState(10)
@@ -200,4 +200,4 @@ export default function AdminDeposits() {
 //       </Dialog>
 //     </div>
 //   )
-}
+// }

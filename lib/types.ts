@@ -1,3 +1,85 @@
+// export interface PaymentInitiateRequest {
+//    uuid: string
+//    phoneNumber: String
+//    encryptedTotalAmount: number
+//    merchantName: string
+//    selectedService: string
+//    selectedBank: string
+// }
+
+
+
+// ---------- Types ----------
+export interface ProviderPaymentMethod {
+  name: string;
+  fee: number;
+  photo: string;
+  service: string;
+  catagory: string;
+  order: number;
+  institution_bic?: string;
+}
+
+export interface CheckData {
+  merchant_name: string;
+  uncomissioned_amount: number;
+  total_amount: number;
+  is_commissioned: boolean;
+  merchant_id: string;
+  status: boolean;
+  cancel_url: string;
+  msg: string;
+  is_phone_restricted: boolean;
+  default_lang: string;
+  phone_number: string;
+  payment_methods: ProviderPaymentMethod[];
+  bank: ProviderPaymentMethod[];
+  HasMerchantAccount: boolean;
+  escrow_enabled: boolean;
+  addispay_transaction_id: string;
+  redirect_url: string;
+  order_reason: string;
+  commission: string;
+  [key: string]: any;
+}
+
+
+ export interface CheckoutData {
+    uuid: string,
+    phoneNumber: string,
+    encryptedTotalAmount: number,
+    merchantName: string,
+    selectedService: string,
+    selectedBank: string,
+};
+
+export interface CheckoutResponse {
+   message?: string
+   details?: string
+   status?: number
+   data?: string
+}
+
+export interface PaymentOrderData {
+  orderId: number;
+  txnRef: string;
+  status: string;
+  amount: number;
+  providerUuid: string;
+  checkoutUrl: string;
+  instructionsUrl?: string | null;
+  paymentMethodId?: number
+  checkData: {
+    message: string;
+    details: string;
+    status_code: number;
+    data: CheckData;
+    commission: string;
+  };
+}
+
+
+
 export interface UserProfile {
   id: number;
   telegramId: number;
@@ -10,20 +92,20 @@ export interface UserProfile {
   updatedAt: string;
 }
 
-export type ApiResponse<T> = {
-  success: boolean;
-  statusCode: number;
-  message?: string;
-  error?: string;
-  errors?: Record<string, string>;
-  path?: string;
-  data?: T;
-  timestamp?: string;
-};
+// export type ApiResponse<T> = {
+//   success: boolean;
+//   statusCode: number;
+//   message?: string;
+//   error?: string;
+//   errors?: Record<string, string>;
+//   path?: string;
+//   data?: T;
+//   timestamp?: string;
+// };
 
 
 
-export type TransactionType = "DEPOSIT" | "WITHDRAWAL" | "DISPUTE";
+export type TransactionType = "DEPOSIT" | "WITHDRAWAL" | "REFUND";
 export type TransactionStatus = "PENDING" | "AWAITING_APPROVAL" | "COMPLETED" | "FAILED" | "CANCELLED" | "REJECTED";
 
 // export interface Transaction {
@@ -53,6 +135,45 @@ export interface Transaction {
   createdAt: string; // ISO timestamp
   updatedAt: string; // ISO timestamp
 }
+
+
+export enum PaymentOrderStatus {
+  PENDING = "PENDING",
+  INITIATED = "INITIATED",
+  AWAITING_APPROVAL = "AWAITING_APPROVAL",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+  CANCELLED = "CANCELLED",
+  REJECTED = "REJECTED",
+}
+
+// export enum TransactionType {
+//   DEPOSIT = "DEPOSIT",
+//   WITHDRAWAL = "WITHDRAWAL",
+// }
+
+
+
+export interface PaymentOrder {
+  id: number;
+  userId: number;
+  txnRef: string;
+  phoneNumber?: string;
+  providerOrderRef?: string | null; // null if offline
+  amount: string; // BigDecimal -> string to preserve precision
+  currency: string;
+  status: PaymentOrderStatus;
+  reason?: string;
+  paymentMethodId: number;
+  instructionsUrl?: string | null;
+  txnType: TransactionType;
+  nonce: string;
+  metaData?: string | null;
+  approvedBy?: number | null;
+  createdAt?: string; // Instant -> ISO string
+  updatedAt?: string; // Instant -> ISO string
+}
+
 
 
 export enum GameTransactionType {
@@ -87,6 +208,11 @@ export interface PaymentMethod {
   name: string;
   description?: string;
   isDefault: boolean;
+  isOnline: boolean;
+  isMobileMoney: boolean
+  instructionUrl: string;
+  logoUrl: string;
+  code: string
 }
 
 export interface WalletBalance {
