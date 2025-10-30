@@ -25,7 +25,6 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
   const removeMarkedNumberFromCard  = useGameStore(state => state.removeMarkedNumberFromCard)
 
   const enterRoom = useCallback(() => {
-    alert(roomId + ' user: '+ user?.id)
     if (!socket || !roomId || !user?.id) return
     socket.send({
       type: "room.getGameStateRequest",
