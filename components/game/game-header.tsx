@@ -1,89 +1,6 @@
-// "use client"
-
-// import { Button } from "@/components/ui/button"
-// import { ArrowLeft, Wifi, WifiOff } from "lucide-react"
-// import { useRouter } from "next/navigation"
-// import type { Room } from "@/lib/types"
-// import { useGameStore } from "@/lib/stores/game-store"
-// import { useRoomStore } from "@/lib/stores/room-store"
-
-// interface GameHeaderProps {
-//   room: Room | undefined | null
-//   connected: boolean
-// }
-
-// export function GameHeader({ room, connected }: GameHeaderProps) {
-//   const router = useRouter()
-//   const game = useGameStore(state => state.game)
-//   const currentRoom = useRoomStore(state => state.room)
-
-//   return (
-//     <header className="bg-card border-b px-4 py-3">
-//       <div className="container mx-auto flex items-center justify-between">
-       
-//         <div className="flex flex-row">
-//           {[1, 2, 3, 4].map((item) => {
-//             if (item === 1)
-//               return (
-//                 <div key={item} className="mr-1 px-2 bg-blue-600 rounded-xs">
-//                   <div className="text-center">Game Id</div>
-//                   <div className="text-center"># {game.gameId}</div>
-//                 </div>
-//               );
-
-//             if (item === 2)
-//               return (
-//                 <div key={item} className="mr-1 px-2 bg-red-600 rounded-xs">
-//                   <div className="text-center">Bet</div>
-//                   <div className="text-center">Br {currentRoom?.entryFee}</div>
-//                 </div>
-//               );
-
-//             if (item === 3)
-//               return (
-//                 <div key={item} className="mr-1 px-2 bg-green-600 rounded-xs">
-//                   <div className="text-center">Prize</div>
-//                   <div className="text-center">
-//                     Br {room ? game.userSelectedCards.length * room?.entryFee * 0.75: 0}
-//                   </div>
-//                 </div>
-//               );
-
-//             if (item === 4)
-//               return (
-//                 <div key={item} className="mr-1 px-2 bg-yellow-600 rounded-xs">
-//                   <div className="text-center">Players</div>
-//                   <div className="text-center">{game.joinedPlayers.length}</div>
-//                 </div>
-//               );
-
-//             return null;
-//           })}
-//         </div>
-
-
-
-//         <div className="flex items-center gap-2 bg-white rounded-xs m-1 p-2">
-//           {connected ? (
-//             <div className="flex items-center gap-1 text-green-600">
-//               <Wifi className="h-4 w-4" />
-//               <span className="text-xs hidden sm:inline">Connected</span>
-//             </div>
-//           ) : (
-//             <div className="flex items-center gap-1 text-red-600">
-//               <WifiOff className="h-4 w-4" />
-//               <span className="text-xs hidden sm:inline">Disconnected</span>
-//             </div>
-//           )}
-//         </div>
-//       </div>
-//     </header>
-//   )
-// }
-
 "use client"
 
-import { Bell, EarIcon, EarOffIcon, Wifi, WifiOff } from "lucide-react"
+import {  EarIcon, EarOffIcon } from "lucide-react"
 import { useGameStore } from "@/lib/stores/game-store"
 import { useRoomStore } from "@/lib/stores/room-store"
 import type { Room } from "@/lib/types"
@@ -130,49 +47,90 @@ export function GameHeader({ room, connected }: GameHeaderProps) {
   // alert(commisionRate)
 
   return (
-    <header className={`bg-card border-1 px-4 py-2 ${connected ? "border-green-500" : "border-red-500"}`}>
-      <div className="container flex items-center justify-between gap-2 whitespace-nowrap">
-        {/* Stats */}
-        <div className="flex gap-2">
-          {stats.map((stat, idx) => (
-            <div
-              key={idx}
-              className={`${stat.bg} text-white px-3 py-1 rounded-md text-center min-w-[60px]`}
-            >
-              <div className="text-xs font-medium">{stat.label}</div>
-              <div className="text-xs">{stat.value}</div>
-            </div>
-          ))}
-        </div>
+    // <header className={`bg-card border-1 px-4 py-2 ${connected ? "border-green-500" : "border-red-500"}`}>
+    //   <div className="container flex items-center justify-between gap-2 whitespace-nowrap">
+    //     {/* Stats */}
+    //     <div className="flex gap-2">
+    //       {stats.map((stat, idx) => (
+    //         <div
+    //           key={idx}
+    //           className={`${stat.bg} text-white px-3 py-1 rounded-md text-center min-w-[60px]`}
+    //         >
+    //           <div className="text-xs font-medium">{stat.label}</div>
+    //           <div className="text-xs">{stat.value}</div>
+    //         </div>
+    //       ))}
+    //     </div>
 
         
-        <div className="bg-yellow-500 px-3 py-1 rounded-md min-w-[60px] flex items-center justify-center">
-          <div onClick={() => setVoiceOn(!voiceOn)} className="cursor-pointer flex flex-col items-center">
-            {voiceOn ? (
-              <div className="text-blue-500 flex flex-col items-center">
-                <EarIcon className="w-4 h-4" />
-                <p className="text-xs">Mute</p>
-              </div>
-            ) : (
-              <div className="text-red-500 flex flex-col items-center">
-                <EarOffIcon className="w-4 h-4" />
-                <p className="text-xs">Unmute</p>
-              </div>
-            )}
-          </div>
-        </div>
+    //     <div className="bg-yellow-500 px-3 py-1 rounded-md min-w-[60px] flex items-center justify-center">
+    //       <div onClick={() => setVoiceOn(!voiceOn)} className="cursor-pointer flex flex-col items-center">
+    //         {voiceOn ? (
+    //           <div className="text-blue-500 flex flex-col items-center">
+    //             <EarIcon className="w-4 h-4" />
+    //             <p className="text-xs">Mute</p>
+    //           </div>
+    //         ) : (
+    //           <div className="text-red-500 flex flex-col items-center">
+    //             <EarOffIcon className="w-4 h-4" />
+    //             <p className="text-xs">Unmute</p>
+    //           </div>
+    //         )}
+    //       </div>
+    //     </div>
 
 
-        {/* Connection Status */}
-        {/* <div
-          className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium ${
-            connected ? "text-green-600 bg-white-950" : "text-red-600 bg-white"
-          }`}
+    //     {/* Connection Status */}
+    //     {/* <div
+    //       className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium ${
+    //         connected ? "text-green-600 bg-white-950" : "text-red-600 bg-white"
+    //       }`}
+    //     >
+    //       {connected ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
+    //       <span className="hidden sm:inline">{connected ? "Connected" : "Disconnected"}</span>
+    //     </div> */}
+    //   </div>
+    // </header>
+
+
+
+    <header className={`bg-card border px-2 sm:px-4 py-2 ${connected ? "border-green-500" : "border-red-500"}`}>
+  <div className="container mx-auto flex flex-wrap items-center justify-between gap-2 sm:gap-4">
+    
+    {/* Stats */}
+    <div className="flex flex-wrap gap-2 justify-center sm:justify-start flex-grow">
+      {stats.map((stat, idx) => (
+        <div
+          key={idx}
+          className={`${stat.bg} text-white px-2 sm:px-3 py-1 rounded-md text-center flex flex-col items-center min-w-[60px] sm:min-w-[80px]`}
         >
-          {connected ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
-          <span className="hidden sm:inline">{connected ? "Connected" : "Disconnected"}</span>
-        </div> */}
-      </div>
-    </header>
+          <div className="text-[10px] sm:text-xs font-medium">{stat.label}</div>
+          <div className="text-[10px] sm:text-xs">{stat.value}</div>
+        </div>
+      ))}
+    </div>
+
+    {/* Voice Toggle */}
+    <div className="bg-yellow-500 px-2 sm:px-3 py-1 rounded-md flex items-center justify-center">
+      <button
+        onClick={() => setVoiceOn(!voiceOn)}
+        className="cursor-pointer flex flex-col items-center"
+      >
+        {voiceOn ? (
+          <div className="text-blue-700 flex flex-col items-center">
+            <EarIcon className="w-4 h-4" />
+            <p className="text-[10px] sm:text-xs">Mute</p>
+          </div>
+        ) : (
+          <div className="text-red-700 flex flex-col items-center">
+            <EarOffIcon className="w-4 h-4" />
+            <p className="text-[10px] sm:text-xs">Unmute</p>
+          </div>
+        )}
+      </button>
+    </div>
+  </div>
+</header>
+
   )
 }
