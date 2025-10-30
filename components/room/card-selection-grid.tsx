@@ -38,6 +38,17 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const totalCards = allCardIds?.length || 0
   const totalPages = Math.ceil(totalCards / cardsPerPage)
 
+
+  const [rotating, setRotating] = useState(false)
+
+  const handleClick = () => {
+    setRotating(true)
+    handleRefresh?.()
+    // Stop rotation after 1 second
+    setTimeout(() => setRotating(false), 1000)
+  }
+
+
   useEffect(() => {
       enterRoom();
   }, [enterRoom, connected]);
@@ -159,7 +170,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
 
          
         </div>
-        <div className="">
+        {/* <div className="">
             {!paginatedCards.length && (
               <>
                 <RefreshCwIcon
@@ -171,6 +182,24 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
               </>
             )}
 
+          </div> */}
+
+
+          <div className="flex flex-col items-center justify-center py-6">
+            {!paginatedCards.length && (
+              <>
+                <RefreshCwIcon
+                  onClick={handleClick}
+                  size={48} // bigger icon
+                  className={`cursor-pointer text-green-700 transition-transform duration-700 ${
+                    rotating ? "rotate-[360deg]" : ""
+                  }`}
+                />
+                <p className="text-center text-green-700 mt-2 text-sm sm:text-base">
+                  Refresh to see cards
+                </p>
+              </>
+            )}
           </div>
 
         {/* {userSelectedCardsIds.length >= maxCards && (

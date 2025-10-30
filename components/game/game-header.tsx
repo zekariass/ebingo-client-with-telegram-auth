@@ -94,43 +94,47 @@ export function GameHeader({ room, connected }: GameHeaderProps) {
 
 
 
-    <header className={`bg-card border px-2 sm:px-4 py-2 ${connected ? "border-green-500" : "border-red-500"}`}>
-  <div className="container mx-auto flex flex-wrap items-center justify-between gap-2 sm:gap-4">
-    
-    {/* Stats */}
-    <div className="flex flex-wrap gap-2 justify-center sm:justify-start flex-grow">
-      {stats.map((stat, idx) => (
-        <div
-          key={idx}
-          className={`${stat.bg} text-white px-2 sm:px-3 py-1 rounded-md text-center flex flex-col items-center min-w-[60px] sm:min-w-[80px]`}
-        >
-          <div className="text-[10px] sm:text-xs font-medium">{stat.label}</div>
-          <div className="text-[10px] sm:text-xs">{stat.value}</div>
-        </div>
-      ))}
-    </div>
-
-    {/* Voice Toggle */}
-    <div className="bg-yellow-500 px-2 sm:px-3 py-1 rounded-md flex items-center justify-center">
-      <button
-        onClick={() => setVoiceOn(!voiceOn)}
-        className="cursor-pointer flex flex-col items-center"
+    <header
+        className={`bg-card border px-3 sm:px-4 py-2 ${
+          connected ? "border-green-500" : "border-red-500"
+        }`}
       >
-        {voiceOn ? (
-          <div className="text-blue-700 flex flex-col items-center">
-            <EarIcon className="w-4 h-4" />
-            <p className="text-[10px] sm:text-xs">Mute</p>
+        <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 mx-auto max-w-screen-xl">
+          {/* Stats */}
+          <div className="flex flex-wrap gap-2 justify-center sm:justify-start flex-grow">
+            {stats.map((stat, idx) => (
+              <div
+                key={idx}
+                className={`${stat.bg} text-white px-2 sm:px-3 py-1 rounded-md text-center flex flex-col items-center min-w-[60px] sm:min-w-[80px]`}
+              >
+                <div className="text-[10px] sm:text-xs font-medium">{stat.label}</div>
+                <div className="text-[10px] sm:text-xs">{stat.value}</div>
+              </div>
+            ))}
           </div>
-        ) : (
-          <div className="text-red-700 flex flex-col items-center">
-            <EarOffIcon className="w-4 h-4" />
-            <p className="text-[10px] sm:text-xs">Unmute</p>
+
+          {/* Voice Toggle */}
+          <div className="bg-yellow-500 px-2 sm:px-3 py-1 rounded-md flex items-center justify-center">
+            <button
+              onClick={() => setVoiceOn(!voiceOn)}
+              className="cursor-pointer flex flex-col items-center"
+            >
+              {voiceOn ? (
+                <div className="text-blue-700 flex flex-col items-center">
+                  <EarIcon className="w-4 h-4" />
+                  <p className="text-[10px] sm:text-xs">Mute</p>
+                </div>
+              ) : (
+                <div className="text-red-700 flex flex-col items-center">
+                  <EarOffIcon className="w-4 h-4" />
+                  <p className="text-[10px] sm:text-xs">Unmute</p>
+                </div>
+              )}
+            </button>
           </div>
-        )}
-      </button>
-    </div>
-  </div>
-</header>
+        </div>
+      </header>
+
 
   )
 }
