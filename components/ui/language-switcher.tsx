@@ -6,13 +6,14 @@ import { useRouter, usePathname } from 'next/navigation'
 import { ChevronDown, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { useSystemStore } from '@/lib/stores/system-store'
 
 const languages = [
-  { code: 'en', name: 'English', nativeName: 'English', dir: 'ltr' },
-  { code: 'am', name: 'Amharic', nativeName: 'አማርኛ', dir: 'ltr' },
-  { code: 'or', name: 'Oromifa', nativeName: 'Afaan Oromoo', dir: 'ltr' },
-  { code: 'ti', name: 'Tigrigna', nativeName: 'ትግርኛ', dir: 'ltr' },
-  { code: 'so', name: 'Somali', nativeName: 'Soomaali', dir: 'ltr' },
+  { code: 'am', display: 'አማ', name: 'Amharic', nativeName: 'አማርኛ', dir: 'ltr' },
+  { code: 'en', display: 'EN', name: 'English', nativeName: 'English', dir: 'ltr' },
+  { code: 'or', display: 'OR', name: 'Oromifa', nativeName: 'Afaan Oromoo', dir: 'ltr' },
+  { code: 'ti', display: 'ትግ', name: 'Tigrigna', nativeName: 'ትግርኛ', dir: 'ltr' },
+  // { code: 'so', display: 'so', name: 'Somali', nativeName: 'Soomaali', dir: 'ltr' },
 ]
 
 export function LanguageSwitcher() {
@@ -20,6 +21,7 @@ export function LanguageSwitcher() {
   const router = useRouter()
   const pathname = usePathname()
   const [mounted, setMounted] = useState(false)
+  const setLocaleChanged = useSystemStore(state => state.setLocaleChanged)
 
   useEffect(() => setMounted(true), [])
 
@@ -46,13 +48,16 @@ export function LanguageSwitcher() {
         <Button variant="ghost" size="sm" className="h-9 px-3 text-sm font-medium" aria-label={t('common:languages.switch', 'Switch language')}>
           <Globe className="h-4 w-4 mr-2" />
           <span className="hidden sm:inline">{currentLanguage.nativeName}</span>
-          <span className="sm:hidden">{currentLanguage.code.toUpperCase()}</span>
+          <span className="sm:hidden">{currentLanguage.display}</span>
           <ChevronDown className="h-3 w-3 ml-1" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         {languages.map(lang => (
-          <DropdownMenuItem key={lang.code} onClick={() => changeLanguage(lang.code)} className={`cursor-pointer ${i18n.language === lang.code ? 'bg-accent' : ''}`}>
+          <DropdownMenuItem key={lang.code} onClick={() => {
+            changeLanguage(lang.code)
+            setLocaleChanged(true)
+          }} className={`cursor-pointer ${i18n.language === lang.code ? 'bg-accent' : ''}`}>
             <div className="flex flex-col">
               <span className="font-medium">{lang.nativeName}</span>
               <span className="text-xs text-muted-foreground">{lang.name}</span>

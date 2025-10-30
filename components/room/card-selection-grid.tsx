@@ -95,10 +95,22 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                    | Active: {joinedPlayers.length} Players
                 </p>}
               </div>
-              {status === GameStatus.COUNTDOWN && <div className="flex items-center gap-1">
-                <div className="sm:w-3 sm:h-3 border-red-300 bg-red-300 dark:bg-red-950 rounded-full" />
-                  <CountdownTimer />
-              </div>}
+              {
+              status === GameStatus.COUNTDOWN ? 
+              <div className="flex items-center gap-1">
+                <div className="sm:w-3 sm:h-3 border-red-300 bg-red-300 dark:bg-red-950 rounded-full" >
+                  <CountdownTimer gamePage={false} />
+                </div>
+              </div> : 
+
+              <div>
+                {
+                status === GameStatus.PLAYING ? 
+                <h3 className="text-red-500 text-center">Game In Progress...</h3> : ""
+                }
+              </div>
+              
+              }
             </div>
           </div>
         </div>
@@ -149,12 +161,16 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
         </div>
         <div className="">
             {!paginatedCards.length && (
-              <RefreshCwIcon
-                onClick={() => handleRefresh()}
-                className="cursor-pointer flex items-center justify-center w-full"
-                size={32}
-              />
+              <>
+                <RefreshCwIcon
+                  onClick={() => handleRefresh()}
+                  className="cursor-pointer flex items-center justify-center w-full text-red-700"
+                  size={32}
+                />
+                <p className="text-center text-red-700">Refresh to see cards</p>
+              </>
             )}
+
           </div>
 
         {/* {userSelectedCardsIds.length >= maxCards && (

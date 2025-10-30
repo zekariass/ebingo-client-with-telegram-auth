@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     // Parse request body
     const body = await req.json();
     const {
-       userId, amount, paymentMethodId, currency, txnType, reason, metadata } = body;
+       userId, amount, paymentMethodId, currency, txnType, reason, phoneNumber, metadata } = body;
 
     if (!amount || !paymentMethodId) {
       return NextResponse.json(
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
           "x-init-data": initData, 
         },
-        body: JSON.stringify({userId, amount, paymentMethodId, currency, txnType, reason, metadata }),
+        body: JSON.stringify({userId, amount, paymentMethodId, currency, txnType, reason, phoneNumber, metadata }),
       }
     );
 

@@ -6,6 +6,9 @@ const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!
 export async function GET(
   request: NextRequest,
 ) {
+
+    // console.log("================INITIAL SYSTEM CONFIG=================>>>>: ")
+
   try {
 
     const backendRes = await fetch(
@@ -32,6 +35,8 @@ export async function GET(
       data,
       error: null,
     }
+
+    // console.log("================SYSTEM CONFIG=================>>>>: ", data)
 
     return NextResponse.json(response)
   } catch (error) {

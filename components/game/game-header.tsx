@@ -83,7 +83,7 @@
 
 "use client"
 
-import { Wifi, WifiOff } from "lucide-react"
+import { Bell, EarIcon, EarOffIcon, Wifi, WifiOff } from "lucide-react"
 import { useGameStore } from "@/lib/stores/game-store"
 import { useRoomStore } from "@/lib/stores/room-store"
 import type { Room } from "@/lib/types"
@@ -98,7 +98,7 @@ interface GameHeaderProps {
 export function GameHeader({ room, connected }: GameHeaderProps) {
   const game = useGameStore(state => state.game)
   const currentRoom = useRoomStore(state => state.room)
-  const systemConfigs = useSystemStore(state => state.systemConfigs);
+  const {systemConfigs, voiceOn, setVoiceOn} = useSystemStore();
 
   const commisionRate = systemConfigs?.find(config => config.name === "COMMISSION_RATE")?.value || "0.30";
 
@@ -127,8 +127,10 @@ export function GameHeader({ room, connected }: GameHeaderProps) {
     },
   ]
 
+  // alert(commisionRate)
+
   return (
-    <header className="bg-card border-b px-4 py-2">
+    <header className={`bg-card border-1 px-4 py-2 ms-1 ${connected ? "border-green-500" : "border-red-500"}`}>
       <div className="container mx-auto flex items-center justify-between gap-2 whitespace-nowrap">
         {/* Stats */}
         <div className="flex gap-2">
@@ -143,15 +145,33 @@ export function GameHeader({ room, connected }: GameHeaderProps) {
           ))}
         </div>
 
+        
+        <div className="bg-yellow-500 px-3 py-1 rounded-md min-w-[60px] flex items-center justify-center">
+          <div onClick={() => setVoiceOn(!voiceOn)} className="cursor-pointer flex flex-col items-center">
+            {voiceOn ? (
+              <div className="text-blue-500 flex flex-col items-center">
+                <EarIcon className="w-4 h-4" />
+                <p className="text-xs">Mute</p>
+              </div>
+            ) : (
+              <div className="text-red-500 flex flex-col items-center">
+                <EarOffIcon className="w-4 h-4" />
+                <p className="text-xs">Unmute</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+
         {/* Connection Status */}
-        <div
+        {/* <div
           className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium ${
             connected ? "text-green-600 bg-white-950" : "text-red-600 bg-white"
           }`}
         >
           {connected ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
           <span className="hidden sm:inline">{connected ? "Connected" : "Disconnected"}</span>
-        </div>
+        </div> */}
       </div>
     </header>
   )

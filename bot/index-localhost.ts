@@ -130,7 +130,7 @@
 //   if (!isRegistered) {
 //     try {
 //       const response = await axios.get(`${API_BASE_URL}/api/v1/secured/user-profile/${userId}`);
-//       console.log("========>>>> User profile response:", response.data);
+//       // console.log("========>>>> User profile response:", response.data);
 //       isRegistered = response.data?.success && response.data?.data?.telegramId === userId;
 //         // await ctx.reply(`Response data: ${JSON.stringify(response.data)}`);
 //       if (isRegistered) cacheUser(userId);

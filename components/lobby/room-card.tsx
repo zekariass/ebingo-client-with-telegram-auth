@@ -1,16 +1,9 @@
 "use client"
 
-import { GameStatus, RoomStatus, type Room } from "@/lib/types"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { RoomStatus, type Room } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { CapacityBadge } from "./capacity-badge"
-import { CountdownTimer } from "../common/countdown-timer"
-import { Users, DollarSign, Clock } from "lucide-react"
 import i18n from "@/i18n"
 import { useRouter } from "next/navigation"
-import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 
 interface RoomCardProps {
   room: Room
@@ -18,9 +11,9 @@ interface RoomCardProps {
 
 export function RoomCard({ room }: RoomCardProps) {
 
-  const occupancyPercentage = 0;//(room.players / room.capacity) * 100
-  const isNearlyFull = occupancyPercentage >= 80
-  const isFull = false;//room.players >= room.capacity
+  // const occupancyPercentage = 0;//(room.players / room.capacity) * 100
+  // const isNearlyFull = occupancyPercentage >= 80
+  // const isFull = false;//room.players >= room.capacity
 
 
   const router =  useRouter();

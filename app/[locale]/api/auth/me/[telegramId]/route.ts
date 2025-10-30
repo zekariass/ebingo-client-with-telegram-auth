@@ -4,7 +4,7 @@ const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
 
 export async function GET(req: NextRequest, context: { params: Promise<{ telegramId: string }> }) {
   try {
-    const { telegramId } = await context.params; // ✅ await params object
+    const { telegramId } = await context.params;
 
     if (!telegramId) {
       return NextResponse.json(

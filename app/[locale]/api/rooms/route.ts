@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server"
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
 
 export async function GET(request: NextRequest) {
-  console.log("========================= GET ROOMS CALLED")
+  // console.log("========================= GET ROOMS CALLED")
   try {
     // Call backend API to fetch rooms
     const response = await fetch(`${BACKEND_BASE_URL}/api/v1/public/rooms`);

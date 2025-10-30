@@ -7,6 +7,8 @@ import QueryProvider from '@/providers/QueryProvider'
 import { LanguageSwitcher } from '@/components/ui/language-switcher'
 import { Analytics } from '@vercel/analytics/next'
 import { I18nProvider } from '@/providers/I18nProvider'
+import { ProcessingProvider } from '@/lib/contexts/processing-context'
+import { LayoutContent } from './layout-content'
 
 interface LayoutProps {
   children: ReactNode
@@ -23,11 +25,16 @@ export default function RootLayout({ children }: LayoutProps) {
           <I18nProvider fallbackLocale="en">
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange={false} storageKey="bingo-theme">
               <QueryProvider>
-                <div className="flex justify-end">
-                  <LanguageSwitcher />
-                </div>
+                <ProcessingProvider>
+                  <div className="flex justify-end">
+                    <LanguageSwitcher />
+                  </div>
 
-                {children}
+                  <LayoutContent>
+                    {children}
+                  </LayoutContent>
+                  
+                </ProcessingProvider>
               </QueryProvider>
             </ThemeProvider>
           </I18nProvider>

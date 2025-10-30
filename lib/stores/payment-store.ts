@@ -65,7 +65,7 @@ interface PaymentState {
   transferFunds: (amount: number, phone: string) => Promise<boolean>
 
   // Deposit
-  addDeposit: (amount: number, paymentMethodId: number) => Promise<void>
+  addDeposit: (amount: number, paymentMethodId: number, phoneNumber: string) => Promise<void>
   checkout:  (paymentData: CheckoutData) => Promise<void>
   // getPendingDeposits: () => number
 
@@ -486,7 +486,7 @@ export const usePaymentStore = create<PaymentState>()(
       },
 
 
-    addDeposit: async (amount: number, paymentMethodId: number) => {
+    addDeposit: async (amount: number, paymentMethodId: number, phoneNumber: string) => {
         set({ processing: true, depositError: null });
         const initData = userStore.getState().initData;
         const user = userStore.getState().user;
@@ -495,7 +495,7 @@ export const usePaymentStore = create<PaymentState>()(
         };
 
         try {
-          const paymentMethod = get().paymentMethods.find(pm => pm.id === paymentMethodId);
+          // const paymentMethod = get().paymentMethods.find(pm => pm.id === paymentMethodId);
 
           // if (paymentMethod?.name.toLowerCase().includes("bank transfer")) {
             const url = new URL(`/${i18n.language}/api/payments/deposit`, window.location.origin);
@@ -513,6 +513,7 @@ export const usePaymentStore = create<PaymentState>()(
                 currency: "ETB",
                 reason: "Deposit",
                 txnType: "DEPOSIT",
+                phoneNumber,
                 metadata: {},
               }),
             });

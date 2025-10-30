@@ -112,6 +112,7 @@ import { useGameStore } from "@/lib/stores/game-store"
 import { GameStatus } from "@/lib/types"
 import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { usePaymentStore } from "@/lib/stores/payment-store"
+import { useSystemStore } from "@/lib/stores/system-store"
 
 interface RoomViewProps {
   roomId: number
@@ -120,9 +121,9 @@ interface RoomViewProps {
 export function RoomView({ roomId }: RoomViewProps) {
   const { room, loading, fetchRoom, resetRoom } = useRoomStore()
   const { game: { userSelectedCardsIds, countdownEndTime, status }, isJoining, setJoining } = useGameStore()
-  const resetWinner = useGameStore(state => state.resetWinner)
   const { enterRoom } = useWebSocketEvents({ roomId, enabled: true })
   const { fetchWallet } = usePaymentStore()
+  const fetchSystemConfigs = useSystemStore(state => state.fetchSystemConfigs)
 
   // Refresh game state every 3 seconds when connected
   // useAutoRefreshGameState(roomId, 3000);
@@ -140,6 +141,7 @@ export function RoomView({ roomId }: RoomViewProps) {
 
   useEffect(() => {
     setJoining(false)
+    fetchSystemConfigs()
   },[])
 
   // Fetch room data

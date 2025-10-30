@@ -70,6 +70,7 @@ export function SelectedCardsView({ cardInfoId, index }: InteractiveBingoCardPro
         {COLUMN_HEADERS.map((letter, index) => (
           <div
             key={letter}
+            
             className={`h-6 md:h-8 flex items-center justify-center font-bold text-white rounded bg-${colors[index]}-500`}
           >
             {letter}

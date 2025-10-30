@@ -23,7 +23,8 @@ export function SelectedCardsPanel() {
         <CardTitle className="text-base sm:text-lg pt-2">Your Selected Cards ({userSelectedCards?.length}/2)</CardTitle>
       </CardHeader> */}
       <CardContent className="p-2 sm:p-4">
-        {status === GameStatus.PLAYING? <h3 className="text-red-500 text-center">Game In Progress...</h3> : <div
+        
+        <div
           className={`grid gap-1 sm:gap-2 md:gap-4 w-full ${userSelectedCards?.length === 1 ? "grid-cols-2 sm:grid-cols-2" : "grid-cols-2"
             }`}
         >
@@ -39,7 +40,7 @@ export function SelectedCardsPanel() {
               </p>
             </div>
           )}
-        </div>}
+        </div>
       </CardContent>
     </Card>
   )
