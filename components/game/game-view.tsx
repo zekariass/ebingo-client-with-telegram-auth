@@ -137,7 +137,8 @@ export function GameView({ roomId }: GameViewProps) {
                           }}
                           className="text-xl font-extrabold text-yellow-400 drop-shadow-2xl"
                         >
-                          {currentLetter}-{currentDrawnNumber}
+                          <span className="text-green-500">{currentLetter}</span>
+                          <span className="text-red-500">-</span>{currentDrawnNumber}
                         </motion.div>
                       </div>
                     ) : (

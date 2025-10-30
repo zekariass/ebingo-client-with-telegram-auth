@@ -130,8 +130,8 @@ export function GameHeader({ room, connected }: GameHeaderProps) {
   // alert(commisionRate)
 
   return (
-    <header className={`bg-card border-1 px-4 py-2 me-1 ${connected ? "border-green-500" : "border-red-500"}`}>
-      <div className="container mx-auto flex items-center justify-between gap-2 whitespace-nowrap">
+    <header className={`bg-card border-1 px-4 py-2 ${connected ? "border-green-500" : "border-red-500"}`}>
+      <div className="container flex items-center justify-between gap-2 whitespace-nowrap">
         {/* Stats */}
         <div className="flex gap-2">
           {stats.map((stat, idx) => (
