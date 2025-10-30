@@ -3,8 +3,6 @@
 import { useRoomStore } from "@/lib/stores/room-store"
 import { Card, CardContent } from "@/components/ui/card"
 import { StartGameButton } from "./start-game-button"
-import { BingoClaimButton } from "./bingo-claim-button"
-import { checkWinningPattern } from "@/lib/utils/bingo"
 import { useGameStore } from "@/lib/stores/game-store"
 import { GameStatus, RoomStatus } from "@/lib/types"
 

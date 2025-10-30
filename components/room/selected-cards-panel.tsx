@@ -1,10 +1,9 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent} from "@/components/ui/card"
 import { SelectedCardsView } from "./selected-cards-view"
 import { useGameStore } from "@/lib/stores/game-store"
 import { useEffect } from "react"
-import { GameStatus } from "@/lib/types"
 
 export function SelectedCardsPanel() {
   const { game: {userSelectedCards, userSelectedCardsIds, status}, computePlayerCardsFromPlayerCardsIds } = useGameStore()

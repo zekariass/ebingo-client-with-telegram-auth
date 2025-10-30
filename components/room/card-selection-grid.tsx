@@ -185,9 +185,9 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
           </div> */}
 
 
-          <div className="flex flex-col items-center justify-center py-6">
+          
             {!paginatedCards.length && (
-              <>
+              <div className="flex flex-col items-center justify-center py-6">
                 <RefreshCwIcon
                   onClick={handleClick}
                   size={48} // bigger icon
@@ -198,9 +198,9 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                 <p className="text-center text-green-700 mt-2 text-sm sm:text-base">
                   Refresh to see cards
                 </p>
-              </>
+              </div>
             )}
-          </div>
+          
 
         {/* {userSelectedCardsIds.length >= maxCards && (
           <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-800 rounded-lg flex flex-row">

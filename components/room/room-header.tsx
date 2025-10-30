@@ -2,19 +2,13 @@
 
 import type { GameState, Room } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { CapacityBadge } from "@/components/lobby/capacity-badge"
-import { CountdownTimer } from "@/components/common/countdown-timer"
-import { useRoomStore } from "@/lib/stores/room-store"
-import { ArrowLeft, RefreshCcw, RefreshCcwDot, Wifi, WifiOff } from "lucide-react"
+import { ArrowLeft, RefreshCcw } from "lucide-react"
 import Link from "next/link"
 import { ConnectionStatus } from "./connection-status"
 import { useGameStore } from "@/lib/stores/game-store"
-import { useWebSocketContext } from "@/lib/contexts/websocket-context"
 import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { useRouter } from "next/navigation"
 import { currency } from "@/lib/constant"
-import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
 
 interface RoomHeaderProps {
   room?: Room | null 

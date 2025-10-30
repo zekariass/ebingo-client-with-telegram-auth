@@ -68,13 +68,14 @@ export function SelectedCardsView({ cardInfoId, index }: InteractiveBingoCardPro
       {/* Column Headers */}
       <div className="grid grid-cols-5 gap-0.5 mb-2 rounded-xs">
         {COLUMN_HEADERS.map((letter, index) => (
-          <div
+          <Button
             key={letter}
+            disabled={true}
             
             className={`h-6 md:h-8 flex items-center justify-center font-bold text-white rounded bg-${colors[index]}-500`}
           >
             {letter}
-          </div>
+          </Button>
         ))}
       </div>
 
