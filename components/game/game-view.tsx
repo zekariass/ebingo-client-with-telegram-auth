@@ -23,6 +23,7 @@ interface GameViewProps {
 
 export function GameView({ roomId }: GameViewProps) {
   const gameId = useGameStore(state => state.game.gameId)
+  const [currentLetter, setCurrentLetter] = useState<string>("")
   const selectedCardIds = useGameStore(state => state.game.userSelectedCardsIds)
   // const countdownEndTime = useGameStore(state => state.game.countdownEndTime)
   const status = useGameStore(state => state.game.status)
@@ -43,6 +44,16 @@ export function GameView({ roomId }: GameViewProps) {
   const router = useRouter()
 
 
+    const getCurrentLetter = (number: number): string => {
+    if (number < 1 || number > 75) throw new Error("Number must be between 1 and 75");
+
+    const letters = ["B", "I", "N", "G", "O"];
+    const index = Math.floor((number - 1) / 15);
+    return letters[index];
+  };
+
+
+
    const playNumberSound = (number: number | undefined) => {
     if (!number) return;
     if (localeChanged){
@@ -55,6 +66,7 @@ export function GameView({ roomId }: GameViewProps) {
 
 
   useEffect(() => {
+    setCurrentLetter(getCurrentLetter(Number(currentDrawnNumber)))
     if (currentDrawnNumber !== null && currentDrawnNumber !==undefined && status === GameStatus.PLAYING && voiceOn) {
       playNumberSound(currentDrawnNumber);
     }
@@ -125,7 +137,7 @@ export function GameView({ roomId }: GameViewProps) {
                           }}
                           className="text-xl font-extrabold text-yellow-400 drop-shadow-2xl"
                         >
-                          {currentDrawnNumber}
+                          {currentLetter}-{currentDrawnNumber}
                         </motion.div>
                       </div>
                     ) : (
@@ -134,7 +146,8 @@ export function GameView({ roomId }: GameViewProps) {
                   </div>
                 ) : (
                   <Badge className="font-mono text-sm px-3 py-1 bg-yellow-600 text-black">
-                    {"Waiting..."}
+                    {/* {"Waiting..."} */}
+                    {status}
                   </Badge>
                 )}
               </div>

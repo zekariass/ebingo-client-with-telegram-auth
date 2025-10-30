@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useRoomStore } from "@/lib/stores/room-store"
 import { usePaymentStore } from "@/lib/stores/payment-store"
 import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
-import { DollarSign, CreditCard } from "lucide-react"
+import { CreditCard } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
 import { useGameStore } from "@/lib/stores/game-store"
