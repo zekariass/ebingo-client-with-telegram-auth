@@ -1,5 +1,3 @@
-import path from 'path';
-import dotenv from 'dotenv';
 import { Telegraf } from 'telegraf';
 import { setCommandsAndWebhooks } from './setup';
 import { registerMiddleware } from './middleware';
