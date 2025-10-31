@@ -96,7 +96,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
         case "game.playerJoined":
           _gameStore.setJoinedPlayers(message.payload.joinedPlayers)
           _gameStore.setPlayersCount(message.payload.playersCount)
-          _gameStore.setAllPlayerSelectedCardIds(message.payload.playerSelectedCardIds)
+          _gameStore.addPlayerSelectedCards(message.payload.playerSelectedCardIds)
           if (user && message.payload.joinedPlayers.includes(user.telegramId.toString())){
             router.push(`/${i18n.language}/rooms/${roomId}/game`)
             _gameStore.setJoining(false)
