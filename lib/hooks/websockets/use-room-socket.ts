@@ -121,10 +121,11 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
             disconnect()
             break
           }
+
+          message.payload.releasedCardsIds?.forEach(cardId => 
+             _gameStore.releaseCard(cardId))
           
           if (user && user.telegramId.toString() === message.payload.playerId){
-            message.payload.releasedCardsIds?.map(cardId => 
-             _gameStore.releaseCard(cardId))
             router.replace(`/${i18n.language}`)
             _gameStore.resetGameState()
             _roomStore.resetRoom()
