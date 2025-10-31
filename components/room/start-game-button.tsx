@@ -22,12 +22,11 @@ interface StartGameButtonProps {
 
 export function StartGameButton({ disabled, selectedCards, fee }: StartGameButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
+  // const [isProcessing, setIsProcessing] = useState(false)
 
   const { room } = useRoomStore()
-  const { game: {gameId, started, joinedPlayers} } = useGameStore()
+  const { game: {gameId, started} } = useGameStore()
   const userProfileId = userStore(state => state.user?.id)
-  const telegramId = userStore(state => state.user?.telegramId) || ""
   const { balance } = usePaymentStore()
   const router = useRouter()
   const { toast } = useToast()
@@ -72,7 +71,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
       return
     }
 
-    setIsProcessing(true)
+    // setIsProcessing(true)
 
     try {
       
@@ -99,7 +98,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
         description: "Please try again or contact support",
       })
     } finally {
-      setIsProcessing(false)
+      // setIsProcessing(false)
     }
   }
 
@@ -181,7 +180,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
               variant="outline"
               className="flex-1 bg-transparent"
               onClick={() => setIsOpen(false)}
-              disabled={isProcessing}
+              // disabled={isProcessing}
             >
               Cancel
             </Button>

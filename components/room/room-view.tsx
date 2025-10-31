@@ -201,7 +201,7 @@ export function RoomView({ roomId }: RoomViewProps) {
               disabled={disableCardSelection}
             />
 
-            {joinError && <div className="text-error text-center">{joinError}</div>}
+            {joinError && <div className="text-red-500 text-center">{joinError}</div>}
 
             {userSelectedCardsIds.length > 0 && (
               <div className="space-y-3 sm:space-y-4">
