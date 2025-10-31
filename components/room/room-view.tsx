@@ -142,11 +142,17 @@ export function RoomView({ roomId }: RoomViewProps) {
   useEffect(() => {
     setJoining(false)
     fetchSystemConfigs()
-
-    setTimeout(()=>{
-      setJoinError(null)
-    }, 5000)
   },[])
+
+
+  useEffect(()=>{
+    const timeoutId = setTimeout(() => {
+      setJoinError(null);
+      }, 5 * 1000); // 5 seconds
+
+      // optional cleanup
+    return () => clearTimeout(timeoutId);
+  }, [joinError])
 
   // Fetch room data
   useEffect(() => {
