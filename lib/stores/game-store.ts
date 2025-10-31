@@ -7,6 +7,7 @@ interface GameStore {
   game: GameState
   winner: GameWinner
   error: string | null
+  joinError: string | null
   claimError: ClaimError | null
   claiming: boolean,
   isJoining: boolean,
@@ -48,6 +49,7 @@ interface GameStore {
   resetWinner: () => void
   setClaimError: (error: ClaimError) => void
   setError: (error: string | null) => void
+  setJoinError: (error: string | null) => void
   resetClaimError: () => void
   setClaiming: (value: boolean) => void
   
@@ -94,6 +96,7 @@ export const useGameStore = create<GameStore>()(
       game: initialGameState,
       winner: initialWinnerState,
       error: null,
+      joinError: null,
       claimError: null,
       claiming: false,
       isJoining: false,
@@ -420,6 +423,7 @@ export const useGameStore = create<GameStore>()(
       })),
 
       setError: (error) => set({ error }),
+      setJoinError: (joinError) => set({ joinError }),
 
     setClaiming: (value: boolean) =>
       set({ claiming: value }),

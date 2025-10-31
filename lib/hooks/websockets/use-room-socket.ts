@@ -206,7 +206,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
             _gameStore.setClaimError(message.payload)
             _gameStore.setClaiming(false)
           }else if (message.payload?.eventType === "game.playerJoinRequest"){
-            gameStoreRef.current.setError(message.payload?.message)
+            gameStoreRef.current.setJoinError(message.payload?.message)
             router.replace(`/${i18n.language}/rooms/${roomId}`)
             // _gameStore.setJoining(false)
           } else if (message.payload?.eventType === "game.playerLeaveRequest"){

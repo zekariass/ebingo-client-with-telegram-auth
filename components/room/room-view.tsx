@@ -120,7 +120,7 @@ interface RoomViewProps {
 
 export function RoomView({ roomId }: RoomViewProps) {
   const { room, loading, fetchRoom, resetRoom } = useRoomStore()
-  const { game: { userSelectedCardsIds, countdownEndTime, status }, isJoining, setJoining } = useGameStore()
+  const { game: { userSelectedCardsIds, countdownEndTime, status }, isJoining, setJoining, joinError } = useGameStore()
   const { enterRoom } = useWebSocketEvents({ roomId, enabled: true })
   const { fetchWallet } = usePaymentStore()
   const fetchSystemConfigs = useSystemStore(state => state.fetchSystemConfigs)
@@ -200,6 +200,8 @@ export function RoomView({ roomId }: RoomViewProps) {
               capacity={room?.capacity ?? 0}
               disabled={disableCardSelection}
             />
+
+            {joinError && <div className="text-error text-center">{joinError}</div>}
 
             {userSelectedCardsIds.length > 0 && (
               <div className="space-y-3 sm:space-y-4">

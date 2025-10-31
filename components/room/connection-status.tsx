@@ -49,9 +49,9 @@ export function ConnectionStatus({ roomId }: ConnectionStatusProps) {
 
   if (connected) {
     return (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Wifi className="h-4 w-4 text-green-500" />
-        <span>Connected</span>
+      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+        {/* <Wifi className="h-4 w-4 text-green-500" /> */}
+        <span className="text-green-500">Connected</span>
       </div>
     )
   }
@@ -60,33 +60,27 @@ export function ConnectionStatus({ roomId }: ConnectionStatusProps) {
     return (
       <div className="flex items-center gap-2 text-sm">
         <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent" />
-        <span>Connecting...</span>
-        {reconnectAttempts > 0 && (
+        <span className="text-yellow-500">Connecting...</span>
+        {/* {reconnectAttempts > 0 && (
           <Badge variant="outline" className="text-xs">
             Attempt {reconnectAttempts}
           </Badge>
-        )}
+        )} */}
       </div>
     )
   }
 
   return (
-    <Alert variant="destructive" className="mb-4">
-      <AlertCircle className="h-4 w-4" />
-      <AlertDescription className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <WifiOff className="h-4 w-4" />
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => reconnect()}
-          className="ml-4 bg-transparent"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Retry
-        </Button>
-      </AlertDescription>
-    </Alert>
+    <div className="flex items-center justify-center">
+      <Badge variant="destructive" className="cursor-pointer" onClick={() => reconnect()}>
+        <WifiOff className="h-4 w-4" />
+        <AlertDescription className="">
+          <div className="bg-transparent fond-bold"
+          >          
+            Retry
+          </div>
+        </AlertDescription>
+    </Badge>
+    </div>
   )
 }

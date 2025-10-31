@@ -25,6 +25,8 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const gameId = useGameStore(state => state.game.gameId)
   const status = useGameStore(state => state.game.status)
   const joinedPlayers = useGameStore(state => state.game.joinedPlayers)
+  const selectCardOptimistically  = useGameStore(state => state.selectCard)
+  const deselectCardOptimistically  = useGameStore(state => state.releaseCard)
 
   const {enterRoom, connected, selectCard: selectCardBackend, releaseCard: releaseCardBackend} =  useWebSocketEvents({roomId: roomId, enabled: true});
 
@@ -41,7 +43,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
 
   const [rotating, setRotating] = useState(false)
 
-  const handleClick = () => {
+  const handleRefreshClick = () => {
     setRotating(true)
     handleRefresh?.()
     // Stop rotation after 1 second
@@ -60,12 +62,22 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
     return allCardIds.slice(startIndex, endIndex)
   }, [allCardIds, currentPage, cardsPerPage, totalCards])
 
-  const handleCardClick = (cardId: string) => {
+  // const handleCardClick = (cardId: string) => {
 
+  //   if (userSelectedCardsIds.includes(cardId) && user?.telegramId) {
+  //     releaseCardBackend(gameId, cardId)
+  //   } else if (!takenCards.has(cardId) && userSelectedCardsIds.length < maxCards && user?.telegramId) {
+  //     selectCardBackend(gameId, cardId)
+  //   }
+  // }
+
+  const handleCardClick = (cardId: string) => {
     if (userSelectedCardsIds.includes(cardId) && user?.telegramId) {
-      releaseCardBackend(gameId, cardId)
+      // releaseCardBackend(gameId, cardId)
+      deselectCardOptimistically(cardId)
     } else if (!takenCards.has(cardId) && userSelectedCardsIds.length < maxCards && user?.telegramId) {
-      selectCardBackend(gameId, cardId)
+      // selectCardBackend(gameId, cardId)
+      selectCardOptimistically(cardId, user.telegramId)
     }
   }
 
@@ -189,7 +201,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
             {!paginatedCards.length && (
               <div className="flex flex-col items-center justify-center py-6">
                 <RefreshCwIcon
-                  onClick={handleClick}
+                  onClick={handleRefreshClick}
                   size={48} // bigger icon
                   className={`cursor-pointer text-green-700 transition-transform duration-700 ${
                     rotating ? "rotate-[360deg]" : ""

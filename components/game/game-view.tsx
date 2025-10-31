@@ -34,14 +34,15 @@ export function GameView({ roomId }: GameViewProps) {
 
   const telegramId = userStore(state => state.user?.telegramId)
   const { leaveGame, connected } = useWebSocketEvents({ roomId, enabled: true })
+  const router = useRouter()
 
+  router.prefetch(`/${i18n.language}`)
   //useAutoRefreshGameState(roomId, 3000);
 
   const [isLeaving, setLeaving] = useState(false)
 
   const { room, loading, fetchRoom } = useRoomStore()
 
-  const router = useRouter()
 
 
     const getCurrentLetter = (number: number): string => {
@@ -85,6 +86,7 @@ export function GameView({ roomId }: GameViewProps) {
     init()
   }, [fetchRoom, roomId])
 
+  
   const handleLeaveGame = async () => {
     if (!gameId || !telegramId) {
       router.replace(`/${i18n.language}`)
@@ -99,6 +101,7 @@ export function GameView({ roomId }: GameViewProps) {
       setLeaving(false)
     }
   }
+
 
   if (gameId === null || loading) {
     return (
@@ -161,7 +164,7 @@ export function GameView({ roomId }: GameViewProps) {
 
         <div className="py-2 flex items-center justify-center">
           <Button
-            className="w-full sm:w-1/2 bg-red-800 text-white p-4 text-xl hover:bg-red-600 cursor-pointer"
+            className="w-full sm:w-1/2 text-white p-4 text-xl cursor-pointer bg-red-600 hover:bg-red-800 transition-colors duration-200"
             onClick={handleLeaveGame}
             disabled={isLeaving}
           >

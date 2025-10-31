@@ -44,11 +44,14 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
   router.prefetch(`/${i18n.language}/rooms/${room?.id}/game`)
 
   const handleStartGame = () => {
-    if (joinedPlayers.includes(telegramId.toString())){
-      router.push(`/${i18n.language}/rooms/${room?.id}/game`)
-      return false
+    // if (joinedPlayers.includes(telegramId.toString())){
+    //   router.push(`/${i18n.language}/rooms/${room?.id}/game`)
+    //   return false
+    // }
+    if (totalCost || canAfford){
+      return true
     }
-    return true
+    return false
   }
 
   const handleConfirmAndPay = async () => {
@@ -103,17 +106,27 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <Button
-        size="lg"
-        className="w-full cursor-pointer bg-blue-800 text-white hover:bg-blue-600"
-        disabled={disabled}
-        variant={canAfford ? "default" : "secondary"}
-        onClick={() => {
-          const ok = handleStartGame() 
-          if (ok) setIsOpen(true)      
-        }}
-      >
-        Start Game ({totalCost.toFixed(2)} {currency})
-      </Button>
+          size="lg"
+          className="w-full flex flex-col items-center justify-center gap-1 text-center"
+          disabled={disabled || !canAfford || !connected}
+          variant={canAfford ? "default" : "destructive"}
+          onClick={() => {
+            const ok = handleStartGame()
+            if (!ok) setIsOpen(true)
+            if (ok) handleConfirmAndPay()
+          }}
+        >
+          {(canAfford && connected) && <span>
+            Start Game ({totalCost.toFixed(2)} {currency})
+          </span>}
+          
+          {!canAfford && (
+            <span className="text-sm font-medium text-yellow-500 leading-none">
+              Insufficient Funds - ({totalCost.toFixed(2)} {currency})
+            </span>
+          )}
+        </Button>
+
 
       <DialogContent className="pr-8">
         <DialogHeader>
@@ -172,7 +185,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
             >
               Cancel
             </Button>
-            <Button
+            {/* <Button
               className="flex-1"
               onClick={handleConfirmAndPay}
               disabled={!canAfford || isProcessing}
@@ -188,7 +201,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
                   Confirm & Pay
                 </>
               )}
-            </Button>
+            </Button> */}
           </div>
         </div>
       </DialogContent>

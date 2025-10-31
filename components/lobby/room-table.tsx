@@ -147,7 +147,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
           <tr className="text-gray-400 uppercase tracking-wider text-xs sm:text-sm">
             <th className="px-3 py-2">Room Name</th>
             <th className="px-3 py-2">Bet</th>
-            <th className="px-3 py-2">Status</th>
+            {/* <th className="px-3 py-2">Status</th> */}
             <th className="px-3 py-2">Capacity</th>
             <th className="px-3 py-2 text-center">Action</th>
           </tr>
@@ -170,7 +170,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
               </td>
 
               {/* Status */}
-              <td className="px-3 py-3">
+              {/* <td className="px-3 py-3">
                 <Badge
                   className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
                     room.status === RoomStatus.OPEN
@@ -182,7 +182,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
                 >
                   {room.status}
                 </Badge>
-              </td>
+              </td> */}
 
               {/* Capacity */}
               <td className="px-3 py-3 text-gray-200 font-medium">

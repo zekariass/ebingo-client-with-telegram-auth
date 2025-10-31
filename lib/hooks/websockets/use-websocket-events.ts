@@ -23,6 +23,7 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
   const selectCardOptimistically  = useGameStore(state => state.selectCard)
   const addMarkedNumberToCard  = useGameStore(state => state.addMarkedNumberToCard)
   const removeMarkedNumberFromCard  = useGameStore(state => state.removeMarkedNumberFromCard)
+  const userSelectedCardsIds = useGameStore(state => state.game.userSelectedCardsIds)
 
   const enterRoom = useCallback(() => {
     if (!socket || !roomId || !user?.id) return
@@ -63,7 +64,7 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
       setJoining(true)
       socket.send({
         type: "game.playerJoinRequest",
-        payload: { gameId, fee, capacity, playerId: user?.telegramId },
+        payload: { gameId, fee, capacity, playerId: user?.telegramId, userSelectedCardsIds },
       })
     },
     [socket, roomId]
