@@ -120,7 +120,7 @@ interface RoomViewProps {
 
 export function RoomView({ roomId }: RoomViewProps) {
   const { room, loading, fetchRoom, resetRoom } = useRoomStore()
-  const { game: { userSelectedCardsIds, countdownEndTime, status }, isJoining, setJoining, joinError } = useGameStore()
+  const { game: { userSelectedCardsIds, countdownEndTime, status }, isJoining, setJoining, joinError, setJoinError } = useGameStore()
   const { enterRoom } = useWebSocketEvents({ roomId, enabled: true })
   const { fetchWallet } = usePaymentStore()
   const fetchSystemConfigs = useSystemStore(state => state.fetchSystemConfigs)
@@ -142,6 +142,10 @@ export function RoomView({ roomId }: RoomViewProps) {
   useEffect(() => {
     setJoining(false)
     fetchSystemConfigs()
+
+    setTimeout(()=>{
+      setJoinError(null)
+    }, 5000)
   },[])
 
   // Fetch room data
