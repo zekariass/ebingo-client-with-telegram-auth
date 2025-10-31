@@ -462,6 +462,7 @@ export interface PlayerJoined extends WSMessage {
     playerId: string
     playersCount: number
     joinedPlayers: string[]
+    playerSelectedCardIds: string[]
   }
 }
 

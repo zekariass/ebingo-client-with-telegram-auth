@@ -30,6 +30,7 @@ interface GameStore {
   addCard: (card: CardInfo) => void
   selectCard: (cardId: string, userId: number) => void
   releaseCard: (cardId: string) => void
+  addPlayerSelectedCards: (cardIds: string[]) => void
   setAllPlayerSelectedCardIds: (cardIds: string[]) => void
   setAllCardIds: (cardIds: string[]) => void
   addMarkedNumberToCard: (cardId: string, number: number) => void
@@ -301,7 +302,34 @@ export const useGameStore = create<GameStore>()(
           game: { ...state.game, allSelectedCardsIds: [...new Set(cardIds)] },
         })),
 
-      setAllCardIds: (cardIds) =>
+
+      addPlayerSelectedCards: (cardIds) => {
+        const { game } = get();
+
+        // Add only cards not already in userSelectedCardsIds
+        const newUserCards = cardIds.filter(id => !game.userSelectedCardsIds.includes(id));
+        if (newUserCards.length > 0) {
+          set({
+            game: {
+              ...game,
+              userSelectedCardsIds: [...game.userSelectedCardsIds, ...newUserCards],
+            },
+          });
+        }
+
+        // Add only cards not already in allCardIds
+        const newAllCards = cardIds.filter(id => !game.allCardIds.includes(id));
+        if (newAllCards.length > 0) {
+          set({
+            game: {
+              ...game,
+              allCardIds: [...game.allCardIds, ...newAllCards],
+            },
+          });
+        }
+      },
+
+    setAllCardIds: (cardIds) =>
         set((state) => ({
           game: { ...state.game, allCardIds: [...new Set(cardIds)] },
         })),
