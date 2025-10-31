@@ -141,6 +141,7 @@ export function RoomView({ roomId }: RoomViewProps) {
 
   useEffect(() => {
     setJoining(false)
+    setJoinError(null);
     fetchSystemConfigs()
   },[])
 
