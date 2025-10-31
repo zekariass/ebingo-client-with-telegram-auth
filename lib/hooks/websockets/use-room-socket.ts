@@ -114,22 +114,21 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           // router.replace(`/${i18n.language}/rooms/${roomId}`)
           break
         case "game.playerLeft":
-          if (message.payload.errorType === "gameStarted" || message.payload.errorType === "gameStarting" || message.payload.errorType === "gameEnded"){
+          message.payload.releasedCardsIds?.forEach(cardId => 
+             _gameStore.releaseCard(cardId))
+          if ((user && user.telegramId === Number(message.payload.playerId)) && (message.payload.errorType === "gameStarted" || message.payload.errorType === "gameStarting" || message.payload.errorType === "gameEnded")){
             router.replace(`/${i18n.language}`)
             _gameStore.resetGameState()
             _roomStore.resetRoom()
             disconnect()
             break
           }
-
-          message.payload.releasedCardsIds?.forEach(cardId => 
-             _gameStore.releaseCard(cardId))
           
-          if (user && user.telegramId.toString() === message.payload.playerId){
+          if (user && user.telegramId === Number(message.payload.playerId)){
             router.replace(`/${i18n.language}`)
             _gameStore.resetGameState()
             _roomStore.resetRoom()
-           disconnect()
+            disconnect()
           }else{
             _gameStore.removePlayer(message.payload.playerId)
             _gameStore.setPlayersCount(message.payload.playersCount)
