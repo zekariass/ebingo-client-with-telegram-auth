@@ -156,15 +156,13 @@ export const useGameStore = create<GameStore>()(
           }
         }),
 
-        setJoinedPlayers: (newJoinedPlayers) => 
-          set((state) => {
-            return {
-              game: {
-                ...state.game,
-                joinedPlayers: newJoinedPlayers
-              }
-            }
-          }),
+      setJoinedPlayers: (newJoinedPlayers) =>
+        set((state) => ({
+          game: {
+            ...(state.game || {}),
+            joinedPlayers: newJoinedPlayers,
+          },
+        })),
 
       removePlayer: (playerId) =>
         set((state) => ({
@@ -176,7 +174,7 @@ export const useGameStore = create<GameStore>()(
 
       setPlayersCount: (count) =>
         set((state) => ({
-          game: { ...state.game, playersCount: count },
+          game: { ...(state.game || {}), playersCount: count },
         })),
 
       addDrawnNumber: (number) =>

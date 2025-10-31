@@ -212,6 +212,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           _gameStore.setMarkedNumbersForACard(message.payload.cardId, message.payload.numbers)
           break
         case "game.notEnoughPlayers":
+          alert(message.payload.status + ' players count: ' + message.payload.joinedPlayers.length + ' ' + message.payload.joinedPlayers)
           if (gameStore.game.gameId === message.payload.gameId) {
             _gameStore.updateStatus(message.payload.status as GameStatus)
             _gameStore.setPlayersCount(message.payload.joinedPlayers.length)
