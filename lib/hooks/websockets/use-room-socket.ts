@@ -111,7 +111,6 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
             _gameStore.setJoining(false)
 
           }
-          // router.replace(`/${i18n.language}/rooms/${roomId}`)
           break
         case "game.playerLeft":
           message.payload.releasedCardsIds?.forEach(cardId => 
@@ -205,12 +204,12 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           _gameStore.resetGameState()
           _gameStore.setGameState(message.payload.gameState)
           break
-        case "card.markNumberResponse":
-          _gameStore.setMarkedNumbersForACard(message.payload.cardId, message.payload.numbers)
-          break
-        case "card.unmarkNumberResponse":
-          _gameStore.setMarkedNumbersForACard(message.payload.cardId, message.payload.numbers)
-          break
+        // case "card.markNumberResponse":
+        //   _gameStore.setMarkedNumbersForACard(message.payload.cardId, message.payload.numbers)
+        //   break
+        // case "card.unmarkNumberResponse":
+        //   _gameStore.setMarkedNumbersForACard(message.payload.cardId, message.payload.numbers)
+        //   break
         case "game.notEnoughPlayers":
           if (gameStore.game.gameId === message.payload.gameId) {
             _gameStore.updateStatus(message.payload.status as GameStatus)
