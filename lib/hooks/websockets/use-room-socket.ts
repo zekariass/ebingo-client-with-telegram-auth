@@ -211,6 +211,13 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
         case "card.unmarkNumberResponse":
           _gameStore.setMarkedNumbersForACard(message.payload.cardId, message.payload.numbers)
           break
+        case "game.notEnoughPlayers":
+          if (gameStore.game.gameId === message.payload.gameId) {
+            _gameStore.updateStatus(message.payload.status as GameStatus)
+            _gameStore.setPlayersCount(message.payload.joinedPlayers.length)
+            _gameStore.setJoinedPlayers(message.payload.joinedPlayers)
+          }
+          break
         case "error":
           if (message.payload?.eventType === "bingo.claim"){
             _gameStore.setClaimError(message.payload)

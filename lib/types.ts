@@ -467,6 +467,18 @@ export interface PlayerJoined extends WSMessage {
 }
 
 
+export interface NotEnoughPlayers extends WSMessage {
+  type: "game.notEnoughPlayers"
+  payload: {
+    gameId: number
+    roomId: number
+    playersCount: number
+    status: string
+    joinedPlayers: string[]
+  }
+}
+
+
 export interface PlayerLeaveRequest extends WSMessage {
   type: "game.playerLeaveRequest"
   payload: {
@@ -773,6 +785,7 @@ export type WSResponseEvent =
   | Countdown
   | GameEnded
   | GameStateAfterPlayerLeave
+  | NotEnoughPlayers
 
 
 export type WSEvent = WSRequestEvent | WSResponseEvent | PongMessage | PingMessage

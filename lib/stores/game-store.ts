@@ -462,10 +462,10 @@ export const useGameStore = create<GameStore>()(
     setClaiming: (value: boolean) =>
       set({ claiming: value }),
 
-      updateStatus: (status) =>
-        set((state) => ({
-          game: { ...state.game, status },
-        })),
+    updateStatus: (status) =>
+      set((state) => ({
+        game: { ...(state.game ?? {}), status },
+      })),
 
       stopDrawing: () =>
         set((state) => ({
