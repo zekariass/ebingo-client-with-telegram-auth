@@ -309,6 +309,8 @@ export const useGameStore = create<GameStore>()(
         // Add only cards not already in userSelectedCardsIds
 
         if (playerId === currentUser){
+          // alert("PLAYER JOINED: "+ cardIds)
+
           const newUserCards = cardIds.filter(id => !game.userSelectedCardsIds.includes(id));
           if (newUserCards.length > 0) {
             set({
@@ -322,12 +324,12 @@ export const useGameStore = create<GameStore>()(
 
 
         // Add only cards not already in allCardIds
-        const newAllCards = cardIds.filter(id => !game.allCardIds.includes(id));
-        if (newAllCards.length > 0) {
+        const newSelectedCards = cardIds.filter(id => !game.allSelectedCardsIds.includes(id));
+        if (newSelectedCards.length > 0) {
           set({
             game: {
               ...game,
-              allCardIds: [...game.allCardIds, ...newAllCards],
+              allSelectedCardsIds: [...game.allSelectedCardsIds, ...newSelectedCards],
             },
           });
         }
