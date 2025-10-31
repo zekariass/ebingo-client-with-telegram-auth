@@ -30,7 +30,7 @@ interface GameStore {
   addCard: (card: CardInfo) => void
   selectCard: (cardId: string, userId: number) => void
   releaseCard: (cardId: string) => void
-  addPlayerSelectedCards: (cardIds: string[]) => void
+  addPlayerSelectedCards: (cardIds: string[], playerId: number, currentUser: number) => void
   setAllPlayerSelectedCardIds: (cardIds: string[]) => void
   setAllCardIds: (cardIds: string[]) => void
   addMarkedNumberToCard: (cardId: string, number: number) => void
@@ -303,19 +303,23 @@ export const useGameStore = create<GameStore>()(
         })),
 
 
-      addPlayerSelectedCards: (cardIds) => {
+      addPlayerSelectedCards: (cardIds, playerId, currentUser) => {
         const { game } = get();
 
         // Add only cards not already in userSelectedCardsIds
-        const newUserCards = cardIds.filter(id => !game.userSelectedCardsIds.includes(id));
-        if (newUserCards.length > 0) {
-          set({
-            game: {
-              ...game,
-              userSelectedCardsIds: [...game.userSelectedCardsIds, ...newUserCards],
-            },
-          });
+
+        if (playerId === currentUser){
+          const newUserCards = cardIds.filter(id => !game.userSelectedCardsIds.includes(id));
+          if (newUserCards.length > 0) {
+            set({
+              game: {
+                ...game,
+                userSelectedCardsIds: [...game.userSelectedCardsIds, ...newUserCards],
+              },
+            });
+          }
         }
+
 
         // Add only cards not already in allCardIds
         const newAllCards = cardIds.filter(id => !game.allCardIds.includes(id));
