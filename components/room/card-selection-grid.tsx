@@ -162,7 +162,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                     status === "selected"
                       ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-1 sm:ring-2 ring-blue-500 text-blue-700 dark:text-blue-300"
                       : status === "taken"
-                      ? "border-red-950 bg-red-500 cursor-not-allowed opacity-50 text-white"
+                      ? "border-red-950 bg-red-500 dark:bg-red-500 cursor-not-allowed opacity-50 text-white"
                       : "border-green-500 bg-green-50 dark:bg-green-900 text-white-700 dark:text-white-900 hover:bg-green-100 dark:hover:bg-green-950"
                   }
                   ${userSelectedCardsIds.length >= maxCards && status === "available" ? "opacity-50" : ""}
