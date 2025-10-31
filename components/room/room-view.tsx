@@ -148,6 +148,7 @@ export function RoomView({ roomId }: RoomViewProps) {
   useEffect(()=>{
     const timeoutId = setTimeout(() => {
       setJoinError(null);
+      setJoining(false)
       }, 5 * 1000); // 5 seconds
 
       // optional cleanup
