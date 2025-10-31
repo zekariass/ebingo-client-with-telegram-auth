@@ -175,7 +175,7 @@ export function RoomView({ roomId }: RoomViewProps) {
 
   return (
     <div className="relative min-h-screen bg-background">
-      {isJoining &&
+      {isJoining && !joinError &&
         <div className="fixed inset-0 bg-black opacity-50 z-[9999] flex flex-col items-center justify-center gap-4 w-full h-full pointer-events-auto">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
           <span className="text-white text-xl font-semibold">Joining room...</span>
