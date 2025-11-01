@@ -143,14 +143,54 @@ export async function showStartMenu(ctx: any) {
   const lang = getUserLang(ctx.from?.id) || 'en';
   const tr = translations[lang];
   await ctx.reply('📋 Choose a command:', Markup.inlineKeyboard([
-    [Markup.button.callback(tr.btnWebview, 'cmd_webview')],
-    [Markup.button.callback(tr.btnGameRooms, 'cmd_gamerooms')],
-    [Markup.button.callback(tr.btnStartGame, 'cmd_startgame')],
-    [Markup.button.callback(tr.btnDeposit, 'cmd_deposit')],
-    [Markup.button.callback(tr.btnTransfer, 'cmd_transfer')],
-    [Markup.button.callback(tr.btnWithdraw, 'cmd_withdraw')],
-    [Markup.button.callback(tr.btnInstructions, 'cmd_instructions')],
-    [Markup.button.callback(tr.btnSupport, 'cmd_support')],
-    [Markup.button.callback(tr.btnLanguage, 'cmd_language')],
+    // [Markup.button.callback(tr.btnWebview, 'cmd_webview')],
+    // [Markup.button.callback(tr.btnGameRooms, 'cmd_gamerooms')],
+    // [Markup.button.callback(tr.btnStartGame, 'cmd_startgame')],
+    // [Markup.button.callback(tr.btnDeposit, 'cmd_deposit')],
+    // [Markup.button.callback(tr.btnTransfer, 'cmd_transfer')],
+    // [Markup.button.callback(tr.btnWithdraw, 'cmd_withdraw')],
+    // [Markup.button.callback(tr.btnInstructions, 'cmd_instructions')],
+    // [Markup.button.callback(tr.btnSupport, 'cmd_support')],
+    // [Markup.button.callback(tr.btnLanguage, 'cmd_language')],
+
+
+    // Row 1 (single button)
+        [Markup.button.callback(tr.btnStartGame, 'cmd_startgame')],
+    
+        // Row 2 (two buttons side by side)
+        [
+          Markup.button.callback(tr.btnGameRooms, 'cmd_gamerooms'),
+          Markup.button.webApp(tr.btnWebview, `${process.env.APP_URL}/${lang}`)
+        ],
+    
+        // Row 3 (three buttons)
+        [
+        //   Markup.button.callback(tr.btnDeposit, 'cmd_deposit'),
+        //   Markup.button.callback(tr.btnTransfer, 'cmd_transfer'),
+        //   Markup.button.callback(tr.btnWithdraw, 'cmd_withdraw'),
+          Markup.button.webApp(tr.btnDeposit, `${process.env.APP_URL}/${lang}/deposit`),
+          Markup.button.webApp(tr.btnWithdraw, `${process.env.APP_URL}/${lang}/withdraw`),
+          Markup.button.webApp(tr.btnTransfer, `${process.env.APP_URL}/${lang}/transfer`),
+          
+        ],
+    
+        // Row 4
+        [
+            Markup.button.webApp(tr.btnBalance, `${process.env.APP_URL}/${lang}/wallet`)
+        ],
+    
+        // Row 5
+        [
+            // Markup.button.callback(tr.btnInstructions, 'cmd_instructions')
+            Markup.button.webApp(tr.btnInstructions, `${process.env.APP_URL}/${lang}/instructions`),
+            Markup.button.callback(tr.changeNickname, `change_name`)
+    
+        ],
+    
+        // Row 6 (two buttons)
+        [
+          Markup.button.callback(tr.btnSupport, 'cmd_support'),
+          Markup.button.callback(tr.btnLanguage, 'cmd_language'),
+        ],
   ]));
 }
