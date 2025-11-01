@@ -2,6 +2,12 @@ import { Markup } from 'telegraf';
 import type { Telegraf } from 'telegraf';
 import { getUserLang, setUserLang } from '../userLangMap';
 
+
+const languageFullName = {
+  "en": "English",
+  "am": "Amharic"
+}
+
 function getTranslationForLang(lang: string, key: string) {
   return translations[lang]?.[key] || translations['en'][key] || key;
 }
@@ -68,14 +74,25 @@ export function registerCommandHandlers(bot: Telegraf) {
     await ctx.reply('🌐 Select your language:', Markup.inlineKeyboard(inlineButtons, { columns: 2 }));
   });
 
-  bot.action(/set_language_(.+)/, async (ctx: any) => {
-    await ctx.answerCbQuery();
-    const selectedLang = ctx.match?.[1];
-    const userId = ctx.from?.id;
-    if (!userId || !selectedLang) return;
-    setUserLang(userId, selectedLang);
-    await ctx.reply(`${getTranslationForLang(selectedLang, 'languageChanged')} ${selectedLang.toUpperCase()}`);
-  });
+  // bot.action(/set_language_(.+)/, async (ctx: any) => {
+  //   await ctx.answerCbQuery();
+  //   const selectedLang = ctx.match?.[1];
+  //   const userId = ctx.from?.id;
+  //   if (!userId || !selectedLang) return;
+  //   setUserLang(userId, selectedLang);
+  //   await ctx.reply(`${getTranslationForLang(selectedLang, 'languageChanged')} ${selectedLang.toUpperCase()}`);
+  // });
+
+  bot.action(/set_language_(.+)/, async (ctx) => {
+  await ctx.answerCbQuery();
+  const selectedLang = ctx.match?.[1];
+  const userId = ctx.from?.id;
+  if (!userId || !selectedLang) return;
+  setUserLang(userId, selectedLang);
+  const langKey = selectedLang as keyof typeof languageFullName;
+  await ctx.reply(`${t(ctx, 'languageChanged')} ${languageFullName[langKey]}`);
+  await showStartMenu(ctx);
+});
 
   // Slash commands
   // bot.command('webview', async (ctx: any) => {
