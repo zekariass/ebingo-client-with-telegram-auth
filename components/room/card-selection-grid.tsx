@@ -97,7 +97,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   if (paginatedCards.length === 0) {
     const timeout = setTimeout(() => {
       handleRefresh()
-    }, 2000) // 2 seconds
+    }, 1000) // 1 seconds
 
     // Cleanup if the component unmounts early
     return () => clearTimeout(timeout)
