@@ -19,8 +19,14 @@
 
 // const bot = new Telegraf(process.env.BOT_TOKEN);
 
+// const awaitingNickname = new Map<number, boolean>();
+
 // // ---------------- Language state ----------------
 // const availableLanguages = ['en', 'am'];
+// const languageFullName = {
+//     "en": "English",
+//     "am": "አማርኛ"
+// }
 // const userLanguageMap = new Map<number, string>();
 
 // function getUserLanguage(ctx: any) {
@@ -31,11 +37,11 @@
 // // ---------------- Translation Helper ----------------
 // const translations: Record<string, Record<string, string>> = {
 //   en: {
-//     greeting: "Welcome to Bingo Fam!",
+//     greeting: "Welcome to Bingo Family!",
 //     noRooms: "❌ No rooms available right now.",
 //     fetchError: "❌ Failed to load rooms. Please try again later.",
-//     chooseRoom: "🎲 Choose a Bingo room:",
-//     openingWebview: "🌐 Opening Web View Lobby",
+//     chooseRoom: "🎲 Choose a Bingo game room:",
+//     openingWebview: "🌐 Opening Web View",
 //     startGame: "🎮 Start Game selected!",
 //     deposit: "💰 Deposit here:",
 //     transfer: "🔁 Transfer here:",
@@ -44,42 +50,48 @@
 //     support: "🧑‍💻 Contact support:",
 //     languageChanged: "🌐 Language changed to",
 //     wallet: "💰 Your Wallet",
-//     btnWebview: "🌐 Web View Lobby",
+//     btnBalance: "💵 Wallet Balance",
+//     btnWebview: "🌐 Web View",
 //     btnGameRooms: "🎲 Game Rooms",
 //     btnStartGame: "🎮 Start Game",
 //     btnDeposit: "💰 Deposit Fund",
 //     btnTransfer: "🔁 Transfer Fund",
 //     btnWithdraw: "💸 Withdraw Money",
 //     btnInstructions: "📖 Instructions",
+//     changeNickname: "👤 Change Your Nickname",
+//     chooseCommand: "Choose:",
 //     btnSupport: "🧑‍💻 Support",
 //     btnLanguage: "🌐 Language",
 //     prev: "⬅️ Prev",
 //     next: "Next ➡️"
 //   },
 //   am: {
-//     greeting: "በቤንጎ ቤተሰብ ወደ እንኳን በደህና መጡ!",
-//     noRooms: "❌ አሁን ክፍሎች የሉም።",
-//     fetchError: "❌ ክፍሎችን ማስገባት አልተቻለም። እባክዎ ከፍ ያድርጉ።",
-//     chooseRoom: "🎲 ክፍሎችን ይምረጡ:",
-//     openingWebview: "🌐 የድህረገፅ እይታ እየተከፈተ ነው",
-//     startGame: "🎮 ጨዋታ መጀመር ተጀምሯል!",
-//     deposit: "💰 ተቀማጭ ያድርጉ:",
-//     transfer: "🔁 ገንዘብ ይከፍሉ:",
-//     withdraw: "💸 ገንዘብ ይወስዱ:",
-//     instructions: "📖 መመሪያዎች:",
+//     greeting: "እንኳን ወደ ቢንጎ ቤተሰብ በደህና መጡ!",
+//     noRooms: "❌ አሁን ጨዋታዎች አልተገኙም",
+//     fetchError: "❌ ጨዋታዎችን ማግኘት አልተቻለም። እባክዎ ደግመው ይሞክሩ።",
+//     chooseRoom: "🎲 ጨዋታዎችን ይምረጡ:",
+//     openingWebview: "🌐 ድህረገፁ እየተከፈተ ነው",
+//     startGame: "🎮 ጨዋታ ጀምር",
+//     deposit: "💰 ገንዘብ አስቀምጥ:",
+//     transfer: "🔁 ገንዘብ ለጓደኛ ይላኩ:",
+//     withdraw: "💸 ገንዘብ ያውጡ:",
+//     instructions: "📖 የጨዋታ መመሪያዎች፡",
 //     support: "🧑‍💻 ድጋፍ ያግኙ:",
-//     languageChanged: "🌐 ቋንቋ ተቀይሯል",
-//     wallet: "💰 ዋሌትዎን ይመልከቱ",
-//     btnWebview: "🌐 የድህረገፅ እይታ",
-//     btnGameRooms: "🎲 የጨዋታ ክፍሎች",
+//     languageChanged: "🌐 ቋንቋ ተቀይሯል: ",
+//     wallet: "💰 ቀሪ ገንዘብ",
+//     btnBalance: "💵 ቀሪ ገንዘብ",
+//     btnWebview: "🌐 ድህረገፁን ይክፈቱ",
+//     btnGameRooms: "🎲 ጨዋታዎች",
 //     btnStartGame: "🎮 ጨዋታ ጀምር",
-//     btnDeposit: "💰 ተቀማጭ",
-//     btnTransfer: "🔁 ክፍያ ላክ",
-//     btnWithdraw: "💸 ገንዘብ ውሰድ",
-//     btnInstructions: "📖 መመሪያ",
-//     btnSupport: "🧑‍💻 ድጋፍ",
-//     btnLanguage: "🌐 ቋንቋ",
-//     prev: "⬅️ ቀድሞ",
+//     btnDeposit: "💰 ገንዘብ አስቀምጥ",
+//     btnTransfer: "🔁 ገንዘብ ለጓደኛ ላክ",
+//     btnWithdraw: "💸 ገንዘብ ያውጡ",
+//     btnInstructions: "📖 የጨዋታ መመሪያዎች",
+//     changeNickname: "👤 ቅጽል ስም ቀይር",
+//     btnSupport: "🧑‍💻 ድጋፍ ያግኙ",
+//     btnLanguage: "🌐 ቋንቋ ይምረጡ",
+//     chooseCommand: "ይምረጡ፡",
+//     prev: "⬅️ ቀዳሚ",
 //     next: "ቀጣይ ➡️"
 //   }
 // };
@@ -92,16 +104,17 @@
 // // ---------------- Set localized commands ----------------
 // async function setLocalizedCommands() {
 //   await bot.telegram.setMyCommands([
-//     { command: 'gamerooms', description: '🎲 Game Rooms' },
-//     { command: 'startgame', description: '🎮 Start Game' },
-//     { command: 'webview', description: '🌐 Open Web View' },
-//     { command: 'wallet', description: '💰 See Your Wallet' },
-//     { command: 'deposit', description: '💰 Deposit Fund' },
-//     { command: 'transfer', description: '🔁 Transfer Fund' },
-//     { command: 'withdraw', description: '💸 Withdraw Money' },
-//     { command: 'instructions', description: '📖 Instructions' },
-//     { command: 'support', description: '🧑‍💻 Support' },
-//     { command: 'language', description: '🌐 Change Language' },
+//     { command: 'menu', description: '📋 Menu | ምርጫዎች' },
+//     { command: 'startgame', description: '🎮 Start Game | ጨዋታ ጀምር' },
+//     { command: 'gamerooms', description: '🎲 Game Rooms | የጨዋታ ክፍሎች' },
+//     { command: 'webview', description: '🌐 Web View | ድረገጽ' },
+//     { command: 'wallet', description: '💰 Check Balance | ቀሪ ገንዘብ' },
+//     { command: 'deposit', description: '💰 Deposit Fund | ገንዘብ አስቀምጥ' },
+//     { command: 'withdraw', description: '💸 Withdraw Money | ገንዘብ አውጣ' },
+//     { command: 'transfer', description: '🔁 Transfer To A Friend| ለጓደኛ ገንዘብ ላክ' },
+//     { command: 'instructions', description: '📖 Instructions | የጨዋታ መመሪያዎች' },
+//     { command: 'support', description: '🧑‍💻 Support | ድጋፍ ያግኙ' },
+//     { command: 'language', description: '🌐 Change Language | ቋንቋ ቀይር' },
 //   ]);
 // }
 
@@ -243,6 +256,93 @@
 
 
 
+// // =========================== CHANGE NAME =============================
+// bot.action('change_name', async (ctx) => {
+//   await ctx.answerCbQuery();
+//   const lang = getUserLanguage(ctx);
+//   const userId = ctx.from?.id;
+
+//   if (!userId) return;
+
+//   awaitingNickname.set(userId, true);
+
+//   await ctx.reply(
+//     lang === 'am'
+//       ? "👤 እባክዎን አዲስ ቅጽል ስምዎን ያስገቡ።"
+//       : "👤 Please enter your new nickname:",
+//   );
+
+//   // Automatically expire after 30 seconds (optional)
+//   setTimeout(() => awaitingNickname.delete(userId), 120_000);
+// });
+
+
+
+// bot.on(message('text'), async (ctx, next) => {
+//   const userId = ctx.from?.id;
+//   if (!userId) return next();
+
+//   const text = ctx.message.text.trim();
+
+//   // ✅ If it's a command, skip nickname handling
+//   if (text.startsWith('/')) {
+//     return next(); // Let normal command handlers run
+//   }
+
+//   // ✅ Only handle if user is in nickname-change mode
+//   if (!awaitingNickname.get(userId)) {
+//     return next();
+//   }
+
+//   // Stop waiting for this user
+//   awaitingNickname.delete(userId);
+
+//   const newNickname = text;
+//   const lang = getUserLanguage(ctx);
+
+//   if (!newNickname) {
+//     await ctx.reply(
+//       lang === 'am'
+//         ? "❌ ስም ተሳስቷል። እባክዎ ደግመው ይሞክሩ።"
+//         : "❌ Invalid nickname. Please try again."
+//     );
+//     return;
+//   }
+
+//   try {
+//     const response = await axios.put(
+//       `${API_BASE_URL}/api/v1/secured/user-profile/update-nickname?telegramId=${userId}&nickName=${newNickname}`
+//     );
+
+//     if (response.data?.success) {
+//       await ctx.reply(
+//         lang === 'am'
+//           ? `✅ ስምዎ ወደ "${newNickname}" ተቀይሯል።`
+//           : `✅ Your nickname has been changed to "${newNickname}".`
+//       );
+//     } else {
+//       await ctx.reply(
+//         lang === 'am'
+//           ? "❌ ስም መቀየር አልተሳካም።"
+//           : "❌ Failed to update nickname."
+//       );
+//     }
+//   } catch (err: any) {
+//     console.error('Nickname change error:', err.response?.data || err.message);
+//     await ctx.reply(
+//       lang === 'am'
+//         ? "❌ የመረጃ ጥያቄ ችግኝ ነበር።"
+//         : "❌ There was an error updating your nickname."
+//     );
+//   }
+
+//   await showStartMenu(ctx);
+// });
+
+
+// // =========================== CHANGE NAME =============================
+
+
 
 // // ---------------- Show Rooms ----------------
 // async function showRooms(ctx: any, page = 1) {
@@ -274,31 +374,78 @@
 // }
 
 // // ---------------- Start Menu ----------------
+// // function getInlineMenu(lang: string) {
+// //   const langTrans = translations[lang];
+// //   return Markup.inlineKeyboard([
+// //     [Markup.button.callback(langTrans.btnWebview, 'cmd_webview')],
+// //     [Markup.button.callback(langTrans.btnGameRooms, 'cmd_gamerooms')],
+// //     [Markup.button.callback(langTrans.btnStartGame, 'cmd_startgame')],
+// //     [Markup.button.callback(langTrans.btnDeposit, 'cmd_deposit')],
+// //     [Markup.button.callback(langTrans.btnTransfer, 'cmd_transfer')],
+// //     [Markup.button.callback(langTrans.btnWithdraw, 'cmd_withdraw')],
+// //     [Markup.button.callback(langTrans.btnInstructions, 'cmd_instructions')],
+// //     [Markup.button.callback(langTrans.btnSupport, 'cmd_support')],
+// //     [Markup.button.callback(langTrans.btnLanguage, 'cmd_language')],
+// //   ]);
+// // }
+
 // function getInlineMenu(lang: string) {
 //   const langTrans = translations[lang];
+
 //   return Markup.inlineKeyboard([
-//     [Markup.button.callback(langTrans.btnWebview, 'cmd_webview')],
-//     [Markup.button.callback(langTrans.btnGameRooms, 'cmd_gamerooms')],
+//     // Row 1 (single button)
 //     [Markup.button.callback(langTrans.btnStartGame, 'cmd_startgame')],
-//     [Markup.button.callback(langTrans.btnDeposit, 'cmd_deposit')],
-//     [Markup.button.callback(langTrans.btnTransfer, 'cmd_transfer')],
-//     [Markup.button.callback(langTrans.btnWithdraw, 'cmd_withdraw')],
-//     [Markup.button.callback(langTrans.btnInstructions, 'cmd_instructions')],
-//     [Markup.button.callback(langTrans.btnSupport, 'cmd_support')],
-//     [Markup.button.callback(langTrans.btnLanguage, 'cmd_language')],
+
+//     // Row 2 (two buttons side by side)
+//     [
+//       Markup.button.callback(langTrans.btnGameRooms, 'cmd_gamerooms'),
+//       Markup.button.webApp(langTrans.btnWebview, `${APP_URL}/${lang}`)
+//     ],
+
+//     // Row 3 (three buttons)
+//     [
+//     //   Markup.button.callback(langTrans.btnDeposit, 'cmd_deposit'),
+//     //   Markup.button.callback(langTrans.btnTransfer, 'cmd_transfer'),
+//     //   Markup.button.callback(langTrans.btnWithdraw, 'cmd_withdraw'),
+//       Markup.button.webApp(langTrans.btnDeposit, `${APP_URL}/${lang}/deposit`),
+//       Markup.button.webApp(langTrans.btnWithdraw, `${APP_URL}/${lang}/withdraw`),
+//       Markup.button.webApp(langTrans.btnTransfer, `${APP_URL}/${lang}/transfer`),
+      
+//     ],
+
+//     // Row 4
+//     [
+//         Markup.button.webApp(langTrans.btnBalance, `${APP_URL}/${lang}/wallet`)
+//     ],
+
+//     // Row 5
+//     [
+//         // Markup.button.callback(langTrans.btnInstructions, 'cmd_instructions')
+//         Markup.button.webApp(langTrans.btnInstructions, `${APP_URL}/${lang}/instructions`),
+//         Markup.button.callback(langTrans.changeNickname, `change_name`)
+
+//     ],
+
+//     // Row 6 (two buttons)
+//     [
+//       Markup.button.callback(langTrans.btnSupport, 'cmd_support'),
+//       Markup.button.callback(langTrans.btnLanguage, 'cmd_language'),
+//     ],
 //   ]);
 // }
 
+
 // async function showStartMenu(ctx: any) {
 //   const lang = getUserLanguage(ctx);
-//   await ctx.reply('📋 Choose a command:', getInlineMenu(lang));
+//   const languageMap = translations[lang]
+//   await ctx.reply(languageMap.chooseCommand, getInlineMenu(lang));
 // }
 
 // // ---------------- Inline handlers ----------------
 // bot.action('cmd_webview', async (ctx) => {
 //   await ctx.answerCbQuery();
 //   await ctx.reply(t(ctx, 'openingWebview'), Markup.inlineKeyboard([
-//     Markup.button.webApp('Open Lobby', `${APP_URL}/${getUserLanguage(ctx)}`)
+//     Markup.button.webApp('Open Web', `${APP_URL}/${getUserLanguage(ctx)}`)
 //   ]));
 // });
 
@@ -309,7 +456,8 @@
 
 // bot.action('cmd_startgame', async (ctx) => {
 //   await ctx.answerCbQuery();
-//   await showStartMenu(ctx);
+// //   await showStartMenu(ctx);
+//   await showRooms(ctx);
 // });
 
 // bot.action('cmd_wallet', async (ctx) => {
@@ -368,17 +516,21 @@
 //   const userId = ctx.from?.id;
 //   if (!userId || !selectedLang) return;
 //   userLanguageMap.set(userId, selectedLang);
-//   await ctx.reply(`${t(ctx, 'languageChanged')} ${selectedLang.toUpperCase()}`);
+//   const langKey = selectedLang as keyof typeof languageFullName;
+//   await ctx.reply(`${t(ctx, 'languageChanged')} ${languageFullName[langKey]}`);
+//   await showStartMenu(ctx);
 // });
 
 // // ---------------- Command Handlers ----------------
+// bot.command('menu', async (ctx) => await showStartMenu(ctx));
+
 // bot.command('webview', async (ctx) => {
 //   await ctx.reply(t(ctx, 'openingWebview'), Markup.inlineKeyboard([
-//     Markup.button.webApp('Open Lobby', `${APP_URL}/${getUserLanguage(ctx)}`)
+//     Markup.button.webApp('Open Web', `${APP_URL}/${getUserLanguage(ctx)}`)
 //   ]));
 // });
 // bot.command('gamerooms', async (ctx) => await showRooms(ctx));
-// bot.command('startgame', async (ctx) => await showStartMenu(ctx));
+// bot.command('startgame', async (ctx) => await showRooms(ctx));
 // bot.command('deposit', async (ctx) => await ctx.reply(t(ctx, 'deposit'), Markup.inlineKeyboard([
 //   Markup.button.webApp('Deposit Fund', `${APP_URL}/${getUserLanguage(ctx)}/deposit`)
 // ])));

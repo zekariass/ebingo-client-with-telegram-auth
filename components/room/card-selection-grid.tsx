@@ -22,7 +22,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const userSelectedCardsIds = useGameStore(state => state.game.userSelectedCardsIds)
   const allSelectedCardsIds = useGameStore(state => state.game.allSelectedCardsIds)
   const allCardIds = useGameStore(state => state.game.allCardIds)
-  const gameId = useGameStore(state => state.game.gameId)
+  // const gameId = useGameStore(state => state.game.gameId)
   const status = useGameStore(state => state.game.status)
   const joinedPlayers = useGameStore(state => state.game.joinedPlayers)
   const selectCardOptimistically  = useGameStore(state => state.selectCard)
@@ -92,6 +92,21 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
       enterRoom();
   }
 
+
+  useEffect(() => {
+  // Run this only when component mounts or when `paginatedCards` updates
+  if (paginatedCards.length === 0) {
+    const timeout = setTimeout(() => {
+      handleRefresh()
+    }, 2000) // 2 seconds
+
+    // Cleanup if the component unmounts early
+    return () => clearTimeout(timeout)
+  }
+}, [paginatedCards, handleRefresh])
+
+  
+
   return (
     <Card>
       <CardHeader className="">
@@ -126,12 +141,9 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                 </div>
               </div> : 
 
-              <div>
-                {
-                status === GameStatus.PLAYING ? 
+              status === GameStatus.PLAYING ? <div>
                 <h3 className="text-red-500 text-center">Game In Progress...</h3> : ""
-                }
-              </div>
+              </div> : ""
               
               }
             </div>

@@ -2,10 +2,9 @@
 
 import { useEffect, useRef } from "react"
 import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
+import { AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Wifi, WifiOff, AlertCircle, RefreshCw } from "lucide-react"
+import { WifiOff } from "lucide-react"
 import { userStore } from "@/lib/stores/user-store"
 
 interface ConnectionStatusProps {

@@ -38,6 +38,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
   
   const router = useRouter();
 
+
   // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Room Socket Hook - roomId:", roomId, "enabled:", enabled, "session:", session, "loading:", loading)
 
   const wsRef = useRef<WebSocket | null>(null)

@@ -109,7 +109,7 @@
 
 "use client"
 
-import type { GameState, Room } from "@/lib/types"
+import type { Room } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, RefreshCcw } from "lucide-react"
 import Link from "next/link"
@@ -166,10 +166,10 @@ export function RoomHeader({ room }: RoomHeaderProps) {
           {/* Center Section: Connection + Balance */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-1 sm:gap-2">
-              <span className="font-medium text-foreground/80">Balance:</span>
-              <span className="text-foreground font-semibold">{totalAvailableBalance} {currency}</span>
+              <span className="text-yellow-700 font-bold">Balance:</span>
+              <span className="text-yellow-700 font-bold">{totalAvailableBalance} {currency}</span>
             </div>
-            <ConnectionStatus roomId={room?.id} />
+            <div className="font-bold"><ConnectionStatus roomId={room?.id} /></div>
           </div>
 
           {/* Right Section: Refresh */}

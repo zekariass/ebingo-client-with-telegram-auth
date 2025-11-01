@@ -85,6 +85,7 @@ export interface UserProfile {
   telegramId: number;
   firstName: string;
   lastName: string;
+  nickname: string,
   phoneNumber?: string | null;
   status: 'ACTIVE' | 'BANNED';
   role: 'ADMIN' | 'PLAYER' | 'MODERATOR';

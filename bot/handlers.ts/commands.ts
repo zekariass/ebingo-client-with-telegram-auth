@@ -15,7 +15,7 @@ export function registerCommandHandlers(bot: Telegraf) {
     await ctx.answerCbQuery();
     const lang = getUserLangFromCtx(ctx);
     await ctx.reply(getTranslationForLang(lang, 'openingWebview'), Markup.inlineKeyboard([
-      Markup.button.webApp('Open Lobby', `${process.env.APP_URL}/${lang}`)
+      Markup.button.webApp('Open Web', `${process.env.APP_URL}/${lang}`)
     ]));
   });
 
