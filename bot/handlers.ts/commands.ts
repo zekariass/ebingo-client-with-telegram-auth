@@ -78,67 +78,103 @@ export function registerCommandHandlers(bot: Telegraf) {
   });
 
   // Slash commands
-  bot.command('webview', async (ctx: any) => {
-    const lang = getUserLangFromCtx(ctx);
-    await ctx.reply(getTranslationForLang(lang, 'openingWebview'), Markup.inlineKeyboard([
-      Markup.button.webApp('Open Lobby', `${process.env.APP_URL}/${lang}`)
+  // bot.command('webview', async (ctx: any) => {
+  //   const lang = getUserLangFromCtx(ctx);
+  //   await ctx.reply(getTranslationForLang(lang, 'openingWebview'), Markup.inlineKeyboard([
+  //     Markup.button.webApp('Open Lobby', `${process.env.APP_URL}/${lang}`)
+  //   ]));
+  // });
+
+  // bot.command('gamerooms', async (ctx: any) => await showRooms(ctx));
+  // bot.command('startgame', async (ctx: any) => await showStartMenu(ctx));
+
+  // bot.command('deposit', async (ctx: any) => {
+  //   const lang = getUserLangFromCtx(ctx);
+  //   await ctx.reply(getTranslationForLang(lang, 'deposit'), Markup.inlineKeyboard([
+  //     Markup.button.webApp('Deposit Fund', `${process.env.APP_URL}/${lang}/deposit`)
+  //   ]));
+  // });
+
+  // bot.command('wallet', async (ctx: any) => {
+  //   const lang = getUserLangFromCtx(ctx);
+  //   await ctx.reply(getTranslationForLang(lang, 'wallet'), Markup.inlineKeyboard([
+  //     Markup.button.webApp('Your Wallet', `${process.env.APP_URL}/${lang}/wallet`)
+  //   ]));
+  // });
+
+  // bot.command('transfer', async (ctx: any) => {
+  //   const lang = getUserLangFromCtx(ctx);
+  //   await ctx.reply(getTranslationForLang(lang, 'transfer'), Markup.inlineKeyboard([
+  //     Markup.button.webApp('Transfer Fund', `${process.env.APP_URL}/${lang}/transfer`)
+  //   ]));
+  // });
+
+  // bot.command('withdraw', async (ctx: any) => {
+  //   const lang = getUserLangFromCtx(ctx);
+  //   await ctx.reply(getTranslationForLang(lang, 'withdraw'), Markup.inlineKeyboard([
+  //     Markup.button.webApp('Withdraw Money', `${process.env.APP_URL}/${lang}/withdraw`)
+  //   ]));
+  // });
+
+  // bot.command('instructions', async (ctx: any) => {
+  //   const lang = getUserLangFromCtx(ctx);
+  //   await ctx.reply(getTranslationForLang(lang, 'instructions'), Markup.inlineKeyboard([
+  //     Markup.button.webApp('How to Play', `${process.env.APP_URL}/${lang}/instructions`)
+  //   ]));
+  // });
+
+  // bot.command('support', async (ctx: any) => {
+  //   const lang = getUserLangFromCtx(ctx);
+  //   await ctx.reply(getTranslationForLang(lang, 'support'), Markup.inlineKeyboard([
+  //     Markup.button.webApp('Get Support', `${process.env.APP_URL}/${lang}/support`)
+  //   ]));
+  // });
+
+  // bot.command('language', async (ctx: any) => {
+  //   const inlineButtons = ['en','am'].map(lang => Markup.button.callback(lang.toUpperCase(), `set_language_${lang}`));
+  //   await ctx.reply('🌐 Select your language:', Markup.inlineKeyboard(inlineButtons, { columns: 2 }));
+  // });
+
+  bot.command('menu', async (ctx) => await showStartMenu(ctx));
+  
+  bot.command('webview', async (ctx) => {
+    await ctx.reply(t(ctx, 'openingWebview'), Markup.inlineKeyboard([
+      Markup.button.webApp('Open Web', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}`)
     ]));
   });
-
-  bot.command('gamerooms', async (ctx: any) => await showRooms(ctx));
-  bot.command('startgame', async (ctx: any) => await showStartMenu(ctx));
-
-  bot.command('deposit', async (ctx: any) => {
-    const lang = getUserLangFromCtx(ctx);
-    await ctx.reply(getTranslationForLang(lang, 'deposit'), Markup.inlineKeyboard([
-      Markup.button.webApp('Deposit Fund', `${process.env.APP_URL}/${lang}/deposit`)
-    ]));
-  });
-
-  bot.command('wallet', async (ctx: any) => {
-    const lang = getUserLangFromCtx(ctx);
-    await ctx.reply(getTranslationForLang(lang, 'wallet'), Markup.inlineKeyboard([
-      Markup.button.webApp('Your Wallet', `${process.env.APP_URL}/${lang}/wallet`)
-    ]));
-  });
-
-  bot.command('transfer', async (ctx: any) => {
-    const lang = getUserLangFromCtx(ctx);
-    await ctx.reply(getTranslationForLang(lang, 'transfer'), Markup.inlineKeyboard([
-      Markup.button.webApp('Transfer Fund', `${process.env.APP_URL}/${lang}/transfer`)
-    ]));
-  });
-
-  bot.command('withdraw', async (ctx: any) => {
-    const lang = getUserLangFromCtx(ctx);
-    await ctx.reply(getTranslationForLang(lang, 'withdraw'), Markup.inlineKeyboard([
-      Markup.button.webApp('Withdraw Money', `${process.env.APP_URL}/${lang}/withdraw`)
-    ]));
-  });
-
-  bot.command('instructions', async (ctx: any) => {
-    const lang = getUserLangFromCtx(ctx);
-    await ctx.reply(getTranslationForLang(lang, 'instructions'), Markup.inlineKeyboard([
-      Markup.button.webApp('How to Play', `${process.env.APP_URL}/${lang}/instructions`)
-    ]));
-  });
-
-  bot.command('support', async (ctx: any) => {
-    const lang = getUserLangFromCtx(ctx);
-    await ctx.reply(getTranslationForLang(lang, 'support'), Markup.inlineKeyboard([
-      Markup.button.webApp('Get Support', `${process.env.APP_URL}/${lang}/support`)
-    ]));
-  });
-
-  bot.command('language', async (ctx: any) => {
-    const inlineButtons = ['en','am'].map(lang => Markup.button.callback(lang.toUpperCase(), `set_language_${lang}`));
+  bot.command('gamerooms', async (ctx) => await showRooms(ctx));
+  bot.command('startgame', async (ctx) => await showRooms(ctx));
+  bot.command('deposit', async (ctx) => await ctx.reply(t(ctx, 'deposit'), Markup.inlineKeyboard([
+    Markup.button.webApp('Deposit Fund', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/deposit`)
+  ])));
+  bot.command('wallet', async (ctx) => await ctx.reply(t(ctx, 'wallet'), Markup.inlineKeyboard([
+    Markup.button.webApp('Your Wallet', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/wallet`)
+  ])));
+  bot.command('transfer', async (ctx) => await ctx.reply(t(ctx, 'transfer'), Markup.inlineKeyboard([
+    Markup.button.webApp('Transfer Fund', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/transfer`)
+  ])));
+  bot.command('withdraw', async (ctx) => await ctx.reply(t(ctx, 'withdraw'), Markup.inlineKeyboard([
+    Markup.button.webApp('Withdraw Money', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/withdraw`)
+  ])));
+  bot.command('instructions', async (ctx) => await ctx.reply(t(ctx, 'instructions'), Markup.inlineKeyboard([
+    Markup.button.webApp('How to Play', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/instructions`)
+  ])));
+  bot.command('support', async (ctx) => await ctx.reply(t(ctx, 'support'), Markup.inlineKeyboard([
+    Markup.button.webApp('Get Support', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/support`)
+  ])));
+  bot.command('language', async (ctx) => {
+    const inlineButtons = availableLanguages.map(lang =>
+      Markup.button.callback(lang.toUpperCase(), `set_language_${lang}`)
+    );
     await ctx.reply('🌐 Select your language:', Markup.inlineKeyboard(inlineButtons, { columns: 2 }));
   });
+  
 }
 
 // helper exported for start handlers to show the menu
-import { translations } from '../translations';
+import { availableLanguages, translations } from '../translations';
 import { showRooms } from './rooms';
+import { t } from '../utils';
 export async function showStartMenu(ctx: any) {
   const lang = getUserLang(ctx.from?.id) || 'en';
   const tr = translations[lang];

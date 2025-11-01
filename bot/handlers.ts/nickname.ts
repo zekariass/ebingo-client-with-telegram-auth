@@ -16,7 +16,7 @@ export function registerNicknameHandlers(bot: Telegraf<Context>) {
 
     awaitingNickname.set(userId, true);
 
-    await ctx.reply(t(ctx, 'enterNewNickname')); // use translations file
+    await ctx.reply(t(ctx, 'changeNickname')); // use translations file
     setTimeout(() => awaitingNickname.delete(userId), 120_000); // expire in 2 min
   });
 
