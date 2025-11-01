@@ -43,8 +43,6 @@ export function GameView({ roomId }: GameViewProps) {
 
   const { room, loading, fetchRoom } = useRoomStore()
 
-
-
     const getCurrentLetter = (number: number): string => {
     if (number < 1 || number > 75) throw new Error("Number must be between 1 and 75");
 
@@ -86,7 +84,7 @@ export function GameView({ roomId }: GameViewProps) {
     init()
   }, [fetchRoom, roomId])
 
-  
+
   const handleLeaveGame = async () => {
     if (!gameId || !telegramId) {
       router.replace(`/${i18n.language}`)

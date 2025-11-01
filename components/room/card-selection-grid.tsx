@@ -50,7 +50,6 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
     setTimeout(() => setRotating(false), 1000)
   }
 
-
   useEffect(() => {
       enterRoom();
   }, [enterRoom, connected]);

@@ -56,7 +56,7 @@ export const translations: Record<string, Record<string, string>> = {
 // },
 
 en: {
-    greeting: "Welcome to Bingo Family!",
+    greeting: "✅ Welcome to Bingo Family!",
     noRooms: "❌ No rooms available right now.",
     fetchError: "❌ Failed to load rooms. Please try again later.",
     chooseRoom: "🎲 Choose a Bingo game room:",
@@ -78,8 +78,10 @@ en: {
     btnWithdraw: "💸 Withdraw Money",
     btnInstructions: "📖 Instructions",
     changeNickname: "👤 Change Your Nickname",
-    invalidNickName: "Invalid nickname entered!",
-    nicknameChanged: "Nickname changed successfully",
+    invalidNickName: "❌ Invalid nickname entered!",
+    nicknameChanged: "✅ Nickname changed successfully",
+    nicknameChangeFailed: "❌ Nickname change has failed",
+    nicknameChangeError: "❌ Nickname change has failed",
     chooseCommand: "Choose:",
     btnSupport: "🧑‍💻 Support",
     btnLanguage: "🌐 Language",
@@ -87,7 +89,7 @@ en: {
     next: "Next ➡️"
   },
   am: {
-    greeting: "እንኳን ወደ ቢንጎ ቤተሰብ በደህና መጡ!",
+    greeting: "✅ እንኳን ወደ ቢንጎ ቤተሰብ በደህና መጡ!",
     noRooms: "❌ አሁን ጨዋታዎች አልተገኙም",
     fetchError: "❌ ጨዋታዎችን ማግኘት አልተቻለም። እባክዎ ደግመው ይሞክሩ።",
     chooseRoom: "🎲 ጨዋታዎችን ይምረጡ:",
@@ -109,8 +111,10 @@ en: {
     btnWithdraw: "💸 ገንዘብ ያውጡ",
     btnInstructions: "📖 የጨዋታ መመሪያዎች",
     changeNickname: "👤 ቅጽል ስም ቀይር",
-    invalidNickName: "ያስገቡት ቅጽል ስም ልክ አይደለም",
-    nicknameChanged: "ቅጽል ስም በትክክል ተቀይሯል",
+    invalidNickName: "❌ ያስገቡት ቅጽል ስም ልክ አይደለም",
+    nicknameChanged: "✅ ቅጽል ስም በትክክል ተቀይሯል",
+    nicknameChangeFailed: "❌ ቅጽል ስም ቅያሪ አልተሳካም",
+    nicknameChangeError: "❌ ቅጽል ስም ቅያሪ አልተሳካም",
     btnSupport: "🧑‍💻 ድጋፍ ያግኙ",
     btnLanguage: "🌐 ቋንቋ ይምረጡ",
     chooseCommand: "ይምረጡ፡",

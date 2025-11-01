@@ -152,13 +152,13 @@ export function registerCommandHandlers(bot: Telegraf) {
   //   await ctx.reply('🌐 Select your language:', Markup.inlineKeyboard(inlineButtons, { columns: 2 }));
   // });
 
-  bot.command('menu', async (ctx) => await showStartMenu(ctx));
   
   bot.command('webview', async (ctx) => {
     await ctx.reply(t(ctx, 'openingWebview'), Markup.inlineKeyboard([
       Markup.button.webApp('Open Web', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}`)
     ]));
   });
+  bot.command('menu', async (ctx) => await showStartMenu(ctx));
   bot.command('gamerooms', async (ctx) => await showRooms(ctx));
   bot.command('startgame', async (ctx) => await showRooms(ctx));
   bot.command('deposit', async (ctx) => await ctx.reply(t(ctx, 'deposit'), Markup.inlineKeyboard([
@@ -208,7 +208,8 @@ export async function showStartMenu(ctx: any) {
 
 
     // Row 1 (single button)
-        [Markup.button.callback(tr.btnStartGame, 'cmd_startgame')],
+        // [Markup.button.callback(tr.btnStartGame, 'cmd_startgame')],
+        [Markup.button.callback(tr.btnStartGame, 'cmd_gamerooms')],
     
         // Row 2 (two buttons side by side)
         [

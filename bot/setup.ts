@@ -18,7 +18,7 @@ return await (global as any).telegraf?.telegram?.setMyCommands?.([
 // { command: 'support', description: '🧑‍💻 Support' },
 // { command: 'language', description: '🌐 Change Language' },
 
-    { command: 'menu', description: '📋 Menu | ምርጫዎች' },
+{ command: 'menu', description: '📋 Menu | ምርጫዎች' },
     { command: 'startgame', description: '🎮 Start Game | ጨዋታ ጀምር' },
     { command: 'gamerooms', description: '🎲 Game Rooms | የጨዋታ ክፍሎች' },
     { command: 'webview', description: '🌐 Web View | ድረገጽ' },
