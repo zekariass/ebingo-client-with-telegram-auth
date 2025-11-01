@@ -1,6 +1,6 @@
 // ==================================================================================
 import { NextRequest, NextResponse } from 'next/server';
-import { bot } from '@/bot/index-oldProd';
+import { bot } from '@/bot';
 
 export async function POST(req: NextRequest, { params }: { params: { locale: string } }) {
   try {
