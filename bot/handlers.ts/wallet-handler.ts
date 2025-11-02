@@ -89,6 +89,6 @@ export function registerWalletHandlers(bot: Telegraf<Context>) {
       await ctx.reply(t(ctx, 'walletFetchError'));
     }
 
-    await showStartMenu(ctx);
+    // await showStartMenu(ctx);
   });
 }
