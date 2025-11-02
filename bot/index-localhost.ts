@@ -1,10 +1,11 @@
-// import { Telegraf, Markup, NarrowedContext } from 'telegraf';
+// import { Telegraf, Markup, NarrowedContext, Context } from 'telegraf';
 // import { message } from 'telegraf/filters';
 // // import { Update, ContactMessage } from 'telegraf/types';
 // import axios from 'axios';
 // import path from 'path';
 // import dotenv from 'dotenv';
 // import { Room } from '@/lib/types';
+// import { registerWalletHandlers } from './handlers.ts/wallet-handler';
 
 // dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
@@ -59,6 +60,10 @@
 //     btnWithdraw: "💸 Withdraw Money",
 //     btnInstructions: "📖 Instructions",
 //     changeNickname: "👤 Change Your Nickname",
+//     walletInfo: "💰 *Your Wallet*\n\n• Total Available Balance: *{total}*\n• Withdrawable Balance: *{withdrawable}*",
+//     walletNotFound: "❌ Wallet not found. Please try again later.",
+//     walletFetchFailed: "⚠️ Failed to fetch wallet. Please try again later.",
+//     walletFetchError: "⚠️ An unexpected error occurred while fetching your wallet.",
 //     chooseCommand: "Choose:",
 //     btnSupport: "🧑‍💻 Support",
 //     btnLanguage: "🌐 Language",
@@ -91,10 +96,55 @@
 //     btnSupport: "🧑‍💻 ድጋፍ ያግኙ",
 //     btnLanguage: "🌐 ቋንቋ ይምረጡ",
 //     chooseCommand: "ይምረጡ፡",
+//     walletInfo: "💰 *Your Wallet*\n\n• Total Available Balance: *{total}*\n• Withdrawable Balance: *{withdrawable}*",
+//     walletNotFound: "❌ Wallet not found. Please try again later.",
+//     walletFetchFailed: "⚠️ Failed to fetch wallet. Please try again later.",
+//     walletFetchError: "⚠️ An unexpected error occurred while fetching your wallet.",
 //     prev: "⬅️ ቀዳሚ",
 //     next: "ቀጣይ ➡️"
 //   }
 // };
+
+
+
+//   // Action: user clicks "My Wallet"
+// bot.action('my_wallet', async (ctx) => {
+//     await ctx.answerCbQuery();
+//     const userId = ctx.from?.id;
+//     if (!userId) return;
+
+//     try {
+//       // Fetch wallet data from backend
+//       const response = await axios.get(`${API_BASE_URL}/api/v1/secured/wallet/by-telegram-id?telegramId=${userId}`);
+
+//       const apiResponse = response.data;
+//       if (!apiResponse?.success || !apiResponse?.data) {
+//         await ctx.reply(t(ctx, 'walletFetchFailed'));
+//         await showStartMenu(ctx);
+//         return;
+//       }
+
+//       const wallet = apiResponse.data;
+
+//       // Extract relevant fields
+//       const totalAvailable = wallet.totalAvailableBalance ?? 0;
+//       const withdrawable = wallet.availableToWithdraw ?? 0;
+
+//       const messageText = t(ctx, 'walletInfo')
+//         .replace('{total}', totalAvailable.toFixed(2))
+//         .replace('{withdrawable}', withdrawable.toFixed(2));
+
+//       await ctx.replyWithMarkdownV2(messageText);
+//     } catch (err: any) {
+//       console.error('Wallet fetch error:', err.response?.data || err.message);
+//       await ctx.reply(t(ctx, 'walletFetchError'));
+//     }
+
+//     await showStartMenu(ctx);
+//   });
+
+
+
 
 // function t(ctx: any, key: string): string {
 //   const lang = getUserLanguage(ctx);
@@ -415,7 +465,8 @@
 
 //     // Row 4
 //     [
-//         Markup.button.webApp(langTrans.btnBalance, `${APP_URL}/${lang}/wallet`)
+//         // Markup.button.webApp(langTrans.btnBalance, `${APP_URL}/${lang}/wallet`)
+//         Markup.button.callback(langTrans.btnBalance, `my_wallet`)
 //     ],
 
 //     // Row 5
@@ -534,9 +585,9 @@
 // bot.command('deposit', async (ctx) => await ctx.reply(t(ctx, 'deposit'), Markup.inlineKeyboard([
 //   Markup.button.webApp('Deposit Fund', `${APP_URL}/${getUserLanguage(ctx)}/deposit`)
 // ])));
-// bot.command('wallet', async (ctx) => await ctx.reply(t(ctx, 'wallet'), Markup.inlineKeyboard([
-//   Markup.button.webApp('Your Wallet', `${APP_URL}/${getUserLanguage(ctx)}/wallet`)
-// ])));
+// // bot.command('wallet', async (ctx) => await ctx.reply(t(ctx, 'wallet'), Markup.inlineKeyboard([
+// //   Markup.button.webApp('Your Wallet', `${APP_URL}/${getUserLanguage(ctx)}/wallet`)
+// // ])));
 // bot.command('transfer', async (ctx) => await ctx.reply(t(ctx, 'transfer'), Markup.inlineKeyboard([
 //   Markup.button.webApp('Transfer Fund', `${APP_URL}/${getUserLanguage(ctx)}/transfer`)
 // ])));
@@ -567,6 +618,7 @@
 // setLocalizedCommands().then(() => {
 //   bot.launch().then(() => console.log('🤖 Telegram bot running!'));
 // });
+
 
 // // Graceful shutdown
 // process.once('SIGINT', () => bot.stop('SIGINT'));

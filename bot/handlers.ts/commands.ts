@@ -230,7 +230,8 @@ export async function showStartMenu(ctx: any) {
     
         // Row 4
         [
-            Markup.button.webApp(tr.btnBalance, `${process.env.APP_URL}/${lang}/wallet`)
+            // Markup.button.webApp(tr.btnBalance, `${process.env.APP_URL}/${lang}/wallet`)
+            Markup.button.webApp(tr.btnBalance, `my_wallet`)
         ],
     
         // Row 5
