@@ -33,12 +33,11 @@ export function registerWalletHandlers(bot: Telegraf<Context>) {
         .replace('{total}', totalAvailable.toFixed(2))
         .replace('{withdrawable}', withdrawable.toFixed(2));
 
-      await ctx.replyWithMarkdownV2(messageText);
+      await ctx.reply(messageText);
     } catch (err: any) {
       console.error('Wallet fetch error:', err.response?.data || err.message);
       await ctx.reply(t(ctx, 'walletFetchError'));
     }
 
-    await showStartMenu(ctx);
   });
 }
