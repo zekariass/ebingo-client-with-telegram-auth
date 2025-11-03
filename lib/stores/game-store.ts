@@ -333,12 +333,12 @@ export const useGameStore = create<GameStore>()(
             });
 
             if (filteredUserCardsIds.length !== userSelectedCardsIds.length) {
-              set({
+              set(state => ({
                 game: {
-                  ...game,
+                  ...state.game,
                   userSelectedCardsIds: [...filteredUserCardsIds],
                 },
-              });
+              }));
             }
           }
 
