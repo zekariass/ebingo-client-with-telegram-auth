@@ -308,8 +308,6 @@ export const useGameStore = create<GameStore>()(
 
         // Add only cards not already in userSelectedCardsIds
         if (playerId === currentUser){
-          // alert("PLAYER JOINED: "+ cardIds)
-
           const newUserCards = cardIds.filter(id => !game.userSelectedCardsIds.includes(id));
           if (newUserCards.length > 0) {
             set({
@@ -322,7 +320,6 @@ export const useGameStore = create<GameStore>()(
         } else {
             const { game } = get();
             const { userSelectedCardsIds, allSelectedCardsIds } = game;
-
 
             // Remove any user-selected cards that appear in incoming cardIds but aren't yet in allSelectedCardsIds
             const filteredUserCardsIds = userSelectedCardsIds.filter(cardId => {
@@ -338,7 +335,7 @@ export const useGameStore = create<GameStore>()(
               set(state => ({
                 game: {
                   ...state.game,
-                  userSelectedCardsIds: [...filteredUserCardsIds],
+                  userSelectedCardsIds: [filteredUserCardsIds[0]] //[...filteredUserCardsIds],
                 },
               }));
             }
