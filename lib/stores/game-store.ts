@@ -320,11 +320,33 @@ export const useGameStore = create<GameStore>()(
               },
             });
           }
+        } else {
+
+          // If the current player selected cards are in incoming cardIds but not in allSelectedCardsIds, remove it from userSelectedCardsIds
+          const {userSelectedCardsIds, allSelectedCardsIds} = get().game
+          const filteredUserCardsIds = userSelectedCardsIds.filter(cardId => {
+            if (!allSelectedCardsIds.includes(cardId) && cardIds.includes(cardId)) {
+              return
+            } else {
+              return cardId
+            }
+          })
+
+
+          if (filteredUserCardsIds.length !== userSelectedCardsIds.length){
+            set({
+              game: {
+                ...game,
+                userSelectedCardsIds: [...filteredUserCardsIds],
+              },
+            });
+          }
         }
 
 
         // Add only cards not already in allCardIds
         const newSelectedCards = cardIds.filter(id => !game.allSelectedCardsIds.includes(id));
+
         if (newSelectedCards.length > 0) {
           set({
             game: {
