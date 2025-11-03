@@ -332,6 +332,8 @@ export const useGameStore = create<GameStore>()(
               return !(takenByOther && notYetInGlobal);
             });
 
+            alert(filteredUserCardsIds)
+
             if (filteredUserCardsIds.length !== userSelectedCardsIds.length) {
               set(state => ({
                 game: {
