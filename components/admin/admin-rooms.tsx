@@ -163,7 +163,7 @@ useTelegramInit();
               <InputField
                 label="Minimum Players"
                 type="number"
-                min="2"
+                min="1"
                 placeholder="100"
                 required
                 {...register("minPlayers", {required: true, valueAsNumber: true })}
