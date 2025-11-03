@@ -28,7 +28,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const selectCardOptimistically  = useGameStore(state => state.selectCard)
   const deselectCardOptimistically  = useGameStore(state => state.releaseCard)
 
-  const {enterRoom, connected, selectCard: selectCardBackend, releaseCard: releaseCardBackend} =  useWebSocketEvents({roomId: roomId, enabled: true});
+  const {enterRoom, connected} =  useWebSocketEvents({roomId: roomId, enabled: true});
 
   const user = userStore(state => state.user)
 

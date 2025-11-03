@@ -35,6 +35,7 @@ export function LobbyHeader() {
               <Link href="/" className="text-xl sm:text-2xl font-bold dark:text-white">
                 Bingo Fam
               </Link>
+              {/* <Link href="/chapa-test">Chapa</Link> */}
             </div>
 
             <div className="flex flex-wrap items-center gap-2 sm:gap-4">
