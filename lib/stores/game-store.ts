@@ -307,8 +307,6 @@ export const useGameStore = create<GameStore>()(
         const { game } = get();
 
         // Add only cards not already in userSelectedCardsIds
-        alert([currentUser, playerId])
-
         if (playerId === currentUser){
           // alert("PLAYER JOINED: "+ cardIds)
 
