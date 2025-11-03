@@ -324,15 +324,16 @@ export const useGameStore = create<GameStore>()(
             const { game } = get();
             const { userSelectedCardsIds, allSelectedCardsIds } = game;
 
-            // alert(userSelectedCardsIds)
 
             // Remove any user-selected cards that appear in incoming cardIds but aren't yet in allSelectedCardsIds
             const filteredUserCardsIds = userSelectedCardsIds.filter(cardId => {
               const takenByOther = cardIds.includes(cardId);
               const notYetInGlobal = !allSelectedCardsIds.includes(cardId);
               // Keep only cards NOT taken by someone else
-              return (takenByOther && notYetInGlobal);
+              return !(takenByOther && notYetInGlobal);
             });
+
+            alert([...cardIds, ...userSelectedCardsIds])
 
             
             if (filteredUserCardsIds.length !== userSelectedCardsIds.length) {
