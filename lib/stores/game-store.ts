@@ -307,6 +307,7 @@ export const useGameStore = create<GameStore>()(
         const { game } = get();
 
         // Add only cards not already in userSelectedCardsIds
+        alert([currentUser, playerId])
 
         if (playerId === currentUser){
           // alert("PLAYER JOINED: "+ cardIds)
@@ -329,7 +330,6 @@ export const useGameStore = create<GameStore>()(
             const filteredUserCardsIds = userSelectedCardsIds.filter(cardId => {
               const takenByOther = cardIds.includes(cardId);
               const notYetInGlobal = !allSelectedCardsIds.includes(cardId);
-              alert([takenByOther, notYetInGlobal])
 
               // Keep only cards NOT taken by someone else
               return !(takenByOther && notYetInGlobal);
