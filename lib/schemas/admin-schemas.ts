@@ -5,7 +5,7 @@ export const roomSchema = z.object({
   name: z.string().min(1, "Room name is required").max(50, "Room name must be less than 50 characters"),
   entryFee: z.number().min(0, "Fee must be positive").max(1000, "Fee cannot exceed $1000"),
   capacity: z.number().min(1, "Capacity must be at least 1"),
-  minPlayers: z.number().min(2, "There must be at least 2 players to play the game."),
+  minPlayers: z.number().min(1, "There must be at least 1 players to play the game."),
   pattern: z.enum(["LINE", "LINE_AND_CORNERS", "CORNERS", "FULL_HOUSE"], {
     errorMap: () => ({ message: "Please select a valid winning pattern" }),
   }),
