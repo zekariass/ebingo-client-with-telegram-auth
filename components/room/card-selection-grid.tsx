@@ -109,6 +109,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   return (
     <Card>
       <CardHeader className="">
+        {userSelectedCardsIds}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
           <div className="flex flex-row sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm">
             {/* <Badge variant="destructive" className="w-fit">
