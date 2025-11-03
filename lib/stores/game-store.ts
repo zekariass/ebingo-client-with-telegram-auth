@@ -321,27 +321,27 @@ export const useGameStore = create<GameStore>()(
             });
           }
         } else {
+            const { game } = get();
+            const { userSelectedCardsIds, allSelectedCardsIds } = game;
 
-          // If the current player selected cards are in incoming cardIds but not in allSelectedCardsIds, remove it from userSelectedCardsIds
-          const {userSelectedCardsIds, allSelectedCardsIds} = get().game
-          const filteredUserCardsIds = userSelectedCardsIds.filter(cardId => {
-            if (!allSelectedCardsIds.includes(cardId) && cardIds.includes(cardId)) {
-              return
-            } else {
-              return cardId
-            }
-          })
-
-
-          if (filteredUserCardsIds.length !== userSelectedCardsIds.length){
-            set({
-              game: {
-                ...game,
-                userSelectedCardsIds: [...filteredUserCardsIds],
-              },
+            // Remove any user-selected cards that appear in incoming cardIds but aren't yet in allSelectedCardsIds
+            const filteredUserCardsIds = userSelectedCardsIds.filter(cardId => {
+              const takenByOther = cardIds.includes(cardId);
+              const notYetInGlobal = !allSelectedCardsIds.includes(cardId);
+              // Keep only cards NOT taken by someone else
+              return !(takenByOther && notYetInGlobal);
             });
+
+            if (filteredUserCardsIds.length !== userSelectedCardsIds.length) {
+              set({
+                game: {
+                  ...game,
+                  userSelectedCardsIds: filteredUserCardsIds,
+                },
+              });
+            }
           }
-        }
+
 
 
         // Add only cards not already in allCardIds
