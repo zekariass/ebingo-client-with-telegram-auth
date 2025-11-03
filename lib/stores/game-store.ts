@@ -335,7 +335,7 @@ export const useGameStore = create<GameStore>()(
               set(state => ({
                 game: {
                   ...state.game,
-                  userSelectedCardsIds: [filteredUserCardsIds[0]] //[...filteredUserCardsIds],
+                  userSelectedCardsIds: [...[filteredUserCardsIds[0]]] //[...filteredUserCardsIds],
                 },
               }));
             }
