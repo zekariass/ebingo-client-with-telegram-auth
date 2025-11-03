@@ -117,6 +117,8 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
     router.push(`/${i18n.language}/rooms/${room.id}`)
   }
 
+  const sortedRooms = rooms.sort((r1, r2) => r1.entryFee - r2.entryFee)
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -127,7 +129,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
     )
   }
 
-  if (!rooms || rooms.length === 0) {
+  if (!sortedRooms || sortedRooms.length === 0) {
     return (
       <div className="text-center py-16">
         <h3 className="text-lg font-semibold text-muted-foreground">
@@ -154,7 +156,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
         </thead>
 
         <tbody>
-          {(Array.isArray(rooms) ? rooms : []).map((room) => (
+          {(Array.isArray(sortedRooms) ? sortedRooms : []).map((room) => (
             <tr
               key={room.id}
               className="bg-gradient-to-br from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 transition-all duration-200 rounded-xl shadow-md hover:shadow-lg cursor-pointer text-white"
