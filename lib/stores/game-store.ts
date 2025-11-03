@@ -306,6 +306,8 @@ export const useGameStore = create<GameStore>()(
       addPlayerSelectedCards: (cardIds, playerId, currentUser) => {
         const { game } = get();
 
+        alert(get().game.allSelectedCardsIds.includes(cardIds[0]))
+
         // Add only cards not already in userSelectedCardsIds
         if (playerId === currentUser){
           const newUserCards = cardIds.filter(id => !game.userSelectedCardsIds.includes(id));
@@ -335,7 +337,7 @@ export const useGameStore = create<GameStore>()(
               set(state => ({
                 game: {
                   ...state.game,
-                  userSelectedCardsIds: [...[filteredUserCardsIds[0]]] //[...filteredUserCardsIds],
+                  userSelectedCardsIds: [...filteredUserCardsIds],
                 },
               }));
             }
