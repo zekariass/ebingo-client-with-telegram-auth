@@ -29,7 +29,9 @@ interface GameStore {
   setAmIDisqualified: (disqualified: boolean) => void
   addCard: (card: CardInfo) => void
   selectCard: (cardId: string, userId: number) => void
+  selectCardOptimistically: (cardId: string) => void
   releaseCard: (cardId: string) => void
+  releaseCardOptimistically: (cardId: string) => void
   addPlayerSelectedCards: (cardIds: string[], playerId: number, currentUser: number) => void
   setAllPlayerSelectedCardIds: (cardIds: string[]) => void
   setAllCardIds: (cardIds: string[]) => void
@@ -258,8 +260,6 @@ export const useGameStore = create<GameStore>()(
             newUserSelectedCards = game.currentCardPool.filter((card) =>
               newUserSelectedIds.includes(card.cardId)
             )
-
-            // console.log("=======================>>SELECTED CARDS============>>>: ", game.allCardIds.length)
           }
 
           return {
@@ -267,6 +267,43 @@ export const useGameStore = create<GameStore>()(
               ...game,
               userSelectedCardsIds: newUserSelectedIds,
               allSelectedCardsIds: newAllSelectedIds,
+              userSelectedCards: newUserSelectedCards,
+            },
+          }
+        })
+      },
+
+      selectCardOptimistically: (cardId) =>{
+        set((state) => {
+          const { game } = state
+
+          // Already selected? Do nothing
+          if (game.userSelectedCardsIds.includes(cardId)) return state
+
+          // Enforce max cards only for the current user
+          if (
+            game.userSelectedCardsIds.length >= maxCards
+          ) {
+            return state
+          }
+        
+          // Default safe values
+          let newUserSelectedIds = game.userSelectedCardsIds
+          let newUserSelectedCards = game.userSelectedCards
+
+          // If the action is from the current user, update their selections
+          newUserSelectedIds = Array.from(
+              new Set([...game.userSelectedCardsIds, cardId])
+            )
+
+          newUserSelectedCards = game.currentCardPool.filter((card) =>
+              newUserSelectedIds.includes(card.cardId)
+            )
+
+          return {
+            game: {
+              ...game,
+              userSelectedCardsIds: newUserSelectedIds,
               userSelectedCards: newUserSelectedCards,
             },
           }
@@ -296,6 +333,29 @@ export const useGameStore = create<GameStore>()(
             },
           }
         }),
+
+      
+      releaseCardOptimistically: (cardId) => {
+        set((state) => {
+          
+          const { game } = state
+          const newUserSelectedIds = game.userSelectedCardsIds.filter(
+            (id) => id !== cardId,
+          )
+          
+          const newUserSelectedCards = game.userSelectedCards.filter(
+            (card) => card.cardId !== cardId,
+          )
+
+          return {
+            game: {
+              ...game,
+              userSelectedCardsIds: newUserSelectedIds,
+              userSelectedCards: newUserSelectedCards,
+            },
+          }
+        })
+      } ,
 
       setAllPlayerSelectedCardIds: (cardIds) =>
         set((state) => ({
