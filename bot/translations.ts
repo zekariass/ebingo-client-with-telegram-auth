@@ -89,6 +89,7 @@ en: {
     chooseCommand: "Choose:",
     btnSupport: "🧑‍💻 Support",
     btnLanguage: "🌐 Language",
+    currency: "Birr",
     prev: "⬅️ Prev",
     next: "Next ➡️"
   },
@@ -119,13 +120,14 @@ en: {
     nicknameChanged: "✅ ቅጽል ስም በትክክል ተቀይሯል",
     nicknameChangeFailed: "❌ ቅጽል ስም ቅያሪ አልተሳካም",
     nicknameChangeError: "❌ ቅጽል ስም ቅያሪ አልተሳካም",
-    walletInfo: "💰 *Your Wallet*\n\n• Total Available Balance: *{total}*\n• Withdrawable Balance: *{withdrawable}*",
+    walletInfo: "💰 *ቀሪ ገንዝብ*\n\n• አጠቃላይ ቀሪ ገንዘብ: *{total}*\n• የሚወጣ ገንዘብ: *{withdrawable}*",
     walletNotFound: "❌ Wallet not found. Please try again later.",
     walletFetchFailed: "⚠️ Failed to fetch wallet. Please try again later.",
     walletFetchError: "⚠️ An unexpected error occurred while fetching your wallet.",
     btnSupport: "🧑‍💻 ድጋፍ ያግኙ",
     btnLanguage: "🌐 ቋንቋ ይምረጡ",
     chooseCommand: "ይምረጡ፡",
+    currency: "ብር",
     prev: "⬅️ ቀዳሚ",
     next: "ቀጣይ ➡️"
   }

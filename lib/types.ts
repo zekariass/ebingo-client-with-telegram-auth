@@ -219,7 +219,7 @@ export interface PaymentMethod {
 export interface WalletBalance {
   id: number;
   userProfileId: number;
-  totalDeposit: number;
+  // totalDeposit: number;
   depositBalance: number;
   pendingBalance: number;
   welcomeBonus: number;
@@ -228,7 +228,7 @@ export interface WalletBalance {
   availableReferralBonus: number;
   totalPrizeAmount: number;
   pendingWithdrawal: number;
-  totalWithdrawal: number;
+  // totalWithdrawal: number;
   totalAvailableBalance: number;
   availableToWithdraw: number;
 }

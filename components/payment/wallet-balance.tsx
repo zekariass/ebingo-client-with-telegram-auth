@@ -86,6 +86,14 @@ export function WalletBalance() {
               </span>
             </div>
 
+            <Separator />
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Withdrawable</span>
+              <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                {currency} {balance.availableToWithdraw?.toFixed(2)}
+              </span>
+            </div>
+
             {balance.pendingWithdrawal > 0 && (
               <>
                 <Separator />

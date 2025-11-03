@@ -34,7 +34,8 @@ export async function POST(req: NextRequest) {
     }
 
     // 🔹 Validate phone format before forwarding
-    const phoneRegex = /^(?:\+251|0)(7|9)\d{8}$/
+    const phoneRegex = /^(?:\+?251|0)(7|9)\d{8}$/;
+
     if (!phoneRegex.test(phone)) {
       return NextResponse.json(
         { success: false, error: "Invalid phone number format. Use 09..., 07..., +2519..., or +2517..." },

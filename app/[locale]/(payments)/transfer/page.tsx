@@ -16,7 +16,7 @@ import Link from "next/link"
 const minTransfer = 10
 
 // Phone validation pattern for Ethiopian numbers
-const phoneRegex = /^(09|07|\+2519|\+2517)\d{8}$/;
+const phoneRegex = /^(09|07|\+2519|\+2517|2519|2517)\d{8}$/;
 
 // 🔹 Dynamic Zod schema builder
 const buildTransferSchema = (maxTransferable: number) =>
@@ -29,7 +29,7 @@ const buildTransferSchema = (maxTransferable: number) =>
     amount: z
       .number()
       .min(minTransfer, `Minimum transfer is Br ${minTransfer}`)
-      .max(maxTransferable, `Maximum transfer is Br ${maxTransferable}`),
+      .max(maxTransferable, `Insufficient fund: ${maxTransferable}`),
   })
 
 type TransferForm = z.infer<ReturnType<typeof buildTransferSchema>>
@@ -62,6 +62,10 @@ export default function TransferPage() {
 
   const selectedAmount = watch("amount")
 
+  useEffect(()=>{
+    setTransferError(null)
+  },[])
+
   useEffect(() => {
     fetchWallet(true)
   }, [fetchWallet])
@@ -79,7 +83,9 @@ export default function TransferPage() {
         const success = await transferFunds(data.amount, data.phone);
 
         if (success) {
-          router.push("/wallet"); // navigate only if transfer succeeds
+          router.push("/transfer/success"); 
+        }else {
+          router.push("/transfer/failure"); 
         }
         // if not success, error will be in transferError and displayed automatically
       } catch (error) {
