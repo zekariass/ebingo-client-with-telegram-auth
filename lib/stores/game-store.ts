@@ -329,11 +329,11 @@ export const useGameStore = create<GameStore>()(
             const filteredUserCardsIds = userSelectedCardsIds.filter(cardId => {
               const takenByOther = cardIds.includes(cardId);
               const notYetInGlobal = !allSelectedCardsIds.includes(cardId);
+              alert([takenByOther, notYetInGlobal])
+
               // Keep only cards NOT taken by someone else
               return !(takenByOther && notYetInGlobal);
             });
-
-            alert([...cardIds, ...userSelectedCardsIds])
 
             
             if (filteredUserCardsIds.length !== userSelectedCardsIds.length) {
