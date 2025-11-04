@@ -279,7 +279,7 @@ export const useGameStore = create<GameStore>()(
 
           // Already selected? Do nothing
           // if (game.userSelectedCardsIds.includes(cardId)) return state
-          if (game.userSelectedCardsIds.includes(cardId)) {
+          if (game.userSelectedCardsIds.length === 2) {
             get().releaseCardOptimistically(game.userSelectedCardsIds[0])
           }
 
