@@ -80,7 +80,6 @@
 //   )
 // }
 
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -105,12 +104,16 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
       return
     }
 
-    // Normalize both timestamps
-    const safeStartTime = startTime.replace(/\.\d+Z$/, "Z").replace(/Z?$/, "Z")
-    const safeEndTime = endTime.replace(/\.\d+Z$/, "Z").replace(/Z?$/, "Z")
+    // 🔹 Try to safely parse dates
+    const parseDate = (val: string) => {
+      if (!val) return NaN
+      // Add Z if no timezone
+      if (!val.endsWith("Z")) val += "Z"
+      return new Date(val).getTime()
+    }
 
-    const serverStartMs = new Date(safeStartTime).getTime()
-    const serverEndMs = new Date(safeEndTime).getTime()
+    const serverStartMs = parseDate(startTime)
+    const serverEndMs = parseDate(endTime)
     const clientNowMs = Date.now()
 
     if (isNaN(serverStartMs) || isNaN(serverEndMs)) {
@@ -118,18 +121,17 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
       return
     }
 
-    // 🔹 Compute offset between server time and client time
-    //    Positive = client is behind, Negative = client is ahead
+    // 🔹 Calculate client-server time offset
     const offset = serverStartMs - clientNowMs
 
     const update = () => {
-      // Adjust local time to server time
       const syncedNow = Date.now() + offset
       const diffSeconds = Math.max(Math.floor((serverEndMs - syncedNow) / 1000), 0)
       setTimeLeft(diffSeconds)
 
       if (diffSeconds <= 0) {
         setCountdownEndTime("")
+        clearInterval(interval)
       }
     }
 
@@ -138,21 +140,19 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
     return () => clearInterval(interval)
   }, [startTime, endTime, setCountdownEndTime])
 
-  // Format seconds into MM:SS
+  // Format MM:SS
   const formatTime = (secs: number) => {
     const mins = Math.floor(secs / 60)
     const remSecs = secs % 60
     return `${mins.toString().padStart(2, "0")}:${remSecs.toString().padStart(2, "0")}`
   }
 
-  // Badge color logic
   const getBadgeBg = () => {
     if (timeLeft <= 10) return "bg-red-500 text-white"
     if (timeLeft <= 30) return "bg-yellow-500 text-white"
     return "bg-blue-500 text-white"
   }
 
-  // Render UI
   if (timeLeft <= 0 && gamePage) {
     return (
       <div className="text-center space-y-1">
