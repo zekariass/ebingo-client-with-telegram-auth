@@ -281,7 +281,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const user = userStore(state => state.user)
 
   const takenCards = new Set(allSelectedCardsIds)
-  // const maxCards = 2
+  const maxCards = 2
 
   const [currentPage, setCurrentPage] = useState(1)
   const cardsPerPage = 100
@@ -424,7 +424,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                       ? "border-2 border-red-950 bg-red-500 dark:bg-red-500 cursor-not-allowed opacity-50 text-white"
                       : "border-green-500 bg-green-50 dark:bg-green-900 text-white-700 dark:text-white-900 hover:bg-green-100 dark:hover:bg-green-950"
                   }
-                  ${status === "available" ? "opacity-50" : ""}
+                  ${userSelectedCardsIds.length >= maxCards && status === "available" ? "opacity-50" : ""}
                 `}
                 onClick={() => handleCardClick(cardId)}
                 disabled={(status === "taken" ) || disabled}
