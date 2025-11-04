@@ -322,7 +322,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
     if (userSelectedCardsIds.includes(cardId) && user?.telegramId) {
       // releaseCardBackend(gameId, cardId)
       deselectCardOptimistically(cardId)
-    } else if (!takenCards.has(cardId) && user?.telegramId) {
+    } else if (!takenCards.has(cardId) && userSelectedCardsIds.length < maxCards && user?.telegramId) {
       // selectCardBackend(gameId, cardId)
       selectCardOptimistically(cardId)
     }
@@ -427,7 +427,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                   ${userSelectedCardsIds.length >= maxCards && status === "available" ? "opacity-50" : ""}
                 `}
                 onClick={() => handleCardClick(cardId)}
-                disabled={(status === "taken" ) || disabled}
+                disabled={(!userSelectedCardsIds.includes(cardId) && (status === "taken" || (userSelectedCardsIds.length >= maxCards && status === "available"))) || disabled}
               >
                 {absoluteIndex}
                 {status === "selected" && (
