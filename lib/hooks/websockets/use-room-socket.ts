@@ -594,7 +594,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           }
         },
         // "game.countdown": (p) => _gameStore.setCountdownWithEndTime(p.countdownEndTime),
-        "game.countdown": (p) => _gameStore.setCountdown(p.serverTime, p.countdownEndTime),
+        "game.countdown": (p) => _gameStore.setCountdown(p.countdownEndTime),
         "room.serverGameState": (p) => {
           _gameStore.resetGameState()
           if (p.success && p.gameState) {
