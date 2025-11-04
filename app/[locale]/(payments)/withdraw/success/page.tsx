@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 export default function WithdrawSuccessPage() {
   const router = useRouter()
 
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 p-6">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-md text-center">

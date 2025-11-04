@@ -233,7 +233,13 @@ export const usePaymentStore = create<PaymentState>()(
       setPMError: (error) => set({ pmError: error }),
       setGameTxnError: (error) => set({ gameTxnError: error }),
       setTransferError: (error) => set({ transferError: error }),
-      setWithdrawError: (error) => set({ withdrawError: error }),
+      setWithdrawError: (error) => {
+         set({ withdrawError: error })
+
+         setTimeout(()=>{
+           set({ withdrawError: null })
+         }, 5000)
+      },
       setDepositError: (error) => set({ depositError: error }),
       
 
