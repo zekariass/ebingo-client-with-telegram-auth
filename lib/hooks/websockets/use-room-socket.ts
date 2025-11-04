@@ -622,9 +622,18 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
             _gameStore.setClaimError(p)
             _gameStore.setClaiming(false)
           } else if (p.eventType === "game.playerJoinRequest") {
-            _gameStore.setJoinError(p.message)
-            router.replace(`/${i18n.language}/rooms/${roomId}`)
-          } else if (p.eventType === "game.playerLeaveRequest") {
+              _gameStore.setJoinError(p.message);
+
+              // Handle failed cards properly
+              if (p.failedCards && Array.isArray(p.failedCards)) {
+                p.failedCards.forEach((cardId: string) => {
+                  _gameStore.releaseCardOptimistically(cardId);
+                });
+              }
+
+              router.replace(`/${i18n.language}/rooms/${roomId}`);
+            }
+          else if (p.eventType === "game.playerLeaveRequest") {
             _gameStore.resetGameState()
             _roomStore.resetRoom()
             _gameStore.setJoining(false)
