@@ -594,7 +594,6 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           }
         },
         "game.countdown": (p) => {
-          alert(JSON.stringify(p))
           _gameStore.setCountdownWithEndTime(p.countdownEndTime)
         },
         "room.serverGameState": (p) => {
