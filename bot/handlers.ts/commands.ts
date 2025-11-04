@@ -165,14 +165,17 @@ export function registerCommandHandlers(bot: Telegraf) {
     Markup.button.webApp('Deposit Fund', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/deposit`)
   ])));
   bot.command('wallet', async (ctx) => await ctx.reply(t(ctx, 'wallet'), Markup.inlineKeyboard([
-    Markup.button.webApp('Your Wallet', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/wallet`)
+    Markup.button.callback(t(ctx, 'btnBalance'), `my_wallet`)
   ])));
   bot.command('transfer', async (ctx) => await ctx.reply(t(ctx, 'transfer'), Markup.inlineKeyboard([
     Markup.button.webApp('Transfer Fund', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/transfer`)
   ])));
-  bot.command('withdraw', async (ctx) => await ctx.reply(t(ctx, 'withdraw'), Markup.inlineKeyboard([
+  bot.command('withdraw', async (ctx) => await ctx.reply(t(ctx, 'withdraw'), 
+  Markup.inlineKeyboard([
     Markup.button.webApp('Withdraw Money', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/withdraw`)
-  ])));
+  ])
+
+));
   bot.command('instructions', async (ctx) => await ctx.reply(t(ctx, 'instructions'), Markup.inlineKeyboard([
     Markup.button.webApp('How to Play', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/instructions`)
   ])));
