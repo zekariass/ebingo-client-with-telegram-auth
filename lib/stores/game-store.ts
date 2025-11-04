@@ -278,14 +278,17 @@ export const useGameStore = create<GameStore>()(
           const { game } = state
 
           // Already selected? Do nothing
-          if (game.userSelectedCardsIds.includes(cardId)) return state
+          // if (game.userSelectedCardsIds.includes(cardId)) return state
+          if (game.userSelectedCardsIds.includes(cardId)) {
+            get().releaseCardOptimistically(game.userSelectedCardsIds[0])
+          }
 
           // Enforce max cards only for the current user
-          if (
-            game.userSelectedCardsIds.length >= maxCards
-          ) {
-            return state
-          }
+          // if (
+          //   game.userSelectedCardsIds.length >= maxCards
+          // ) {
+          //   return state
+          // }
         
           // Default safe values
           let newUserSelectedIds = game.userSelectedCardsIds
