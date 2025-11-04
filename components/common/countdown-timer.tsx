@@ -15,7 +15,12 @@ export function CountdownTimer({label, gamePage = true }: CountdownTimerProps) {
   const setCountdownEndTime = useGameStore(state => state.setCountdownWithEndTime)
   const endTime = useGameStore(state => state.game.countdownEndTime)
 
+  // useEffect(()=>{
+  //   alert(endTime)
+  // },[])
+
   useEffect(() => {
+    
     if (!endTime) {
       console.warn("CountdownTimer: missing endTime")
       return
@@ -25,6 +30,7 @@ export function CountdownTimer({label, gamePage = true }: CountdownTimerProps) {
                         .replace(/\.\d+Z$/, "Z") // remove sub-millisecond precision
                         .replace(/Z?$/, "Z");    // ensure UTC suffix
     const targetTime = new Date(safeEndTime).getTime()
+    
     if (isNaN(targetTime)) {
       console.error("CountdownTimer: invalid endTime", endTime)
       return

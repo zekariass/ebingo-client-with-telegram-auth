@@ -593,8 +593,10 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
             _gameStore.setClaiming(false)
           }
         },
-        // "game.countdown": (p) => _gameStore.setCountdownWithEndTime(p.countdownEndTime),
-        "game.countdown": (p) => _gameStore.setCountdown(p.countdownEndTime),
+        "game.countdown": (p) => {
+          alert(p.countdownEndTime)
+          _gameStore.setCountdownWithEndTime(p.countdownEndTime)
+        },
         "room.serverGameState": (p) => {
           _gameStore.resetGameState()
           if (p.success && p.gameState) {
