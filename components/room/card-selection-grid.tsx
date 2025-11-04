@@ -281,7 +281,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const user = userStore(state => state.user)
 
   const takenCards = new Set(allSelectedCardsIds)
-  const maxCards = 2
+  // const maxCards = 2
 
   const [currentPage, setCurrentPage] = useState(1)
   const cardsPerPage = 100
@@ -322,7 +322,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
     if (userSelectedCardsIds.includes(cardId) && user?.telegramId) {
       // releaseCardBackend(gameId, cardId)
       deselectCardOptimistically(cardId)
-    } else if (!takenCards.has(cardId) && userSelectedCardsIds.length < maxCards && user?.telegramId) {
+    } else if (!takenCards.has(cardId) && user?.telegramId) {
       // selectCardBackend(gameId, cardId)
       selectCardOptimistically(cardId)
     }
@@ -427,7 +427,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                   ${userSelectedCardsIds.length >= maxCards && status === "available" ? "opacity-50" : ""}
                 `}
                 onClick={() => handleCardClick(cardId)}
-                // disabled={(status === "taken" ) || disabled}
+                disabled={(status === "taken" ) || disabled}
               >
                 {absoluteIndex}
                 {status === "selected" && (
