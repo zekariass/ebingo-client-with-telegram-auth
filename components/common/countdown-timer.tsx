@@ -96,7 +96,7 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
   const [timeLeft, setTimeLeft] = useState<number>(0)
 
   const setCountdownEndTime = useGameStore(state => state.setCountdownWithEndTime)
-  const startTime = useGameStore(state => state.game.countdownStartime)
+  const startTime = useGameStore(state => state.game.serverTime)
   const endTime = useGameStore(state => state.game.countdownEndTime)
 
   useEffect(() => {

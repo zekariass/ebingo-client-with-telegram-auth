@@ -77,7 +77,7 @@ const initialGameState: GameState = {
   ended: false,
   status: Status.READY,
   stopNumberDrawing: false,
-  countdownStartime: "",
+  serverTime: "",
   countdownEndTime: "",
   loading: false,
 }
@@ -529,11 +529,11 @@ export const useGameStore = create<GameStore>()(
         })),
 
 
-      setCountdown: (startTime, endTime) =>
+      setCountdown: (serverTime, endTime) =>
         set((state) => ({
           game: {
             ...state.game,
-            countdownStartime: startTime,
+            serverTime: serverTime,
             countdownEndTime: endTime,
             status: Status.COUNTDOWN,
           },
