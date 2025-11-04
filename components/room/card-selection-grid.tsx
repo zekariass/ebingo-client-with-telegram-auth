@@ -427,7 +427,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                   ${userSelectedCardsIds.length >= maxCards && status === "available" ? "opacity-50" : ""}
                 `}
                 onClick={() => handleCardClick(cardId)}
-                disabled={(status === "taken" ) || disabled}
+                // disabled={(status === "taken" ) || disabled}
               >
                 {absoluteIndex}
                 {status === "selected" && (
