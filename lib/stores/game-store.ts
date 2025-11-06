@@ -134,7 +134,7 @@ export const useGameStore = create<GameStore>()(
         set((state) => {
           const { currentCardPool, userSelectedCardsIds } = state.game;
 
-          console.log("====================currentCardPool============: ", currentCardPool)
+          // console.log("====================currentCardPool============: ", currentCardPool)
 
           return {
             game: {
@@ -425,7 +425,7 @@ export const useGameStore = create<GameStore>()(
           userSelectedCards:
             state.game.userSelectedCards?.map((card) => {
               if (card.cardId !== cardId) return card
-              console.log("=================>>> MARKED NUMBERS: ", card)
+              // console.log("=================>>> MARKED NUMBERS: ", card)
               if (card.marked?.includes(number)) return card
               return { ...card, marked: [...(card.marked ?? []), number] }
             }) || [],
