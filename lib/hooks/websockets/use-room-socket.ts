@@ -555,7 +555,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
         "game.playerLeft": (p) => {
           p.releasedCardsIds?.forEach((cardId: string) => _gameStore.releaseCard(cardId))
           if (user && user.telegramId === Number(p.playerId)) {
-            router.replace(`/${i18n.language}`)
+            // router.replace(`/${i18n.language}`)
             _gameStore.resetGameState()
             _roomStore.resetRoom()
             disconnect()
