@@ -408,7 +408,9 @@
 // }
 
 
-// ===================== Second version =================================
+
+
+
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from "react"
@@ -555,7 +557,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
         "game.playerLeft": (p) => {
           p.releasedCardsIds?.forEach((cardId: string) => _gameStore.releaseCard(cardId))
           if (user && user.telegramId === Number(p.playerId)) {
-            // router.replace(`/${i18n.language}`)
+            router.replace(`/${i18n.language}`)
             _gameStore.resetGameState()
             _roomStore.resetRoom()
             disconnect()
@@ -591,9 +593,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
             _gameStore.setClaiming(false)
           }
         },
-        "game.countdown": (p) => {
-          _gameStore.setCountdownWithEndTime(p.countdownEndTime)
-        },
+        "game.countdown": (p) => _gameStore.setCountdownWithEndTime(p.countdownEndTime),
         "room.serverGameState": (p) => {
           _gameStore.resetGameState()
           if (p.success && p.gameState) {
@@ -755,4 +755,3 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
     reconnect,
   }
 }
-
