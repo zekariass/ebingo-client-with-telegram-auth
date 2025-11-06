@@ -2,6 +2,7 @@
 
 import { useGameStore } from "@/lib/stores/game-store"
 import { cn } from "@/lib/utils"
+import { ConnectionStatus } from "../room/connection-status"
 
 const BINGO_LETTERS = ["B", "I", "N", "G", "O"]
 
@@ -23,7 +24,7 @@ const generateNumberGrid = () => {
 
 export function NumberGrid() {
   const {
-    game: { drawnNumbers: calledNumbers },
+    game: { drawnNumbers: calledNumbers, roomId },
   } = useGameStore()
   const numberGrid = generateNumberGrid()
 
@@ -32,9 +33,11 @@ const colors = ["green", "red", "yellow", "green", "red"]
 
   return (
     <div className="bg-card rounded-lg border p-2 sm:p-4 w-full">
-      <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-center text-primary">
+      
+      {/* <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-center text-primary">
         75 Number Grid
-      </h2>
+      </h2> */}
+      <div className="font-bold"><ConnectionStatus roomId={roomId} /></div>
 
       <div className="flex items-center justify-center w-full">
         <div className="w-full max-w-3xl">
