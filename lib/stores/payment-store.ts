@@ -10,6 +10,7 @@ interface PaymentState {
   transactions: Transaction[]
   gameTransactions: GameTransaction[]
   loading: boolean
+  hasMore: boolean
   processing: boolean
   paymentOrderData: PaymentOrderData | null
   checkoutData: CheckoutData | null
@@ -107,6 +108,7 @@ export const usePaymentStore = create<PaymentState>()(
       transactions: [],
       gameTransactions: [],
       loading: false,
+      hasMore: false,
       processing: false,
       paymentOrderData: null,
       checkoutData: null,
@@ -159,6 +161,7 @@ export const usePaymentStore = create<PaymentState>()(
         paymentMethods: [],
         transactions: [],
         loading: false,
+        hasMore: false,
         processing: false,
         walletError: null,
         pmError: null,
@@ -275,6 +278,45 @@ export const usePaymentStore = create<PaymentState>()(
           gameTransactions: [...gameTxns]
          }),
 
+      // fetchGameTransactions: async (page = 1, size = 10, sortBy = "createdAt", refresh = false) => {
+      //   const { gameTransactions } = get()
+      //   const initData = userStore.getState().initData || ""
+      //   const lang = i18n?.language || "en"
+
+      //   if (gameTransactions.length && !refresh && page === 1) return
+
+      //   set({ loading: true, gameTxnError: null })
+
+      //   try {
+      //     const response = await fetch(
+      //       `/${lang}/api/payments/game-transactions?page=${page}&size=${size}&sortBy=${sortBy}`,
+      //       {
+      //         method: "GET",
+      //         headers: {
+      //           "Content-Type": "application/json",
+      //           "x-init-data": initData,
+      //         },
+      //         cache: "no-store",
+      //       }
+      //     )
+
+      //     const result = await response.json()
+
+      //     if (!response.ok || !result.success) {
+      //       throw new Error(result.error || "Failed to fetch transactions")
+      //     }
+
+      //     set({ gameTransactions: result.data || [], loading: false })
+      //   } catch (err: any) {
+      //     console.error("fetchGameTransactions error:", err)
+      //     set({
+      //       gameTxnError: err.message || "Error fetching game transactions",
+      //       loading: false,
+      //     })
+      //   }
+      // },
+
+
       fetchGameTransactions: async (page = 1, size = 10, sortBy = "createdAt", refresh = false) => {
         const { gameTransactions } = get()
         const initData = userStore.getState().initData || ""
@@ -303,7 +345,15 @@ export const usePaymentStore = create<PaymentState>()(
             throw new Error(result.error || "Failed to fetch transactions")
           }
 
-          set({ gameTransactions: result.data || [], loading: false })
+          // ✅ use result.data.length to determine if there’s more data
+          const hasMore = result.data?.length === size
+
+          // ✅ store both transactions and hasMore in Zustand
+          set({
+            gameTransactions: result.data || [],
+            hasMore,
+            loading: false,
+          })
         } catch (err: any) {
           console.error("fetchGameTransactions error:", err)
           set({
@@ -312,6 +362,7 @@ export const usePaymentStore = create<PaymentState>()(
           })
         }
       },
+
 
 
       // Async actions to fetch from DB

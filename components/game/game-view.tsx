@@ -10,7 +10,6 @@ import { useGameStore } from "@/lib/stores/game-store"
 import { Button } from "../ui/button"
 import { userStore } from "@/lib/stores/user-store"
 import { CountdownTimer } from "../common/countdown-timer"
-import { Badge } from "../ui/badge"
 import { GameStatus } from "@/lib/types"
 import { useRouter } from "next/navigation"
 import i18n from "@/i18n"
@@ -147,7 +146,7 @@ export function GameView({ roomId }: GameViewProps) {
                     )}
                   </div>
                 ) : (
-                  <div className="font-semibold text-xs px-3 py-1 bg-yellow-600 text-white rounded-2xl">
+                  <div className="font-semibold text-xs px-3 py-1 bg-yellow-600 text-white rounded-xl">
                     {"Waiting Players..."}
                     {/* {status} */}
                   </div>
