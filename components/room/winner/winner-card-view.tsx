@@ -186,12 +186,16 @@ export function WinnerCardView({ card, markedNumbers, pattern }: WinnerCardViewP
           [size - 1, size - 1],
         ]
 
-        corners.forEach(([r, c]) => {
-          if (isMarked(grid[r][c])) {
+        // Check if all corners are marked
+        const allCornersMarked = corners.every(([r, c]) => isMarked(grid[r][c]))
+
+        if (allCornersMarked) {
+          corners.forEach(([r, c]) => {
             winningPositions.add(`${r}-${c}`)
-          }
-        })
+          })
+        }
       }
+
     }
 
 
