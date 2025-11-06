@@ -147,8 +147,8 @@ export function GameView({ roomId }: GameViewProps) {
                     )}
                   </div>
                 ) : (
-                  <div className="font-semibold text-sm px-3 py-1 bg-yellow-600 text-white rounded-2xl">
-                    {"Waiting More Players..."}
+                  <div className="font-semibold text-xs px-3 py-1 bg-yellow-600 text-white rounded-2xl">
+                    {"Waiting Players..."}
                     {/* {status} */}
                   </div>
                 )}
