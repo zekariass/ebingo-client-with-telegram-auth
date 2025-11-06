@@ -6,7 +6,6 @@ import type { BingoClaimRequestPayloadType } from "@/lib/types"
 import { useRoomStore } from "@/lib/stores/room-store"
 import { useGameStore } from "@/lib/stores/game-store"
 import { userStore } from "@/lib/stores/user-store"
-import { useRouter } from "next/navigation"
 
 interface UseWebSocketEventsOptions {
   roomId?: number
@@ -15,6 +14,7 @@ interface UseWebSocketEventsOptions {
 
 export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEventsOptions) {
   const socket = useRoomSocket({ roomId, enabled })
+  const { connected, connecting, error, latencyMs, reconnectAttempts, connect, disconnect, reconnect } = socket
   const { user } = userStore(state => state)
 
   const capacity = useRoomStore((state) => state.room?.capacity);
@@ -158,16 +158,26 @@ export function useWebSocketEvents({ roomId, enabled = true }: UseWebSocketEvent
 
   return {
     // Socket state
-    connected: socket.connected,
-    connecting: socket.connecting,
-    error: socket.error,
-    latencyMs: socket.latencyMs,
-    reconnectAttempts: socket.reconnectAttempts,
+    // connected: socket.connected,
+    // connecting: socket.connecting,
+    // error: socket.error,
+    // latencyMs: socket.latencyMs,
+    // reconnectAttempts: socket.reconnectAttempts,
+
+    connected,
+    connecting,
+    error,
+    latencyMs,
+    reconnectAttempts,
 
     // Socket actions
-    connect: socket.connect,
-    disconnect: socket.disconnect,
-    reconnect: socket.reconnect,
+    // connect: socket.connect,
+    // disconnect: socket.disconnect,
+    // reconnect: socket.reconnect,
+
+    connect,
+    disconnect,
+    reconnect,
 
     // Game actions
     enterRoom,

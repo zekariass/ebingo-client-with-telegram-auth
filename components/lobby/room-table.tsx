@@ -198,7 +198,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
                   disabled={room.status !== RoomStatus.OPEN}
                   className={`px-3 py-2 rounded-lg font-semibold text-xs sm:text-sm transition-colors duration-200 ${
                     room.status === RoomStatus.OPEN
-                      ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+                      ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm cursor-pointer"
                       : "bg-gray-700 text-gray-400 cursor-not-allowed"
                   }`}
                 >
