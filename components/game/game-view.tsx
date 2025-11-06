@@ -120,7 +120,7 @@ export function GameView({ roomId }: GameViewProps) {
           </div>
 
           <div className="order-2 sm:order-2">
-            <div className="border border-purple-500 rounded-xl h-12 w-full max-w-xs mx-auto bg-yellow-950 p-1">
+            <div className="border border-purple-500 rounded-xl h-11 w-full max-w-xs mx-auto bg-yellow-950 p-1">
               <div className="flex items-center justify-center h-full">
                 {status === GameStatus.COUNTDOWN ? (
                   <CountdownTimer label="" />
@@ -143,14 +143,14 @@ export function GameView({ roomId }: GameViewProps) {
                         </motion.div>
                       </div>
                     ) : (
-                      <div className="text-2xl text-yellow-500">__</div>
+                      <div className="text-2xl text-yellow-500">_ __</div>
                     )}
                   </div>
                 ) : (
-                  <Badge className="font-mono text-sm px-3 py-1 bg-yellow-600 text-black">
-                    {/* {"Waiting..."} */}
-                    {status}
-                  </Badge>
+                  <div className="font-semibold text-sm px-3 py-1 bg-yellow-600 text-white rounded-2xl">
+                    {"Waiting Players..."}
+                    {/* {status} */}
+                  </div>
                 )}
               </div>
             </div>

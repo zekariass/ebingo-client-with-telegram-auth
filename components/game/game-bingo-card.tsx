@@ -164,11 +164,11 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
       </div>
 
       {/* Claim button */}
-      <div className="mt-3">
+      <div className="mt-2">
         <Button
           onClick={handleBingoClaim}
           disabled={!isConnected || !started || !userId}
-          className="h-8 w-full font-bold text-sm sm:text-base bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+          className="h-7 w-full font-bold text-sm sm:text-base bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
         >
           {!claiming ? "Claim Bingo" : "Claiming..."}
         </Button>

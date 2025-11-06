@@ -15,6 +15,7 @@ interface GameHeaderProps {
 export function GameHeader({ room, connected }: GameHeaderProps) {
   const game = useGameStore(state => state.game)
   const currentRoom = useRoomStore(state => state.room)
+  const {connected: isRoomConnected} = useRoomStore()
   const {systemConfigs, voiceOn, setVoiceOn} = useSystemStore();
 
   const commisionRate = systemConfigs?.find(config => config.name === "COMMISSION_RATE")?.value || "0.20";
