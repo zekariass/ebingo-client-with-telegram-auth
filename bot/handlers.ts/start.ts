@@ -18,7 +18,7 @@ export function registerStartHandlers(bot: Telegraf) {
 
     // ✅ Add a start image (local file or URL)
     await ctx.replyWithPhoto(
-      { url: `public/logo.png` }, // or use { source: 'path/to/local/image.jpg' }
+      { url: `${process.env.APP_URL}/logo.png` }, // or use { source: 'path/to/local/image.jpg' }
       { caption: '👋 Welcome to Family Bingo!' }
     );
     if (!isRegistered) {
