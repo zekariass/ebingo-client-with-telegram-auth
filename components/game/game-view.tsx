@@ -148,8 +148,8 @@ export function GameView({ roomId }: GameViewProps) {
                   </div>
                 ) : (
                   <Badge className="font-mono text-sm px-3 py-1 bg-yellow-600 text-black">
-                    {/* {"Waiting..."} */}
-                    {status}
+                    {"Starting soon..."}
+                    {/* {status} */}
                   </Badge>
                 )}
               </div>
