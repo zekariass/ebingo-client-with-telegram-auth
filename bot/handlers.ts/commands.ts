@@ -200,11 +200,12 @@ export async function showStartMenu(ctx: any) {
   const tr = translations[lang];
   await ctx.reply('📋 Choose a command:', Markup.inlineKeyboard([
         // Row 1
-        [Markup.button.callback(tr.btnStartGame, 'cmd_gamerooms')],
+        // [Markup.button.callback(tr.btnStartGame, 'cmd_gamerooms')],
     
         // Row 2 (two buttons side by side)
         [
-          Markup.button.callback(tr.btnGameRooms, 'cmd_gamerooms'),
+          Markup.button.callback(tr.btnStartGame, 'cmd_gamerooms'),
+          // Markup.button.callback(tr.btnGameRooms, 'cmd_gamerooms'),
           Markup.button.webApp(tr.btnWebview, `${process.env.APP_URL}/${lang}`)
         ],
     
