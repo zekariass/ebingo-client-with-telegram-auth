@@ -4,7 +4,7 @@ import { registerCommandHandlers } from './commands';
 import { registerRoomHandlers } from './rooms';
 import { registerNicknameHandlers } from './nickname';
 import { registerWalletHandlers } from './wallet-handler';
-import { setLocalizedCommands } from '../setup';
+import { registerInviteHandler } from './invite';
 
 export function registerHandlers(bot: Telegraf) {
   registerStartHandlers(bot);
@@ -12,5 +12,6 @@ export function registerHandlers(bot: Telegraf) {
   registerRoomHandlers(bot);
   registerNicknameHandlers(bot);
   registerWalletHandlers(bot);
+  registerInviteHandler(bot)
   // setLocalizedCommands()
 }

@@ -1,3 +1,4 @@
+import { Description } from '@radix-ui/react-toast';
 import { Telegraf } from 'telegraf';
 
 
@@ -25,7 +26,8 @@ return await (global as any).telegraf?.telegram?.setMyCommands?.([
     { command: 'wallet', description: '💰 Check Balance | ቀሪ ገንዘብ' },
     { command: 'deposit', description: '💰 Deposit Fund | ገንዘብ አስቀምጥ' },
     { command: 'withdraw', description: '💸 Withdraw Money | ገንዘብ አውጣ' },
-    { command: 'transfer', description: '🔁 Transfer To A Friend| ለጓደኛ ገንዘብ ላክ' },
+    { command: 'transfer', description: '🔁 Transfer To A Friend | ለጓደኛ ገንዘብ ላክ' },
+    { command: 'invite', description: '🔗 Invite A Friend | ጓደኛ ይጋብዙ'},
     { command: 'instructions', description: '📖 Instructions | የጨዋታ መመሪያዎች' },
     { command: 'support', description: '🧑‍💻 Support | ድጋፍ ያግኙ' },
     { command: 'language', description: '🌐 Change Language | ቋንቋ ቀይር' },
@@ -58,6 +60,7 @@ await bot.telegram.setMyCommands([
     { command: 'deposit', description: '💰 Deposit Fund | ገንዘብ አስቀምጥ' },
     { command: 'withdraw', description: '💸 Withdraw Money | ገንዘብ አውጣ' },
     { command: 'transfer', description: '🔁 Transfer To A Friend| ለጓደኛ ገንዘብ ላክ' },
+    { command: 'invite', description: '🔗 Invite A Friend | ጓደኛ ይጋብዙ'},
     { command: 'instructions', description: '📖 Instructions | የጨዋታ መመሪያዎች' },
     { command: 'support', description: '🧑‍💻 Support | ድጋፍ ያግኙ' },
     { command: 'language', description: '🌐 Change Language | ቋንቋ ቀይር' },
