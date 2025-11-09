@@ -234,5 +234,7 @@ export async function showStartMenu(ctx: any) {
           Markup.button.callback(tr.btnSupport, 'cmd_support'),
           Markup.button.callback(tr.btnLanguage, 'cmd_language'),
         ],
+
+        [Markup.button.url("🔔 Join Channel For Notification", 'https://t.me/redfoxbingo')]
   ]));
 }
