@@ -118,7 +118,7 @@ export function registerStartHandlers(bot: Telegraf) {
   // Welcome image
   await ctx.replyWithPhoto(
     { url: `${process.env.APP_URL}/logo.png` },
-    { caption: '👋 Welcome to Family Bingo!' }
+    { caption: '👋 Welcome to Redfox Bingo!' }
   );
 
   if (!isRegistered) {
