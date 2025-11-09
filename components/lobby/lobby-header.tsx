@@ -33,7 +33,7 @@ export function LobbyHeader() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <Link href="/" className="text-xl sm:text-2xl font-bold dark:text-white">
-                Bingo Fam
+                Redfox Bingo
               </Link>
               {/* <Link href="/chapa-test">Chapa</Link> */}
             </div>
