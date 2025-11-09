@@ -522,7 +522,7 @@ import { CheckCircle2 } from "lucide-react"
 import { useProcessing } from "@/lib/contexts/processing-context"
 
 const depositSchema = z.object({
-  amount: z.number().min(1, `Minimum deposit is 1 ${currency}`).max(20, `Maximum deposit is 20 ${currency}`),
+  amount: z.number().min(20, `Minimum deposit is 20 ${currency}`).max(10000, `Maximum deposit is 10000 ${currency}`),
   paymentMethodId: z.number().min(1, "Please select a payment method"),
   depositType: z.enum(["online", "offline"]),
   phoneNumber: z
@@ -550,7 +550,7 @@ export default function DepositPage() {
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<DepositForm>({
     resolver: zodResolver(depositSchema),
     defaultValues: {
-      amount: 5,
+      amount: 0,
       depositType: "online",
       paymentMethodId: getDefaultPaymentMethod()?.id,
       phoneNumber: "",
@@ -559,7 +559,7 @@ export default function DepositPage() {
 
   const depositType = watch("depositType")
   const selectedAmount = watch("amount")
-  const quickAmounts = [1, 5, 10, 20]
+  const quickAmounts = [20, 50, 100, 200, 500]
 
   useEffect(() => {
     fetchPaymentMethods()
@@ -632,7 +632,7 @@ export default function DepositPage() {
             <Input
               id="phoneNumber"
               type="text"
-              placeholder="+251900000000"
+              placeholder="Phone Number"
               {...register("phoneNumber")}
               className="text-lg font-semibold"
             />

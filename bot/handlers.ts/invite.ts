@@ -10,10 +10,10 @@ export function registerInviteHandler(bot: Telegraf) {
     const botInfo = await bot.telegram.getMe();
     const inviteLink = generateInviteLink(botInfo.username, userId);
 
-    const shareMessage = `🎉 Join me on Family Bingo!\n\nClick here to start: ${inviteLink}`;
+    const shareMessage = `🎉 Join me on Redfox Bingo!\n\nClick here to start: ${inviteLink}`;
 
     await ctx.reply(
-      `🎉 Invite your friends to Family Bingo!\n\n${inviteLink}`,
+      `🎉 Invite your friends to Redfox Bingo!\n\n${inviteLink}`,
       Markup.inlineKeyboard([
         [Markup.button.switchToChat('📤 Share', shareMessage)]
       ])

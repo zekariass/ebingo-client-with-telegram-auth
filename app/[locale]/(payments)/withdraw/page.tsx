@@ -22,7 +22,7 @@ import { currency } from "@/lib/constant"
 import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
 import Link from "next/link"
 
-const minWithdrawalAmount = 1
+const minWithdrawalAmount = 50
 const maxWithdrawalAmount = 10000
 
 // ------------------ Zod Schema ------------------
@@ -80,7 +80,7 @@ export default function WithdrawPage() {
   } = useForm<WithdrawForm>({
     resolver: zodResolver(withdrawSchema),
     defaultValues: {
-      amount: 5,
+      amount: 0,
       paymentMethodId: 0,
     },
   })
