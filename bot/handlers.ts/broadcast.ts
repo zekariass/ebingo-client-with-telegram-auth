@@ -162,7 +162,7 @@ export function registerBroadcastHandler(bot: Telegraf<Context>) {
     ctx.reply("📡 Sending your message to all users...");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/secured/user-profile/user-telegram-ids`);
+      const response = await fetch(`${API_BASE_URL}/api/v1/secured/user-profile/user-telegram-ids?adminTelegramId=${userId}`);
       const result = await response.json();
       const userIds: number[] = result.data?.ids || [];
 
