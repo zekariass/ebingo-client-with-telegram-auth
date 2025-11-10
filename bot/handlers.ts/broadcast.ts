@@ -170,6 +170,7 @@ export function registerBroadcastHandler(bot: Telegraf<Context>) {
 
       let sent = 0;
       let failed = 0;
+      let failedIds = [];
 
       for (const id of userIds) {
         try {
@@ -183,10 +184,12 @@ export function registerBroadcastHandler(bot: Telegraf<Context>) {
         } catch (err: any) {
           console.error(`Failed to send to ${id}:`, err.description || err.message);
           failed++;
+          failedIds.push(id)
         }
       }
 
       ctx.reply(`✅ Broadcast complete.\nSent: ${sent}\nFailed: ${failed}`);
+      ctx.reply("Failed IDS: "+ JSON.stringify(failedIds))
     } catch (err) {
       console.error("Broadcast error:", err);
       ctx.reply("❌ Failed to send broadcast.");
