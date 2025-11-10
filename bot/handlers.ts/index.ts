@@ -5,6 +5,7 @@ import { registerRoomHandlers } from './rooms';
 import { registerNicknameHandlers } from './nickname';
 import { registerWalletHandlers } from './wallet-handler';
 import { registerInviteHandler } from './invite';
+import { registerBroadcastHandler } from './broadcast';
 
 export function registerHandlers(bot: Telegraf) {
   registerStartHandlers(bot);
@@ -13,5 +14,6 @@ export function registerHandlers(bot: Telegraf) {
   registerNicknameHandlers(bot);
   registerWalletHandlers(bot);
   registerInviteHandler(bot)
+  registerBroadcastHandler(bot)
   // setLocalizedCommands()
 }
