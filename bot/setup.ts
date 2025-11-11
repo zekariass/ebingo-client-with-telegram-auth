@@ -70,6 +70,7 @@ export async function setCommandsAndWebhooks(bot: Telegraf) {
   // Normal commands for everyone
   // --------------------------
   const normalCommands = [
+    { command: "register", description: "📋 Register | ተመዝገብ" },
     { command: "menu", description: "📋 Menu | ምርጫዎች" },
     { command: "startgame", description: "🎮 Start Game | ጨዋታ ጀምር" },
     { command: "gamerooms", description: "🎲 Game Rooms | የጨዋታ ክፍሎች" },

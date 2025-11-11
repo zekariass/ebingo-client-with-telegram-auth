@@ -246,6 +246,7 @@ export function registerBroadcastHandler(bot: Telegraf<Context>) {
         // if long, consider logging instead of replying
         await ctx.reply("⚠️ Failed IDs: " + JSON.stringify(failedIds));
       }
+      pendingPrompts.delete(fromId);
     } catch (err) {
       console.error("Unexpected handler error:", err);
       // ensure pending state is cleared to avoid stuck state

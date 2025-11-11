@@ -27,7 +27,7 @@ export function GameHeader({ room, connected }: GameHeaderProps) {
     },
     {
       label: "Bet",
-      value: `${currency} ${currentRoom?.entryFee ?? 0}`,
+      value: `${currentRoom?.entryFee && currentRoom?.entryFee > 0 ? currentRoom?.entryFee: "Free"}`,
       bg: "bg-red-600",
     },
     {

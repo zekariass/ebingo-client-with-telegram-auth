@@ -158,7 +158,9 @@ export function RoomHeader({ room }: RoomHeaderProps) {
               </h1> */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-muted-foreground">
                 <span className="truncate">Room ID: {room?.id}</span>
-                <span>Bet: {room?.entryFee ?? 0} {currency}</span>
+                <span>
+                  Bet: {room?.entryFee && room.entryFee > 0 ? `${room.entryFee} ${currency}` : "Free"}
+                </span>
               </div>
             </motion.div>
           </div>

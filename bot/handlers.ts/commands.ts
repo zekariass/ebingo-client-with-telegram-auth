@@ -152,6 +152,34 @@ export function registerCommandHandlers(bot: Telegraf) {
   //   await ctx.reply('🌐 Select your language:', Markup.inlineKeyboard(inlineButtons, { columns: 2 }));
   // });
 
+
+  bot.command('register', async (ctx: any) => {
+  const userId = ctx.from.id;
+
+  // 1️⃣ Check if user is already registered
+  let isRegistered = false;
+  try {
+    const res = await axios.get(`${process.env.BACKEND_BASE_URL}/api/v1/secured/user-profile/${userId}`);
+    isRegistered = res.data?.success && res.data?.data?.telegramId === userId;
+  } catch (err) {
+    console.error("Error checking registration");
+  }
+
+  // 2️⃣ Respond based on registration status
+  if (isRegistered) {
+    return ctx.reply("✅ You are already registered and can play anytime!");
+  }
+
+  // 3️⃣ Not registered — ask for contact info
+  await ctx.reply(
+    "👋 Please share your phone number to register and start playing!",
+    Markup.keyboard([[Markup.button.contactRequest("📱 Share Phone Number")]])
+      .resize()
+      .oneTime(false)
+  );
+});
+
+
   
   bot.command('webview', async (ctx) => {
     await ctx.reply(t(ctx, 'openingWebview'), Markup.inlineKeyboard([
@@ -195,6 +223,7 @@ export function registerCommandHandlers(bot: Telegraf) {
 import { availableLanguages, translations } from '../translations';
 import { showRooms } from './rooms';
 import { t } from '../utils';
+import axios from 'axios';
 export async function showStartMenu(ctx: any) {
   const lang = getUserLang(ctx.from?.id) || 'en';
   const tr = translations[lang];
@@ -235,6 +264,7 @@ export async function showStartMenu(ctx: any) {
           Markup.button.callback(tr.btnLanguage, 'cmd_language'),
         ],
 
-        [Markup.button.url("🔔 Join Channel For Notification", 'https://t.me/redfoxbingo')]
+        [Markup.button.url("🔔 Join Channel For Notification", 'https://t.me/redfoxbingo')],
+        // [Markup.button.callback("📝 Register To Play", "cmd_register")]
   ]));
 }
