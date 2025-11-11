@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     const { name, entryFee, capacity, minPlayers, pattern } = await request.json();
 
-    if (!name || !entryFee || !capacity || !minPlayers || !pattern) {
+    if (!name || !capacity || !minPlayers || !pattern) {
       return NextResponse.json(
         { error: "Missing required fields or invalid field name" },
         { status: 400 }
@@ -84,13 +84,13 @@ export async function POST(request: NextRequest) {
     });
 
 
-    console.log("=======================>>Create room response:", response);
-    console.log("=======================>>Create room body:", body);
-    console.log("=======================>>Create room body:", initData);
+    // console.log("=======================>>Create room response:", response);
+    // console.log("=======================>>Create room body:", body);
+    // console.log("=======================>>Create room body:", initData);
 
     const data = await response.json();
 
-    console.log("=======================>>Create room DATA:", data);
+    // console.log("=======================>>Create room DATA:", data);
 
 
     if (!response.ok) {

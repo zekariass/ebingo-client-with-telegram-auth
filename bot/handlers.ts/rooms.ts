@@ -24,8 +24,10 @@ export async function showRooms(ctx: any, page = 1) {
     const startIdx = (page - 1) * ROOMS_PER_PAGE;
     const pagedRooms = rooms.slice(startIdx, startIdx + ROOMS_PER_PAGE);
 
-    const roomButtons = pagedRooms.map((room: any) =>
-      Markup.button.webApp(`(${room.entryFee} ${currency})`, `${process.env.APP_URL}/${getUserLang(ctx.from?.id)}/rooms/${room.id}`)
+    const roomButtons = pagedRooms.map((room: any) =>{
+      const btnName = room?.entryFee === 0? "🎮 Test (free)": `🎮-Play ${room?.entryFee} ${currency}`;
+      return Markup.button.webApp(`${btnName}`, `${process.env.APP_URL}/${getUserLang(ctx.from?.id)}/rooms/${room.id}`)
+    }
     );
 
     const totalPages = Math.ceil(rooms.length / ROOMS_PER_PAGE);

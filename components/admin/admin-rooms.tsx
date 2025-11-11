@@ -45,7 +45,7 @@ useTelegramInit();
       entryFee: 10,
       capacity: 100,
       minPlayers: 2,
-      pattern: "LINE",
+      pattern: "LINE_AND_CORNERS",
       status: editingRoom? editingRoom.status: "OPEN",
     },
   })
