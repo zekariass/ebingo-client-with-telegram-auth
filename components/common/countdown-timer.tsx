@@ -111,10 +111,12 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
     const interval = setInterval(() => {
       setTimeLeft(prev => {
         const next = prev - 1
-        if (next <= 0) {
+        if (next === 0) {
           clearInterval(interval)
-          setCountdownTime("", -1) // reset store when finished
+          setCountdownTime("", 0) // reset store when finished
           return 0
+        } else {
+          setCountdownTime("", next)
         }
         return next
       })
@@ -135,7 +137,7 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
     return "bg-blue-500 text-white"
   }
 
-  if (timeLeft <= 0 && gamePage) {
+  if (timeLeft === 0 && gamePage) {
     return (
       <div className="text-center space-y-1">
         {label && <div className="text-xs text-white">{label}</div>}
