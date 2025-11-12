@@ -1,28 +1,55 @@
+// import { Telegraf, Markup } from 'telegraf';
+// import { generateInviteLink } from './generate-invite-link';
+
+// export function registerInviteHandler(bot: Telegraf) {
+//   bot.command('invite', async (ctx: any) => {
+//   try {
+//     const userId = ctx.from.id;
+//     if (!userId) return ctx.reply('❌ Could not get your user ID.');
+
+//     const botInfo = await bot.telegram.getMe();
+//     const inviteLink = generateInviteLink(botInfo.username, userId);
+
+//     const shareMessage = `🎉 Join me on Redfox Bingo!\n\nClick here to start: ${inviteLink}`;
+
+//     await ctx.reply(
+//       `🎉 Invite your friends to Redfox Bingo!\n\n${inviteLink}`,
+      // Markup.inlineKeyboard([
+      //   [Markup.button.switchToChat('📤 Share', shareMessage)]
+      // ])
+//     );
+//   } catch (err: any) {
+//     console.error('Error generating invite link:', err);
+//     await ctx.reply('❌ Failed to generate invite link. Please try again later.');
+//   }
+// });
+
+
+// }
+
+
+
 import { Telegraf, Markup } from 'telegraf';
 import { generateInviteLink } from './generate-invite-link';
 
 export function registerInviteHandler(bot: Telegraf) {
   bot.command('invite', async (ctx: any) => {
-  try {
-    const userId = ctx.from.id;
-    if (!userId) return ctx.reply('❌ Could not get your user ID.');
+    try {
+      const userId = ctx.from.id;
+      if (!userId) return ctx.reply('❌ Could not get your user ID.');
 
-    const botInfo = await bot.telegram.getMe();
-    const inviteLink = generateInviteLink(botInfo.username, userId);
+      const botInfo = await bot.telegram.getMe();
+      const inviteLink = generateInviteLink(botInfo.username, userId);
 
-    const shareMessage = `🎉 Join me on Redfox Bingo!\n\nClick here to start: ${inviteLink}`;
-
-    await ctx.reply(
-      `🎉 Invite your friends to Redfox Bingo!\n\n${inviteLink}`,
-      Markup.inlineKeyboard([
-        [Markup.button.switchToChat('📤 Share', shareMessage)]
-      ])
-    );
-  } catch (err: any) {
-    console.error('Error generating invite link:', err);
-    await ctx.reply('❌ Failed to generate invite link. Please try again later.');
-  }
-});
-
-
+      await ctx.reply(
+        `🎉 Invite your friends to Redfox Bingo!\n\nCopy or long press and click forward to share this link:\n${inviteLink}`,
+      //   Markup.inlineKeyboard([
+      //     [Markup.button.switchToChat('📤 Share', inviteLink)]
+      // ])
+      );
+    } catch (err: any) {
+      console.error('Error generating invite link:', err);
+      await ctx.reply('❌ Failed to generate invite link. Please try again later.');
+    }
+  });
 }
