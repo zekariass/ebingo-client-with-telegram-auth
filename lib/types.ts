@@ -359,6 +359,7 @@ export interface GameState {
   // Countdown timer in seconds (if applicable)
   // serverTime: string;
   countdownEndTime: string;
+  countdownDurationSeconds: number;
 
   // Stop flag for number drawing
   stopNumberDrawing: boolean;
