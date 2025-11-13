@@ -225,10 +225,10 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
         const next = prev - 1
         if (next <= 0) {
           clearInterval(interval)
-          setCountdownTime("", 0)
+          setCountdownTime("", 0, GameStatus.READY)
           return 0
         } else {
-          setCountdownTime("", next)
+          setCountdownTime("", next, GameStatus.COUNTDOWN)
           return next
         }
       })
@@ -263,7 +263,7 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
   }
 
   const getBadgeBg = () => {
-    if (timeLeft <= 10) return "bg-red-500 text-white"
+    if (timeLeft < 10) return "bg-red-500 text-white"
     if (timeLeft <= 30) return "bg-yellow-500 text-white"
     return "bg-blue-500 text-white"
   }

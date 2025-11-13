@@ -47,7 +47,7 @@ interface GameStore {
   updateStatus: (status: GameStatus) => void
   // claimBingo: (gameId: number, markedNumbers: number[]) => void
   handleBingoClaimResponse: (payload: WSPayload) => void
-  setCountdownTime: (endTime: string, duration: number) => void
+  setCountdownTime: (endTime: string, duration: number, status: GameStatus) => void
   setWinner: (winner: GameWinner) => void
   resetWinner: () => void
   setClaimError: (error: ClaimError) => void
@@ -518,13 +518,13 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      setCountdownTime: (countdownEndTime, duration) =>
+      setCountdownTime: (countdownEndTime, duration, status) =>
         set((state) => ({
           game: {
             ...state.game,
             countdownEndTime: countdownEndTime,
             countdownDurationSeconds: duration,
-            status: Status.COUNTDOWN,
+            status: status,
           },
         })),
 

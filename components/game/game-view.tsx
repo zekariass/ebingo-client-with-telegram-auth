@@ -304,8 +304,6 @@ export function GameView({ roomId }: GameViewProps) {
                 <CountdownTimer label="" />
               </div>
             </div>
-
-
             <GameCards selectedCardIds={selectedCardIds} />
           </div>
         </div>

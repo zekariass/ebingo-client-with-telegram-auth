@@ -551,7 +551,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           _gameStore.addPlayerSelectedCards(p.playerSelectedCardIds, Number(p.playerId), user?.telegramId || 0)
           if (user && p.joinedPlayers.includes(user.telegramId.toString()) && Number(p.playerId) === user.telegramId) {
             router.push(`/${i18n.language}/rooms/${roomId}/game`)
-            _gameStore.setCountdownTime(p.countdownEndTime, p.countdownDurationSeconds)
+            _gameStore.setCountdownTime(p.countdownEndTime, p.countdownDurationSeconds, p.status)
             _gameStore.setJoining(false)
           }
         },
@@ -595,7 +595,7 @@ export function useRoomSocket({ roomId, enabled = true }: UseRoomSocketOptions) 
           }
         },
         "game.countdown": (p) => {
-          _gameStore.setCountdownTime(p.countdownEndTime, p.countdownDurationSeconds)
+          _gameStore.setCountdownTime(p.countdownEndTime, p.countdownDurationSeconds, GameStatus.COUNTDOWN)
         },
         "room.serverGameState": (p) => {
           _gameStore.resetGameState()
