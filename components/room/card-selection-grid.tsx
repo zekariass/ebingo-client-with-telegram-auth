@@ -288,7 +288,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const cardsPerPage = 100
   const totalCards = allCardIds?.length || 0
   const totalPages = Math.ceil(totalCards / cardsPerPage)
-  const joinNotAllowed = countdownDuration > 0 && countdownDuration < 10
+  // const joinNotAllowed = countdownDuration > 0 && countdownDuration < 10
 
 
   const [rotating, setRotating] = useState(false)
@@ -429,7 +429,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                   ${userSelectedCardsIds.length >= maxCards && status === "available" ? "opacity-50" : ""}
                 `}
                 onClick={() => handleCardClick(cardId)}
-                disabled={(!userSelectedCardsIds.includes(cardId) && (status === "taken" || (userSelectedCardsIds.length >= maxCards && status === "available"))) || disabled || joinNotAllowed}
+                disabled={(!userSelectedCardsIds.includes(cardId) && (status === "taken" || (userSelectedCardsIds.length >= maxCards && status === "available"))) || disabled}
               >
                 {absoluteIndex}
                 {status === "selected" && (
