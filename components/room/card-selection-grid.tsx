@@ -413,6 +413,16 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
             const status = getCardStatus(cardId)
             const absoluteIndex = (currentPage - 1) * cardsPerPage + index + 1
 
+
+          const isSelected = userSelectedCardsIds.includes(cardId)
+          const hasReachedMax = userSelectedCardsIds.length >= maxCards
+          const isUnavailable = status === "taken"
+          const isAvailable = status === "available"
+
+          const isCardDisabled =
+            disabled ||
+            (!isSelected && (isUnavailable || (isAvailable && hasReachedMax)))
+
             return (
               <Button
                 key={cardId}
@@ -429,7 +439,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                   ${userSelectedCardsIds.length >= maxCards && status === "available" ? "opacity-50" : ""}
                 `}
                 onClick={() => handleCardClick(cardId)}
-                disabled={(!userSelectedCardsIds.includes(cardId) && (status === "taken" || (userSelectedCardsIds.length >= maxCards && status === "available"))) || disabled}
+                disabled={isCardDisabled}
               >
                 {absoluteIndex}
                 {status === "selected" && (
