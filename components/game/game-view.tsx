@@ -272,6 +272,7 @@ export function GameView({ roomId }: GameViewProps) {
     }
 
     setLeaving(true)
+    router.replace(`/${i18n.language}`)
     try {
       await leaveGame(gameId, telegramId.toString())
     } catch (err) {
