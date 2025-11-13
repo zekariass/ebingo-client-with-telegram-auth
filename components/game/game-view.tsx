@@ -212,7 +212,7 @@ export function GameView({ roomId }: GameViewProps) {
   const localeChanged = useSystemStore(state => state.localeChanged)
 
   const telegramId = userStore(state => state.user?.telegramId)
-  const { leaveGame, connected, reconnect } = useWebSocketEvents({ roomId, enabled: true })
+  const { leaveGame, connected, connect } = useWebSocketEvents({ roomId, enabled: true })
   const router = useRouter()
 
   router.prefetch(`/${i18n.language}`)
@@ -284,7 +284,7 @@ export function GameView({ roomId }: GameViewProps) {
 
   const handleRefresh = async () => {
     setRefreshing(true)
-    await reconnect()
+    await connect()
     setRefreshing(false)
   }
 
