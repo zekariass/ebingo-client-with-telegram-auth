@@ -9,6 +9,7 @@ import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { userStore } from "@/lib/stores/user-store"
 import { cn } from "@/lib/utils"
 import { Star } from "lucide-react"
+import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
 
 const COLUMN_HEADERS = ["B", "I", "N", "G", "O"]
 
@@ -35,6 +36,7 @@ interface GameBingoCardProps {
 }
 
 export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
+  useTelegramInit()
   const { room, connected: isConnected } = useRoomStore()
   const {
     game: { gameId, drawnNumbers, roomId, started },
