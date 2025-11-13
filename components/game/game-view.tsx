@@ -212,13 +212,14 @@ export function GameView({ roomId }: GameViewProps) {
   const localeChanged = useSystemStore(state => state.localeChanged)
 
   const telegramId = userStore(state => state.user?.telegramId)
-  const { leaveGame, connected } = useWebSocketEvents({ roomId, enabled: true })
+  const { leaveGame, connected, reconnect } = useWebSocketEvents({ roomId, enabled: true })
   const router = useRouter()
 
   router.prefetch(`/${i18n.language}`)
   //useAutoRefreshGameState(roomId, 3000);
 
   const [isLeaving, setLeaving] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   const { room, loading, fetchRoom } = useRoomStore()
 
@@ -280,6 +281,13 @@ export function GameView({ roomId }: GameViewProps) {
   }
 
 
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    await reconnect()
+    setRefreshing(false)
+  }
+
+
   if (gameId === null || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -308,15 +316,25 @@ export function GameView({ roomId }: GameViewProps) {
           </div>
         </div>
 
-        <div className="py-2 flex items-center justify-center">
+        <div className="py-4 px-3 flex flex-row items-center justify-center gap-3 w-full">
           <Button
-            className="w-full sm:w-1/2 text-white p-4 text-xl cursor-pointer bg-red-600 hover:bg-red-800 transition-colors duration-200"
+            onClick={handleRefresh}
+            disabled={isLeaving || refreshing}
+            className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+          >
+            {refreshing ? "Refreshing..." : "Refresh"}
+          </Button>
+
+          <Button
             onClick={handleLeaveGame}
             disabled={isLeaving}
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
           >
-            {!isLeaving ? "Leave Game" : "Leaving..."}
+            {isLeaving ? "Leaving..." : "Leave Game"}
           </Button>
         </div>
+
+
       </div>
     </div>
   )
