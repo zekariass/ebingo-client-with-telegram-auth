@@ -99,7 +99,7 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
   }
 
   const handleBingoClaim = () => {
-    if (!isConnected || !started || !userId) return
+    // if (!isConnected || !started || !userId) return
     claimBingo(claimPayload)
   }
 
