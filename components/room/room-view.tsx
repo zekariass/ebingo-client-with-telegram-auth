@@ -120,7 +120,7 @@ interface RoomViewProps {
 
 export function RoomView({ roomId }: RoomViewProps) {
   const { room, loading, fetchRoom, resetRoom } = useRoomStore()
-  const { game: { userSelectedCardsIds, countdownEndTime, status }, isJoining, setJoining, joinError, setJoinError } = useGameStore()
+  const { game: { userSelectedCardsIds, countdownEndTime, countdownDurationSeconds, status }, isJoining, setJoining, joinError, setJoinError } = useGameStore()
   const { enterRoom } = useWebSocketEvents({ roomId, enabled: true })
   const { fetchWallet } = usePaymentStore()
   const fetchSystemConfigs = useSystemStore(state => state.fetchSystemConfigs)
@@ -130,10 +130,10 @@ export function RoomView({ roomId }: RoomViewProps) {
 
   // const [isJoining, setJoining] = useState(true)
 
-  const targetTime = new Date(countdownEndTime).getTime()
-  const now = Date.now()
-  const timeLeft = Math.max(Math.ceil((targetTime - now) / 1000), 0)
-  const disableCardSelection = (timeLeft < 10 && timeLeft > 0) || (status === GameStatus.PLAYING)
+  // const targetTime = new Date(countdownEndTime).getTime()
+  // const now = Date.now()
+  // const timeLeft = Math.max(Math.ceil((targetTime - now) / 1000), 0)
+  const disableCardSelection = (countdownDurationSeconds < 10 && countdownDurationSeconds > 0) || (status === GameStatus.PLAYING)
 
   // const onGameWinnerClose = () => {
   //   resetWinner()

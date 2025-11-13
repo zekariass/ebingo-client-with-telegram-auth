@@ -270,6 +270,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const userSelectedCardsIds = useGameStore(state => state.game.userSelectedCardsIds)
   const allSelectedCardsIds = useGameStore(state => state.game.allSelectedCardsIds)
   const allCardIds = useGameStore(state => state.game.allCardIds)
+  const countdownDuration = useGameStore(state => state.game.countdownDurationSeconds)
   // const gameId = useGameStore(state => state.game.gameId)
   const status = useGameStore(state => state.game.status)
   const joinedPlayers = useGameStore(state => state.game.joinedPlayers)
@@ -287,6 +288,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const cardsPerPage = 100
   const totalCards = allCardIds?.length || 0
   const totalPages = Math.ceil(totalCards / cardsPerPage)
+  const joinNotAllowed = countdownDuration > 0 && countdownDuration < 10
 
 
   const [rotating, setRotating] = useState(false)
@@ -427,7 +429,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                   ${userSelectedCardsIds.length >= maxCards && status === "available" ? "opacity-50" : ""}
                 `}
                 onClick={() => handleCardClick(cardId)}
-                disabled={(!userSelectedCardsIds.includes(cardId) && (status === "taken" || (userSelectedCardsIds.length >= maxCards && status === "available"))) || disabled}
+                disabled={(!userSelectedCardsIds.includes(cardId) && (status === "taken" || (userSelectedCardsIds.length >= maxCards && status === "available"))) || disabled || joinNotAllowed}
               >
                 {absoluteIndex}
                 {status === "selected" && (
