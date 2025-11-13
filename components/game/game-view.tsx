@@ -282,11 +282,11 @@ export function GameView({ roomId }: GameViewProps) {
   }
 
 
-  const handleRefresh = async () => {
-    setRefreshing(true)
-    await connect()
-    setRefreshing(false)
-  }
+  // const handleRefresh = async () => {
+  //   setRefreshing(true)
+  //   await connect()
+  //   setRefreshing(false)
+  // }
 
 
   if (gameId === null || loading) {
@@ -318,13 +318,13 @@ export function GameView({ roomId }: GameViewProps) {
         </div>
 
         <div className="py-4 px-3 flex flex-row items-center justify-center gap-3 w-full">
-          <Button
+          {/* <Button
             onClick={handleRefresh}
             disabled={isLeaving || refreshing}
             className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-4 text-lg rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
           >
             {refreshing ? "Refreshing..." : "Refresh"}
-          </Button>
+          </Button> */}
 
           <Button
             onClick={handleLeaveGame}
