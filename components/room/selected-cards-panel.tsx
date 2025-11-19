@@ -3,14 +3,13 @@
 import { Card, CardContent} from "@/components/ui/card"
 import { SelectedCardsView } from "./selected-cards-view"
 import { useGameStore } from "@/lib/stores/game-store"
-import { useEffect } from "react"
 
 export function SelectedCardsPanel() {
-  const { game: {userSelectedCards, userSelectedCardsIds, status}, computePlayerCardsFromPlayerCardsIds } = useGameStore()
+  const { game: {userSelectedCards} } = useGameStore()
 
-  useEffect(() => {
-    computePlayerCardsFromPlayerCardsIds()
-  }, [computePlayerCardsFromPlayerCardsIds, userSelectedCardsIds])
+  // useEffect(() => {
+  //   computePlayerCardsFromPlayerCardsIds()
+  // }, [computePlayerCardsFromPlayerCardsIds, userSelectedCardsIds])
 
   if (userSelectedCards?.length === 0) {
     return null

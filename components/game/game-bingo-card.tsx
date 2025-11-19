@@ -5,11 +5,12 @@ import { useRoomStore } from "@/lib/stores/room-store"
 import { useGameStore } from "@/lib/stores/game-store"
 import { Button } from "@/components/ui/button"
 import { BingoColumn, GamePattern, BingoClaimRequestPayloadType } from "@/lib/types"
-import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
+// import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { userStore } from "@/lib/stores/user-store"
 import { cn } from "@/lib/utils"
 import { Star } from "lucide-react"
 import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
+import { useRoomSocket } from "@/lib/hooks/websockets/use-room-socket"
 
 const COLUMN_HEADERS = ["B", "I", "N", "G", "O"]
 
@@ -36,8 +37,9 @@ interface GameBingoCardProps {
 }
 
 export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
-  useTelegramInit()
-  const { room, connected: isConnected } = useRoomStore()
+  // useTelegramInit()
+
+  const { room } = useRoomStore()
   const {
     game: { gameId, drawnNumbers, roomId, started },
     claimError,
@@ -47,8 +49,10 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
     resetClaimError
   } = useGameStore()
 
-  const { markNumber: markNumberInBackend, unmarkNumber: unMarkNumberInBackend, claimBingo } =
-    useWebSocketEvents({ roomId, enabled: true })
+  // const { markNumber: markNumberInBackend, unmarkNumber: unMarkNumberInBackend, claimBingo } =
+  //   useWebSocketEvents({ roomId, enabled: true })
+
+  const {markNumber: markNumberInBackend, unmarkNumber: unMarkNumberInBackend, claimBingo, connected: isConnected} = useRoomSocket({roomId, enabled: true})
 
   const currentCard = useGameStore((state) =>
     state.game.userSelectedCards?.find((card) => card.cardId === cardInfoId)
@@ -95,7 +99,8 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
     playerId: userId?.toString() ?? "",
     userProfileId: userDbId, 
     playerName: userName,
-    markedNumbers: currentCard.marked ?? []
+    markedNumbers: currentCard.marked ?? [],
+    card: currentCard
   }
 
   const handleBingoClaim = () => {

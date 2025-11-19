@@ -10,6 +10,7 @@ import { AlertCircle } from "lucide-react"
 import { usePaymentStore } from "@/lib/stores/payment-store"
 import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
 import { useSystemStore } from "@/lib/stores/system-store"
+import { useRoomSocket } from "@/lib/hooks/websockets/use-room-socket"
 
 export function Lobby() {
   const { rooms, loading, error, fetchRooms } = useLobbyStore()
@@ -21,6 +22,12 @@ export function Lobby() {
 
   const [currentTxnPage, setCurrentTxnPage] = useState<number>(1)
   const [currentTxnSize, setCurrentTxnSize] = useState<number>(10)
+
+  // Get just an id of a room to open websockets connections
+  const sampleRoomId: number = rooms && rooms.length > 0 ? rooms[0].id : 0;
+
+  useRoomSocket({ roomId: sampleRoomId, enabled: true })
+  
 
   const getAllFromDB = async () => {
      Promise.all([

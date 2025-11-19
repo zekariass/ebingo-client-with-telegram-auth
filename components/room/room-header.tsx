@@ -119,6 +119,7 @@ import { useRouter } from "next/navigation"
 import { currency } from "@/lib/constant"
 import { usePaymentStore } from "@/lib/stores/payment-store"
 import { motion } from "framer-motion"
+import { useRoomStore } from "@/lib/stores/room-store"
 
 interface RoomHeaderProps {
   room?: Room | null
@@ -126,6 +127,7 @@ interface RoomHeaderProps {
 
 export function RoomHeader({ room }: RoomHeaderProps) {
   const { resetGameState } = useGameStore()
+  const {resetRoom} = useRoomStore();
   const {
     balance: { totalAvailableBalance },
   } = usePaymentStore()
@@ -133,6 +135,7 @@ export function RoomHeader({ room }: RoomHeaderProps) {
 
   const handleBackArrowClick = () => {
     resetGameState()
+    resetRoom();
   }
 
   return (

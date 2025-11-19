@@ -29,6 +29,7 @@ export async function GET(
 
     const { data } = await backendRes.json()
 
+
     if (!data) {
       const response: ApiResponse = {
         success: false,

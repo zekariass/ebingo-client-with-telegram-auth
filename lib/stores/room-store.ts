@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type { Room,} from "@/lib/types"
+import type { CardInfo, Room,} from "@/lib/types"
 import i18n from "@/i18n"
 import { useLobbyStore } from "./lobby-store"
 
@@ -24,6 +24,8 @@ interface RoomState {
   // setBalance: (balance: number) => void
   initializeRoom: (roomId: string) => void
   resetRoom: () => void
+
+  getSelectedCard: (cardId: string) => CardInfo | null | undefined
 }
 
 export const useRoomStore = create<RoomState>()(
@@ -38,10 +40,10 @@ export const useRoomStore = create<RoomState>()(
 
       // Actions
       setRoom: (room) => set({ room }),
+
       fetchRoom: async (roomId: number) => {
         const { room } = get();
 
-        // ✅ Avoid redundant fetch if same room is already loaded
         if (room && room.id === roomId) return room;
 
         set({ loading: true });
@@ -56,16 +58,19 @@ export const useRoomStore = create<RoomState>()(
           const result = await response.json();
           const { data } = result;
 
+          
           set({ room: data, loading: false });
           return data;
         } catch (error: any) {
           console.error('Error fetching room:', error);
-          set({ loading: false }); // ✅ Fix: stop loading
+          set({ loading: false });
           return null;
         }
       },
 
-
+      getSelectedCard: (cardId) => {
+        return get().room?.cardPool.find((card) => card.cardId === cardId)
+      },
 
       getRoomFromLobby: (roomId: number) => {
         const {rooms} = useLobbyStore.getState()

@@ -10,7 +10,7 @@ export interface GameControlsProps{
   disabled: boolean
 }
 export function GameControls({disabled}: GameControlsProps) {
-  const { game: {userSelectedCards, userSelectedCardsIds, allCardIds, status }} = useGameStore()
+  const { game: {userSelectedCards, userSelectedCardsIds, status }} = useGameStore()
   const {room} = useRoomStore()
 
   const canStartGame = userSelectedCardsIds?.length > 0 && room?.status === RoomStatus.OPEN

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useRoomStore } from "@/lib/stores/room-store"
 import { usePaymentStore } from "@/lib/stores/payment-store"
-import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
+// import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { CreditCard } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
@@ -13,6 +13,7 @@ import { useGameStore } from "@/lib/stores/game-store"
 import { userStore } from "@/lib/stores/user-store"
 import i18n from "@/i18n"
 import { currency } from "@/lib/constant"
+import { useRoomSocket } from "@/lib/hooks/websockets/use-room-socket"
 
 interface StartGameButtonProps {
   disabled: boolean
@@ -25,13 +26,12 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
   const [isProcessing, setIsProcessing] = useState(false)
 
   const { room } = useRoomStore()
-  const { game: {gameId, started} } = useGameStore()
+  const { game: {gameId, userSelectedCardsIds} } = useGameStore()
   const userProfileId = userStore(state => state.user?.id)
   const { balance } = usePaymentStore()
   const router = useRouter()
-  const { toast } = useToast()
 
-  const { connected, joinGame } = useWebSocketEvents({
+    const { connected, joinGame } = useRoomSocket({
     roomId: room?.id || -1,
     enabled: true,
   })
@@ -43,10 +43,6 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
   router.prefetch(`/${i18n.language}/rooms/${room?.id}/game`)
 
   const handleStartGame = () => {
-    // if (joinedPlayers.includes(telegramId.toString())){
-    //   router.push(`/${i18n.language}/rooms/${room?.id}/game`)
-    //   return false
-    // }
     if (totalCost || canAfford){
       return true
     }
@@ -55,19 +51,10 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
 
   const handleConfirmAndPay = async () => {
     if (!canAfford) {
-      toast({
-        variant: "destructive",
-        title: "Insufficient Balance",
-        description: `You need $${totalCost.toFixed(2)} but only have $${balance.totalAvailableBalance.toFixed(2)}`,
-      })
       return
     }
 
     if (!connected) {
-      toast({
-        title: "Connection Required",
-        description: "Please wait for connection to be established",
-      })
       return
     }
 
@@ -76,27 +63,14 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
     try {
       
       if (userProfileId){
-        joinGame(gameId, totalCost)
+        joinGame(gameId, totalCost, userSelectedCardsIds)
       }else {
         throw new Error("userProfileId (playerId) is null or undefined!")
       }
-
-      if (started){
-        toast({
-        title: "Game Started!",
-        description: `Successfully joined with ${selectedCards} card${selectedCards > 1 ? "s" : ""}.`,
-      })
-      }
-
       setIsOpen(false)
       // router.push(`/rooms/${room?.id}/game`)
     } catch (error) {
       console.error("Game Start Failed:", error)
-      toast({
-        variant: "destructive",
-        title: "Game Start Failed",
-        description: "Please try again or contact support",
-      })
     } finally {
       setIsProcessing(false)
     }

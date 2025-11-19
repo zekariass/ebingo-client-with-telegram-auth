@@ -181,7 +181,7 @@
 
 import { useEffect, useState } from "react"
 import { useRoomStore } from "@/lib/stores/room-store"
-import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
+// import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { GameHeader } from "./game-header"
 import { NumberGrid } from "./number-grid"
 import { GameCards } from "./game-cards"
@@ -195,6 +195,7 @@ import { useRouter } from "next/navigation"
 import i18n from "@/i18n"
 import { useSystemStore } from "@/lib/stores/system-store"
 import { motion } from "framer-motion";
+import { useRoomSocket } from "@/lib/hooks/websockets/use-room-socket"
 
 interface GameViewProps {
   roomId: number
@@ -212,7 +213,8 @@ export function GameView({ roomId }: GameViewProps) {
   const localeChanged = useSystemStore(state => state.localeChanged)
 
   const telegramId = userStore(state => state.user?.telegramId)
-  const { leaveGame, connected, connect } = useWebSocketEvents({ roomId, enabled: true })
+  // const { leaveGame, connected, connect } = useWebSocketEvents({ roomId, enabled: true })
+  const { leaveGame, connected, connect } = useRoomSocket({ roomId, enabled: true })
   const router = useRouter()
 
   router.prefetch(`/${i18n.language}`)

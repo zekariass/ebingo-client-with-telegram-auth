@@ -33,6 +33,10 @@ export type Room = {
   entryFee: number;             // BigDecimal -> number
   pattern: "LINE" | "LINE_AND_CORNERS" | "CORNERS" | "FULL_HOUSE"; // match RoomPattern enum
   status: "OPEN" | "CLOSED";     // match RoomStatus enum
+  botAllowed?: boolean;
+  minBots: number;
+  maxBots: number;
+  commissionRate: number;
   createdBy: number;            // Long -> number
   createdAt: string;            // LocalDateTime -> ISO string
   updatedAt: string;            // LocalDateTime -> ISO string

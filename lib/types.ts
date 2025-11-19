@@ -314,7 +314,7 @@ export interface GameWinner {
   card?: CardInfo
 }
 
-export interface GameState {
+export interface GameState { 
   gameId: number;
   roomId: number;
 
@@ -330,15 +330,6 @@ export interface GameState {
   // The most recently drawn number
   currentDrawnNumber?: number;
 
-  // Users disqualified due to false bingo claims
-  disqualifiedUsers: number[];
-
-  // Track if the user playing the game is disqualified
-  amIDisqualified: boolean;
-
-  // Card Pools
-  currentCardPool: CardInfo[];
-
   // Selected cards by players
   allSelectedCardsIds: string[]; 
 
@@ -349,7 +340,7 @@ export interface GameState {
   userSelectedCards: CardInfo[];
 
   // All card IDs in the game (for reference)
-  allCardIds: string[];
+  // allCardIds: string[];
 
   // Game status flags
   started: boolean;
@@ -360,6 +351,7 @@ export interface GameState {
   // serverTime: string;
   countdownEndTime: string;
   countdownDurationSeconds: number;
+  backendEpochMillis: number;
 
   // Stop flag for number drawing
   stopNumberDrawing: boolean;
@@ -427,7 +419,13 @@ export interface Room {
   entryFee: number; // BigDecimal → number
   pattern: GamePattern;
   status: RoomStatus;
+  cardPool: CardInfo[] | [];
+  allCardIds: string[] | []
   isForPractice?: boolean;
+  botsEnabled?: boolean;
+  maxBots?: number;
+  minBots?: number;
+  commissionRate: number;
 }
 
 
@@ -688,6 +686,7 @@ export interface BingoClaimRequestPayloadType {
   userProfileId?: number,
   playerName: string
   markedNumbers: number[]
+  card: CardInfo
 }
 
 export interface BingoClaimRequest extends WSMessage {

@@ -4,7 +4,6 @@ import { type NextRequest, NextResponse } from "next/server"
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL!;
 
 export async function GET(request: NextRequest) {
-  // console.log("========================= GET ROOMS CALLED")
   try {
     // Call backend API to fetch rooms
     const response = await fetch(`${BACKEND_BASE_URL}/api/v1/public/rooms`);
@@ -14,9 +13,6 @@ export async function GET(request: NextRequest) {
     if (!response.ok) {
       return NextResponse.json({ error: result?.error || "Backend error" }, { status: response.status });
     }
-
-  // console.log("========================= GET ROOMS CALLED", JSON.stringify(result))
-    
 
     return NextResponse.json({ success: true, data: result.data });
   } catch (err) {

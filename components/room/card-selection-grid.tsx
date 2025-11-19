@@ -246,18 +246,23 @@
 // }
 
 
+
+
+
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
 import { useGameStore } from "@/lib/stores/game-store"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Info, RefreshCcw, RefreshCwIcon } from "lucide-react"
-import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
+import { ChevronLeft, ChevronRight, RefreshCwIcon } from "lucide-react"
+// import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { userStore } from "@/lib/stores/user-store"
-import { useRouter } from "next/navigation"
-import { GameStatus } from "@/lib/types"
+import { CardInfo, GameStatus } from "@/lib/types"
 import { CountdownTimer } from "../common/countdown-timer"
+import { useRoomStore } from "@/lib/stores/room-store"
+import { useRoomSocket } from "@/lib/hooks/websockets/use-room-socket"
+import { Badge } from "../ui/badge"
 
 interface CardSelectionGridProps {
   roomId: number
@@ -269,7 +274,9 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
 
   const userSelectedCardsIds = useGameStore(state => state.game.userSelectedCardsIds)
   const allSelectedCardsIds = useGameStore(state => state.game.allSelectedCardsIds)
-  const allCardIds = useGameStore(state => state.game.allCardIds)
+  // const allCardIds = useGameStore(state => state.game.allCardIds)
+  const allCardIds = useRoomStore(state => state.room?.allCardIds)
+  const getSelectedCard = useRoomStore(state => state.getSelectedCard)
   const countdownDuration = useGameStore(state => state.game.countdownDurationSeconds)
   // const gameId = useGameStore(state => state.game.gameId)
   const status = useGameStore(state => state.game.status)
@@ -277,7 +284,8 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const selectCardOptimistically  = useGameStore(state => state.selectCardOptimistically)
   const deselectCardOptimistically  = useGameStore(state => state.releaseCardOptimistically)
 
-  const {enterRoom, connected} =  useWebSocketEvents({roomId: roomId, enabled: true});
+  // const {enterRoom, connected} =  useWebSocketEvents({roomId: roomId, enabled: true});
+  // const {joinGame, connected} =  useRoomSocket({roomId: roomId, enabled: true});
 
   const user = userStore(state => state.user)
 
@@ -300,15 +308,15 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
     setTimeout(() => setRotating(false), 1000)
   }
 
-  useEffect(() => {
-      enterRoom();
-  }, [enterRoom, connected]);
+  // useEffect(() => {
+  //     // enterRoom();
+  // }, [enterRoom, connected]);
 
   // Slice the cards for the current page
   const paginatedCards = useMemo(() => {
     const startIndex = (currentPage - 1) * cardsPerPage
     const endIndex = Math.min(startIndex + cardsPerPage, totalCards)
-    return allCardIds.slice(startIndex, endIndex)
+    return allCardIds?.slice(startIndex, endIndex)
   }, [allCardIds, currentPage, cardsPerPage, totalCards])
 
   // const handleCardClick = (cardId: string) => {
@@ -322,11 +330,12 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
 
   const handleCardClick = (cardId: string) => {
     if (userSelectedCardsIds.includes(cardId) && user?.telegramId) {
-      // releaseCardBackend(gameId, cardId)
       deselectCardOptimistically(cardId)
     } else if (!takenCards.has(cardId) && userSelectedCardsIds.length < maxCards && user?.telegramId) {
-      // selectCardBackend(gameId, cardId)
-      selectCardOptimistically(cardId)
+      const card: CardInfo | null | undefined = getSelectedCard(cardId)
+      if (card){
+        selectCardOptimistically(card)
+      }
     }
   }
 
@@ -338,13 +347,13 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
 
 
   const handleRefresh = () => {
-      enterRoom();
+      // enterRoom();
   }
 
 
   useEffect(() => {
   // Run this only when component mounts or when `paginatedCards` updates
-  if (paginatedCards.length === 0) {
+  if (paginatedCards?.length === 0) {
     const timeout = setTimeout(() => {
       handleRefresh()
     }, 1000) // 1 seconds
@@ -389,8 +398,8 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                     </div>
                   </div>
                 ) : status === GameStatus.PLAYING ? (
-                  <div>
-                    <h3 className="text-red-500 text-center">Game In Progress...</h3>
+                  <div className="text-red-500 font-bold">
+                    PLAYING...
                   </div>
                 ) : (
                   ""
@@ -401,15 +410,8 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
       </CardHeader>
 
       <CardContent className="p-1 sm:p-1">
-        {/* {totalPages > 1 && (
-          <div className="mb-3 text-xs text-muted-foreground text-center">
-            Showing cards {(currentPage - 1) * cardsPerPage + 1} –{" "}
-            {Math.min(currentPage * cardsPerPage, totalCards)} of {totalCards}
-          </div>
-        )} */}
-
         <div className="grid grid-cols-10 xs:grid-cols-10 sm:grid-cols-10 md:grid-cols-20 lg:grid-cols-20 xl:grid-cols-20 gap-0.5 sm:gap-0.5 max-h-[60vh] overflow-y-auto ">
-          {paginatedCards.map((cardId, index) => {
+          {paginatedCards?.map((cardId, index) => {
             const status = getCardStatus(cardId)
             const absoluteIndex = (currentPage - 1) * cardsPerPage + index + 1
 
@@ -452,7 +454,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
           })}
          
         </div>
-            {!paginatedCards.length && (
+            {!paginatedCards?.length && (
               <div className="flex flex-col items-center justify-center py-6">
                 <RefreshCwIcon
                   onClick={handleRefreshClick}
@@ -504,3 +506,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
     </Card>
   )
 }
+
+
+
+

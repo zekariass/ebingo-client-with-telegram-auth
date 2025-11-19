@@ -9,11 +9,7 @@ interface GameCardsProps {
 }
 
 export function GameCards({ selectedCardIds }: GameCardsProps) {
-  const { game: {userSelectedCards: userCards, userSelectedCardsIds}, computePlayerCardsFromPlayerCardsIds } = useGameStore()
-
-  useEffect(() => {
-      computePlayerCardsFromPlayerCardsIds()
-    }, [computePlayerCardsFromPlayerCardsIds, userSelectedCardsIds])
+  const { game: {userSelectedCards: userCards}} = useGameStore()
 
   if (!userCards || userCards.length === 0) {
     return (

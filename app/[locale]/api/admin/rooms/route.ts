@@ -48,9 +48,62 @@ export async function GET(request: NextRequest) {
 /**
  * POST - Create a room (ADMIN only)
  */
+// export async function POST(request: NextRequest) {
+//   try {
+//     // Read role and initData from headers
+//     const role = request.headers.get("x-user-role");
+//     const initData = request.headers.get("x-init-data");
+
+//     if (role !== "ADMIN") {
+//       return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
+//     }
+
+//     if (!initData) {
+//       return NextResponse.json({ error: "Missing initData" }, { status: 400 });
+//     }
+
+//     const { name, entryFee, capacity, minPlayers, pattern } = await request.json();
+
+//     if (!name || !capacity || !minPlayers || !pattern) {
+//       return NextResponse.json(
+//         { error: "Missing required fields or invalid field name" },
+//         { status: 400 }
+//       );
+//     }
+
+//     const body = JSON.stringify({ name, entryFee: Number(entryFee), capacity: Number(capacity), minPlayers: Number(minPlayers), pattern })
+
+//     // Forward data to backend for verification and room creation
+//     const response = await fetch(`${BACKEND_BASE_URL}/api/v1/secured/rooms`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "x-init-data": initData,
+//       },
+//       body:body,
+//     });
+
+//     const data = await response.json();
+
+//     if (!response.ok) {
+//       return NextResponse.json({ error: data?.error || "Backend error" }, { status: response.status });
+//     }
+
+//     return NextResponse.json({ success: true, data });
+//   } catch (err) {
+//     console.error("Create room error:", err);
+//     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+//   }
+// }
+
+
+
+
+/**
+ * POST - Create a room (ADMIN only)
+ */
 export async function POST(request: NextRequest) {
   try {
-    // Read role and initData from headers
     const role = request.headers.get("x-user-role");
     const initData = request.headers.get("x-init-data");
 
@@ -62,36 +115,58 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing initData" }, { status: 400 });
     }
 
-    const { name, entryFee, capacity, minPlayers, pattern } = await request.json();
+    const {
+      name,
+      entryFee,
+      capacity,
+      minPlayers,
+      pattern,
+      status = "OPEN",
+      botAllowed = false,
+      minBots = 0,
+      maxBots = 0,
+      commissionRate = 0,
+    } = await request.json();
 
+    // Validate required fields
     if (!name || !capacity || !minPlayers || !pattern) {
       return NextResponse.json(
-        { error: "Missing required fields or invalid field name" },
+        { error: "Missing required fields or invalid field" },
         { status: 400 }
       );
     }
 
-    const body = JSON.stringify({ name, entryFee: Number(entryFee), capacity: Number(capacity), minPlayers: Number(minPlayers), pattern })
+    // Ensure bot numbers are consistent
+    if (botAllowed && minBots > maxBots) {
+      return NextResponse.json(
+        { error: "minBots cannot be greater than maxBots" },
+        { status: 400 }
+      );
+    }
 
-    // Forward data to backend for verification and room creation
+    const body = JSON.stringify({
+      name,
+      entryFee: Number(entryFee),
+      capacity: Number(capacity),
+      minPlayers: Number(minPlayers),
+      pattern,
+      status,
+      botAllowed,
+      minBots: Number(minBots),
+      maxBots: Number(maxBots),
+      commissionRate: Number(commissionRate),
+    });
+
     const response = await fetch(`${BACKEND_BASE_URL}/api/v1/secured/rooms`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-init-data": initData,
       },
-      body:body,
+      body,
     });
 
-
-    // console.log("=======================>>Create room response:", response);
-    // console.log("=======================>>Create room body:", body);
-    // console.log("=======================>>Create room body:", initData);
-
     const data = await response.json();
-
-    // console.log("=======================>>Create room DATA:", data);
-
 
     if (!response.ok) {
       return NextResponse.json({ error: data?.error || "Backend error" }, { status: response.status });
