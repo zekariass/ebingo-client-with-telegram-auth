@@ -86,7 +86,7 @@ useEffect(() => {
         )}
 
         <div className="space-y-6">
-          {rooms?.length >=8 && <LobbyFilters />}
+          {/* {rooms?.length >=8 && <LobbyFilters />} */}
           <RoomTable rooms={rooms} loading={loading} />
         </div>
       </main>
