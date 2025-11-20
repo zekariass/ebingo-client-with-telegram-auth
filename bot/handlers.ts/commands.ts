@@ -232,7 +232,7 @@ export function registerCommandHandlers(bot: Telegraf) {
       Markup.inlineKeyboard([
         Markup.button.url(
           'Get Support',
-          'https://t.me/eleisonzek' // replace with your private Telegram username
+          'https://t.me/M104610' // replace with your private Telegram username
         )
       ])
     );
@@ -288,7 +288,7 @@ export async function showStartMenu(ctx: any) {
     
         // Row 6 (two buttons)
         [
-          Markup.button.url(tr.btnSupport, 'https://t.me/eleisonzek'),
+          Markup.button.url(tr.btnSupport, 'https://t.me/M104610'),
           Markup.button.callback(tr.btnLanguage, 'cmd_language'),
         ],
 
