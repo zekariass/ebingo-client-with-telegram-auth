@@ -402,9 +402,12 @@ export default function WithdrawPage() {
             <Button
               type="submit"
               className="flex-1"
-              // disabled={processing || displayedMethods.length === 0 || (selectedAmount || 0) > balance.availableToWithdraw || 
-              //   (balance.availableToWithdraw < minWithdrawalAmount)
-              // } 
+             disabled={
+                processing ||
+                displayedMethods.length === 0 ||
+                (selectedAmount || 0) > balance.availableToWithdraw ||
+                balance.availableToWithdraw < Math.max(minWithdrawalAmount, 50)
+              }
             >
               {processing ? (
                 <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />Processing...</>
