@@ -182,7 +182,7 @@ export function StartGameButton({ disabled, selectedCards, fee }: StartGameButto
 
     <Button
       size="sm"
-      className={`text-center ${!canAfford ? "cursor-not-allowed bg-red-800" : "cursor-pointer bg-yellow-700"} w-full`}
+      className={`text-center text-white ${!canAfford ? "cursor-not-allowed bg-red-800" : "cursor-pointer bg-yellow-700 hover:bg-yellow-900"} w-full`}
       disabled={disabled || !canAfford || !connected}
       // variant={canAfford ? "default" : "destructive"}
       onClick={() => {
