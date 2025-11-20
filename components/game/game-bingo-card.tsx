@@ -175,9 +175,9 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
         <Button
           onClick={handleBingoClaim}
           disabled={!isConnected || !started || !userId}
-          className="h-7 w-full font-bold text-sm sm:text-base bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+          className="h-7 w-full font-mono text-lg sm:text-base bg-yellow-700 hover:bg-yellow-900 text-white cursor-pointer"
         >
-          {!claiming ? "Claim Bingo" : "Claiming..."}
+          {!claiming ? "Bingo" : "Claiming..."}
         </Button>
       </div>
     </div>

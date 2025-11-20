@@ -60,13 +60,28 @@ export function registerCommandHandlers(bot: Telegraf) {
     ]));
   });
 
-  bot.action('cmd_support', async (ctx: any) => {
-    await ctx.answerCbQuery();
-    const lang = getUserLangFromCtx(ctx);
-    await ctx.reply(getTranslationForLang(lang, 'support'), Markup.inlineKeyboard([
-      Markup.button.webApp('Get Support', `${process.env.APP_URL}/${lang}/support`)
-    ]));
-  });
+  // bot.action('cmd_support', async (ctx: any) => {
+  //   await ctx.answerCbQuery();
+  //   const lang = getUserLangFromCtx(ctx);
+  //   await ctx.reply(getTranslationForLang(lang, 'support'), Markup.inlineKeyboard([
+  //     Markup.button.webApp('Get Support', `${process.env.APP_URL}/${lang}/support`)
+  //   ]));
+  // });
+
+  // bot.action('cmd_support', async (ctx: any) => {
+  //   await ctx.answerCbQuery();
+
+  //   const lang = getUserLangFromCtx(ctx);
+  //   const supportMessage = getTranslationForLang(lang, 'support');
+
+  //   await ctx.reply(
+  //     Markup.button.url(
+  //         'Get Support',
+  //         'https://t.me/eleisonzek' // replace with your actual Telegram username
+  //       )
+  //   );
+  // });
+
 
   bot.action('cmd_language', async (ctx: any) => {
     await ctx.answerCbQuery();
@@ -207,9 +222,22 @@ export function registerCommandHandlers(bot: Telegraf) {
   bot.command('instructions', async (ctx) => await ctx.reply(t(ctx, 'instructions'), Markup.inlineKeyboard([
     Markup.button.webApp('How to Play', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/instructions`)
   ])));
-  bot.command('support', async (ctx) => await ctx.reply(t(ctx, 'support'), Markup.inlineKeyboard([
-    Markup.button.webApp('Get Support', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/support`)
-  ])));
+  // bot.command('support', async (ctx) => await ctx.reply(t(ctx, 'support'), Markup.inlineKeyboard([
+  //   Markup.button.webApp('Get Support', `${process.env.APP_URL}/${getUserLangFromCtx(ctx)}/support`)
+  // ])));
+
+  bot.command('support', async (ctx) => {
+    await ctx.reply(
+      t(ctx, 'support'),
+      Markup.inlineKeyboard([
+        Markup.button.url(
+          'Get Support',
+          'https://t.me/eleisonzek' // replace with your private Telegram username
+        )
+      ])
+    );
+  });
+
   bot.command('language', async (ctx) => {
     const inlineButtons = availableLanguages.map(lang =>
       Markup.button.callback(lang.toUpperCase(), `set_language_${lang}`)
@@ -260,7 +288,7 @@ export async function showStartMenu(ctx: any) {
     
         // Row 6 (two buttons)
         [
-          Markup.button.callback(tr.btnSupport, 'cmd_support'),
+          Markup.button.url(tr.btnSupport, 'https://t.me/eleisonzek'),
           Markup.button.callback(tr.btnLanguage, 'cmd_language'),
         ],
 
