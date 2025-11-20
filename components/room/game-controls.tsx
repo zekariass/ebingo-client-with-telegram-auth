@@ -19,28 +19,31 @@ export function GameControls({disabled}: GameControlsProps) {
   // const hasWinningCard = userCards.some((card) => (pattern ? checkWinningPattern(card, pattern) : false))
 
   return (
-    <Card>
-      <CardContent className="pt-6 space-y-4">
-        {/* {!gameInProgress ? ( */}
-          <StartGameButton disabled={!canStartGame || disabled} selectedCards={userSelectedCards?.length} fee={room?.entryFee || 0} />
-        {/* ) : (
-          <BingoClaimButton disabled={false} hasWinningCard={false} />
-        )} */}
+    // <Card>
+    //   <CardContent className="pt-6 space-y-4">
+    //     {/* {!gameInProgress ? ( */}
+    //       <StartGameButton disabled={!canStartGame || disabled} selectedCards={userSelectedCards?.length} fee={room?.entryFee || 0} />
+    //     {/* ) : (
+    //       <BingoClaimButton disabled={false} hasWinningCard={false} />
+    //     )} */}
 
-        <div className="text-xs text-muted-foreground text-center space-y-1">
-          {!gameInProgress ? (
-            <>
-              <p>Select 1-2 cards to join the game</p>
-              <p>Entry fee will be charged when you start</p>
-            </>
-          ) : (
-            <>
-              <p>Mark numbers as they are called</p>
-              <p>Click BINGO when you complete the pattern</p>
-            </>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+    //     {/* <div className="text-xs text-muted-foreground text-center space-y-1">
+    //       {!gameInProgress ? (
+    //         <>
+    //           <p>Select 1-2 cards to join the game</p>
+    //           <p>Entry fee will be charged when you start</p>
+    //         </>
+    //       ) : (
+    //         <>
+    //           <p>Mark numbers as they are called</p>
+    //           <p>Click BINGO when you complete the pattern</p>
+    //         </>
+    //       )}
+    //     </div> */}
+    //   </CardContent>
+    // </Card>
+
+
+    <StartGameButton disabled={!canStartGame || disabled} selectedCards={userSelectedCards?.length} fee={room?.entryFee || 0} />
   )
 }

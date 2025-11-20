@@ -128,8 +128,6 @@ import { useGameStore } from "@/lib/stores/game-store"
 import { ConnectionStatus } from "../room/connection-status"
 import { CountdownTimerAllGames } from "../common/countdown-timer-all-games"
 import { Badge } from "../ui/badge"
-import { useRoomSocket } from "@/lib/hooks/websockets/use-room-socket"
-import { WebSocketManager } from "@/lib/hooks/websockets/web-socket-manager"
 
 interface RoomTableProps {
   rooms: Room[]

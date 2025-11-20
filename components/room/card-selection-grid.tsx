@@ -255,7 +255,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useGameStore } from "@/lib/stores/game-store"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, RefreshCwIcon } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronsLeftIcon, ChevronsRightIcon, RefreshCwIcon } from "lucide-react"
 // import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { userStore } from "@/lib/stores/user-store"
 import { CardInfo, GameStatus } from "@/lib/types"
@@ -263,6 +263,7 @@ import { CountdownTimer } from "../common/countdown-timer"
 import { useRoomStore } from "@/lib/stores/room-store"
 import { useRoomSocket } from "@/lib/hooks/websockets/use-room-socket"
 import { Badge } from "../ui/badge"
+import { GameControls } from "./game-controls"
 
 interface CardSelectionGridProps {
   roomId: number
@@ -479,29 +480,67 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
           </div>
         )} */}
 
-        {totalPages > 1 && (
+        {/* {totalPages > 1 && (
           <div className="flex items-center gap-2 justify-end mt-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
-            </Button>
-            <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
-              Page {currentPage} of {totalPages}
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
-            </Button>
+                <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+              </Button>
+              <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+              </Button>
           </div>
-        )}
+        )} */}
+
+
+        <div className="flex flex-col items-center mt-1 w-full space-y-2">
+          {/* GameControls: always centered */}
+          <div className="flex justify-center w-full">
+            <GameControls disabled={disabled} />
+          </div>
+
+          {/* Pagination: only show if multiple pages */}
+          {totalPages > 1 && (
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronsLeftIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+              </Button>
+
+              <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronsRightIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+              </Button>
+            </div>
+          )}
+        </div>
+
+
+
       </CardContent>
     </Card>
   )
