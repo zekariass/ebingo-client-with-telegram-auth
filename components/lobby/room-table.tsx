@@ -218,7 +218,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
               >
                 {/* Bet */}
                 <td className="px-1 py-3 font-semibold rounded-l-xl">
-                  {room.entryFee} {currency}
+                  {room.entryFee === 0 ? "Free" : `${room.entryFee} ${currency}`}
                 </td>
 
                 {/* Active Players */}
