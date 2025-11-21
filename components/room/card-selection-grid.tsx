@@ -255,7 +255,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useGameStore } from "@/lib/stores/game-store"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, ChevronsLeftIcon, ChevronsRightIcon, RefreshCwIcon } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronsLeftIcon, ChevronsRightIcon, RefreshCwIcon, SeparatorVertical } from "lucide-react"
 // import { useWebSocketEvents } from "@/lib/hooks/websockets/use-websocket-events"
 import { userStore } from "@/lib/stores/user-store"
 import { CardInfo, GameStatus } from "@/lib/types"
@@ -265,6 +265,8 @@ import { useRoomSocket } from "@/lib/hooks/websockets/use-room-socket"
 import { Badge } from "../ui/badge"
 import { GameControls } from "./game-controls"
 import { CountdownTimerAllGames } from "../common/countdown-timer-all-games"
+import { Separator } from "../ui/separator"
+import { currency } from "@/lib/constant"
 
 interface CardSelectionGridProps {
   roomId: number
@@ -396,19 +398,19 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
               <div className="flex items-center gap-2 text-xs sm:text-sm">
                 {/* Active Players */}
                 <span className="text-blue-500">
-                  Active Players: {joinedPlayers.length}
+                  Players: {joinedPlayers.length}
                 </span>
 
                 {/* Separator */}
-                <span className="text-muted-foreground">|</span>
+                <span className="text-muted">|</span>
 
                 {/* Prize */}
                 <span className="text-green-500">
-                  Prize: {joinedPlayers.length * entryFee * (1 - commissionRate)}
+                  Prize: {joinedPlayers.length * entryFee * (1 - commissionRate)} Br
                 </span>
 
                 {/* Separator */}
-                <span className="text-muted-foreground">|</span>
+                <span className="text-muted">|</span>
 
                 {/* Countdown / Status */}
                 <span className="flex items-center">
@@ -416,9 +418,9 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                     // <CountdownTimerAllGames activeGame={game} gamePage={false} />
                     <CountdownTimer gamePage={false} />
                   ) : status === GameStatus.PLAYING ? (
-                    <span className="text-red-500 font-bold">PLAYING...</span>
+                    <span className="text-red-500">PLAYING... (Wait for next game)</span>
                   ) : (
-                    <span className="text-green-500 font-bold">WAITING...</span>
+                    <span className="text-yellow-500 font-bold">Waiting Players...</span>
                   )}
                 </span>
               </div>

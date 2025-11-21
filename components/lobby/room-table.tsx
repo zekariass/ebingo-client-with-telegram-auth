@@ -183,7 +183,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
 
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto shadow-xl bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 rounded-xl p-4">
       <div className="flex items-center justify-center">
         <Badge variant="outline">
           <ConnectionStatus roomId={rooms[0].id} />
@@ -216,7 +216,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
               >
                 {/* Bet */}
                 <td className="px-1 py-3 font-semibold rounded-l-xl">
-                  {room.entryFee === 0 ? "Free" : `${room.entryFee} ${currency}`}
+                  {room.entryFee === 0 ? "Free" : `${room.entryFee} Br`}
                 </td>
 
                 {/* Active Players */}
@@ -226,7 +226,7 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
 
                 {/* Prize */}
                 <td className="px-1 py-3 font-semibold text-yellow-400">
-                  {prize.toFixed(2)} {currency}
+                  {prize.toFixed(2)} Br
                 </td>
 
                 {/* Status */}
