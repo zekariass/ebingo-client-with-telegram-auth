@@ -174,10 +174,10 @@ import { usePathname } from "next/navigation"
 
 const sidebarItems = [
   { title: "Home", href: "/", icon: Home },
-  { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  // { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { title: "Rooms", href: "/admin/rooms", icon: GamepadIcon },
-  {title: "Deposits", href: "/admin/deposits", icon: Wallet},
-  {title: "Withdrawals", href: "/admin/withdrawals", icon: DollarSign},
+  // {title: "Deposits", href: "/admin/deposits", icon: Wallet},
+  // {title: "Withdrawals", href: "/admin/withdrawals", icon: DollarSign},
   // { title: "Games", href: "/admin/games", icon: Settings },
   // { title: "Manual Calling", href: "/admin/manual-calling", icon: Mic },
   // { title: "Players", href: "/admin/players", icon: Users },
