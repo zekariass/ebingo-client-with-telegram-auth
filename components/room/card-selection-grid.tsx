@@ -264,6 +264,7 @@ import { useRoomStore } from "@/lib/stores/room-store"
 import { useRoomSocket } from "@/lib/hooks/websockets/use-room-socket"
 import { Badge } from "../ui/badge"
 import { GameControls } from "./game-controls"
+import { CountdownTimerAllGames } from "../common/countdown-timer-all-games"
 
 interface CardSelectionGridProps {
   roomId: number
@@ -277,13 +278,15 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const allSelectedCardsIds = useGameStore(state => state.game.allSelectedCardsIds)
   // const allCardIds = useGameStore(state => state.game.allCardIds)
   const allCardIds = useRoomStore(state => state.room?.allCardIds)
+  const commissionRate = useRoomStore(state => state.room?.commissionRate || 0)
+  const entryFee = useRoomStore(state => state.room?.entryFee || 0)
   const getSelectedCard = useRoomStore(state => state.getSelectedCard)
-  const countdownDuration = useGameStore(state => state.game.countdownDurationSeconds)
-  // const gameId = useGameStore(state => state.game.gameId)
+  const gameId = useGameStore(state => state.game.gameId)
   const status = useGameStore(state => state.game.status)
   const joinedPlayers = useGameStore(state => state.game.joinedPlayers)
   const selectCardOptimistically  = useGameStore(state => state.selectCardOptimistically)
   const deselectCardOptimistically  = useGameStore(state => state.releaseCardOptimistically)
+  const game = useGameStore(state => state.game)
 
   // const {enterRoom, connected} =  useWebSocketEvents({roomId: roomId, enabled: true});
   // const {joinGame, connected} =  useRoomSocket({roomId: roomId, enabled: true});
@@ -370,43 +373,58 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
     <Card>
       <CardHeader className="">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-          <div className="flex flex-row sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm">
-            {/* <Badge variant="destructive" className="w-fit">
-              {userSelectedCardsIds.length}/{maxCards} selected
-            </Badge> */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="flex flex-col gap-4 text-xs sm:text-sm">
+          {/* Status Legend - horizontal items */}
+            <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full" />
-                <span className="text-muted-foreground text-xs">Available</span>
+                <div className="w-3 h-3 bg-green-500 rounded-full" />
+                <span className="text-muted-foreground">Available</span>
               </div>
+
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full" />
-                <span className="text-muted-foreground text-xs">Selected</span>
+                <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                <span className="text-muted-foreground">Selected</span>
               </div>
+
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 sm:w-3 sm:h-3 border-red-300 bg-red-300 dark:bg-red-950 rounded-full" />
-                <span className="text-muted-foreground text-xs">Taken</span>
+                <div className="w-3 h-3 border-red-300 bg-red-300 dark:bg-red-950 rounded-full" />
+                <span className="text-muted-foreground">Taken</span>
               </div>
-              <div className="">
-                {joinedPlayers.length > 5 && <p className="text-xs text-blue-500">
-                   | Active: {joinedPlayers.length} Players
-                </p>}
-              </div>
-              {status === GameStatus.COUNTDOWN ? (
-                  <div className="flex items-center gap-1">
-                    <div className="sm:w-3 sm:h-3 border-red-300 bg-red-300 dark:bg-red-950 rounded-full">
-                      <CountdownTimer gamePage={false} />
-                    </div>
-                  </div>
-                ) : status === GameStatus.PLAYING ? (
-                  <div className="text-red-500 font-bold">
-                    PLAYING...
-                  </div>
-                ) : (
-                  ""
-                )}
             </div>
+            {/* Game Info - horizontal items */}
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2 text-xs sm:text-sm">
+                {/* Active Players */}
+                <span className="text-blue-500">
+                  Active Players: {joinedPlayers.length}
+                </span>
+
+                {/* Separator */}
+                <span className="text-muted-foreground">|</span>
+
+                {/* Prize */}
+                <span className="text-green-500">
+                  Prize: {joinedPlayers.length * entryFee * (1 - commissionRate)}
+                </span>
+
+                {/* Separator */}
+                <span className="text-muted-foreground">|</span>
+
+                {/* Countdown / Status */}
+                <span className="flex items-center">
+                  {status === GameStatus.COUNTDOWN ? (
+                    // <CountdownTimerAllGames activeGame={game} gamePage={false} />
+                    <CountdownTimer gamePage={false} />
+                  ) : status === GameStatus.PLAYING ? (
+                    <span className="text-red-500 font-bold">PLAYING...</span>
+                  ) : (
+                    <span className="text-green-500 font-bold">WAITING...</span>
+                  )}
+                </span>
+              </div>
+
           </div>
+        </div>
         </div>
       </CardHeader>
 

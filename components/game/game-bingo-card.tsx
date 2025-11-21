@@ -9,7 +9,6 @@ import { BingoColumn, GamePattern, BingoClaimRequestPayloadType } from "@/lib/ty
 import { userStore } from "@/lib/stores/user-store"
 import { cn } from "@/lib/utils"
 import { Star } from "lucide-react"
-import { useTelegramInit } from "@/lib/hooks/use-telegram-init"
 import { useRoomSocket } from "@/lib/hooks/websockets/use-room-socket"
 
 const COLUMN_HEADERS = ["B", "I", "N", "G", "O"]
@@ -60,7 +59,7 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
 
   const userId = userStore((state) => state.user?.telegramId)
   const userDbId = userStore((state) => state.user?.id)
-  const userName = userStore(
+  let userName = userStore(
     (state) => `${state.user?.nickname ?? state.user?.firstName}`.trim()
   )
 
@@ -177,7 +176,7 @@ export function GameBingoCard({ cardInfoId, index }: GameBingoCardProps) {
           disabled={!isConnected || !started || !userId}
           className="h-7 w-full font-mono text-lg sm:text-base bg-yellow-700 hover:bg-yellow-900 text-white cursor-pointer"
         >
-          {!claiming ? "Bingo" : "Claiming..."}
+          {!claiming ? "BINGO" : "CLAIMING..."}
         </Button>
       </div>
     </div>

@@ -221,7 +221,6 @@ export function GameView({ roomId }: GameViewProps) {
   //useAutoRefreshGameState(roomId, 3000);
 
   const [isLeaving, setLeaving] = useState(false)
-  const [refreshing, setRefreshing] = useState(false)
 
   const { room, loading, fetchRoom } = useRoomStore()
 
@@ -310,7 +309,7 @@ export function GameView({ roomId }: GameViewProps) {
           </div>
 
           <div className="order-2 sm:order-2">
-            <div className="border border-purple-500 rounded-xl h-12 w-full max-w-xs mx-auto bg-yellow-950 p-1">
+            <div className="border border-purple-500 rounded-xl h-12 w-full max-w-xs mx-auto bg-neutral-950 p-1">
               <div className="flex items-center justify-center h-full">
                 <CountdownTimer label="" />
               </div>

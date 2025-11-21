@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Badge } from "@/components/ui/badge"
 import { GameState, GameStatus } from "@/lib/types"
 
 interface CountdownTimerProps {
@@ -19,7 +18,7 @@ export function CountdownTimerAllGames({
 
   if (!activeGame) return null
 
-  const { status, countdownDurationSeconds: duration, backendEpochMillis } = activeGame
+  const { status, countdownDurationSeconds: duration, backendEpochMillis, } = activeGame
 
   // -------------------------------------------
   // Countdown timer logic
@@ -59,15 +58,13 @@ export function CountdownTimerAllGames({
   // -------------------------------------------
   if (status === GameStatus.COUNTDOWN) {
     return (
-      <div className="text-center space-y-1">
-        {label && <div className="text-xs text-white">{label}</div>}
-
+      <div className="">
         {timeLeft > 0 ? (
-          <div className={`font-bold text-sm px-3 py-1 ${countdownColor()}`}>
+          <div className={`font-bold text-sm px-2  ${countdownColor()}`}>
             {formatTime(timeLeft)}
           </div>
         ) : (
-          <div className="font-bold text-yellow-500 text-sm px-3 py-1">
+          <div className="font-bold text-yellow-500 text-sm px-2 py-1">
             Starting...
           </div>
         )}
@@ -77,9 +74,9 @@ export function CountdownTimerAllGames({
 
   if (status === GameStatus.READY && gamePage) {
     return (
-      <div className="text-center space-y-1">
+      <div className="">
         {label && <div className="text-xs text-white">{label}</div>}
-        <div className="text-yellow-500 font-mono text-sm px-3 py-1">
+        <div className="text-yellow-500 font-mono text-sm px-2 py-1">
           Starting...
         </div>
       </div>

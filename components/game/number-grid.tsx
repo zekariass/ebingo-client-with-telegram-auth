@@ -3,6 +3,7 @@
 import { useGameStore } from "@/lib/stores/game-store"
 import { cn } from "@/lib/utils"
 import { ConnectionStatus } from "../room/connection-status"
+import { Badge } from "../ui/badge"
 
 const BINGO_LETTERS = ["B", "I", "N", "G", "O"]
 
@@ -37,7 +38,9 @@ const colors = ["green", "red", "yellow", "green", "red"]
       {/* <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-center text-primary">
         75 Number Grid
       </h2> */}
-      <div className="font-bold"><ConnectionStatus roomId={roomId} /></div>
+      <div className="flex items-center justify-center mb-2">
+        <Badge variant="outline"><ConnectionStatus roomId={roomId} /></Badge>
+      </div>
 
       <div className="flex items-center justify-center w-full">
         <div className="w-full max-w-3xl">

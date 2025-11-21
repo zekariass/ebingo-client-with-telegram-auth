@@ -245,9 +245,9 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
   }
 
   const getBadgeBg = () => {
-    if (timeLeft < 10) return "bg-red-500 text-white"
-    if (timeLeft <= 30) return "bg-yellow-500 text-white"
-    return "bg-blue-500 text-white"
+    if (timeLeft < 10) return "text-red-500"
+    if (timeLeft <= 30) return "text-yellow-500"
+    return "text-blue-500"
   }
 
   // Render logic
@@ -255,14 +255,14 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
     return (
       <div className="text-center space-y-1">
         {label && <div className="text-xs text-white">{label}</div>}
-        {timeLeft > 0 ? (
-          <Badge className={`font-mono text-sm px-3 py-1 ${getBadgeBg()}`}>
+        {timeLeft >= 0 ? (
+          <div className={`font-bold text-md px-3 py-1 ${getBadgeBg()}`}>
             Starts In: {formatTime(timeLeft)}
-          </Badge>
+          </div>
         ) : (
-          <Badge className="bg-green-500 text-white font-mono text-sm px-3 py-1">
+          <div className="text-green-500 font-bold text-md px-3 py-1">
             Starting...
-          </Badge>
+          </div>
         )}
       </div>
     )
@@ -287,9 +287,9 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
             {currentDrawnNumber}
           </motion.div>
         ) : (
-          <Badge className="bg-yellow-600 text-black font-mono text-white text-sm px-3 py-1">
+          <div className="font-bold text-green-500 text-md px-3 py-1">
             Calling...
-          </Badge>
+          </div>
         )}
       </div>
     )
@@ -300,9 +300,9 @@ export function CountdownTimer({ label, gamePage = true }: CountdownTimerProps) 
     return (
       <div className="text-center space-y-1">
         {label && <div className="text-xs text-white">{label}</div>}
-        <Badge className="bg-green-500 text-white font-mono text-sm px-3 py-1">
+        <div className="text-yellow-500 font-bold text-md px-3 py-1">
           Starting Soon...
-        </Badge>
+        </div>
       </div>
     )
   }

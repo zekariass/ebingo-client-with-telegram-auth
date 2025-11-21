@@ -89,6 +89,7 @@ export interface UserProfile {
   phoneNumber?: string | null;
   status: 'ACTIVE' | 'BANNED';
   role: 'ADMIN' | 'PLAYER' | 'MODERATOR';
+  is_bot: boolean;
   createdAt: string;
   updatedAt: string;
 }
