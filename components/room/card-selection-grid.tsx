@@ -418,7 +418,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                     // <CountdownTimerAllGames activeGame={game} gamePage={false} />
                     <CountdownTimer gamePage={false} />
                   ) : status === GameStatus.PLAYING ? (
-                    <span className="text-red-500">PLAYING... (Wait for next game)</span>
+                    <span className="text-red-500 text-xs">PLAYING (Wait for next game)</span>
                   ) : (
                     <span className="text-yellow-500 font-bold">Waiting Players...</span>
                   )}
