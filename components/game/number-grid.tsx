@@ -25,7 +25,7 @@ const generateNumberGrid = () => {
 
 export function NumberGrid() {
   const {
-    game: { drawnNumbers: calledNumbers, roomId },
+    game: { drawnNumbers: calledNumbers, roomId, currentDrawnNumber },
   } = useGameStore()
   const numberGrid = generateNumberGrid()
 
@@ -68,9 +68,9 @@ const colors = ["green", "red", "yellow", "green", "red"]
                     key={number}
                     className={cn(
                       "h-7 md:h-10 flex items-center justify-center rounded-xs border-2 transition-all duration-300",
-                      isCalled
+                      isCalled && currentDrawnNumber !== number
                         ? "bg-red-500 text-white border-green-600 shadow-md"
-                        : "bg-green-800 text-white border-border hover:border-primary/50"
+                        : isCalled && number === currentDrawnNumber ? "bg-blue-500 border border-white": "bg-green-800 text-white border-border hover:border-primary/50"
                     )}
                   >
                     {number}
