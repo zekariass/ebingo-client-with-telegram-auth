@@ -204,7 +204,8 @@ export function RoomTable({ rooms, loading }: RoomTableProps) {
           {sortedRooms.map((room) => {
             const activeGame = activeGames[room.id]
             const activePlayers = activeGame?.joinedPlayers?.length ?? 0
-            const prize = activePlayers * room.entryFee * (1.0 - (room.commissionRate ?? 0.20))
+            const allSelectedCardsIds = activeGame.allSelectedCardsIds || []
+            const prize = allSelectedCardsIds.length * room.entryFee * (1.0 - (room.commissionRate ?? 0.20))
             const status = activeGame?.status ?? GameStatus.READY
 
             return (
