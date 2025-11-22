@@ -276,8 +276,7 @@ interface CardSelectionGridProps {
 
 export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionGridProps) {
 
-  const userSelectedCardsIds = useGameStore(state => state.game.userSelectedCardsIds)
-  const allSelectedCardsIds = useGameStore(state => state.game.allSelectedCardsIds)
+
   // const allCardIds = useGameStore(state => state.game.allCardIds)
   const allCardIds = useRoomStore(state => state.room?.allCardIds)
   const commissionRate = useRoomStore(state => state.room?.commissionRate || 0)
@@ -286,6 +285,8 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
   const gameId = useGameStore(state => state.game.gameId)
   const status = useGameStore(state => state.game.status)
   const joinedPlayers = useGameStore(state => state.game.joinedPlayers)
+    const userSelectedCardsIds = useGameStore(state => state.game.userSelectedCardsIds)
+  const allSelectedCardsIds = useGameStore(state => state.game.allSelectedCardsIds)
   const selectCardOptimistically  = useGameStore(state => state.selectCardOptimistically)
   const deselectCardOptimistically  = useGameStore(state => state.releaseCardOptimistically)
   const game = useGameStore(state => state.game)
@@ -406,7 +407,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
 
                 {/* Prize */}
                 <span className="text-green-500">
-                  Prize: {joinedPlayers.length * entryFee * (1 - commissionRate)} Br
+                  Prize: {allSelectedCardsIds.length * entryFee * (1 - commissionRate)} Br
                 </span>
 
                 {/* Separator */}
@@ -418,7 +419,7 @@ export function CardSelectionGrid({ roomId, capacity, disabled }: CardSelectionG
                     // <CountdownTimerAllGames activeGame={game} gamePage={false} />
                     <CountdownTimer gamePage={false} />
                   ) : status === GameStatus.PLAYING ? (
-                    <span className="text-red-500 text-xs">PLAYING (Wait for next game)</span>
+                    <span className="text-red-500 text-xs">PLAYING (Join next game)</span>
                   ) : (
                     <span className="text-yellow-500 font-bold">Waiting Players...</span>
                   )}
